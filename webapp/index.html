@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Pre-Show Reels — demo gratis</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --border: #2a2e38;
+    --text: #e6e8ec;
+    --muted: #9aa1ac;
+    --accent: #6ea8fe;
+    --ok: #4caf7d;
+    --bad: #e5534b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    padding: 24px 32px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { margin: 0 0 4px; font-size: 20px; }
+  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 720px; }
+  .layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 0;
+    min-height: calc(100vh - 90px);
+  }
+  aside {
+    border-right: 1px solid var(--border);
+    padding: 16px;
+    overflow-y: auto;
+  }
+  aside .group-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 16px 4px 6px;
+  }
+  aside button {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    color: var(--text);
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13.5px;
+  }
+  aside button:hover { background: var(--panel); }
+  aside button.active { background: var(--accent); color: #0f1115; font-weight: 600; }
+  main { padding: 24px 32px; overflow-y: auto; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { margin-top: 0; font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .bullet { margin: 8px 0; padding-left: 14px; border-left: 2px solid var(--border); }
+  .bullet .kind { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .badge.ok { background: rgba(76,175,125,.15); color: var(--ok); }
+  .badge.bad { background: rgba(229,83,75,.15); color: var(--bad); }
+  .metrics { display: flex; gap: 24px; flex-wrap: wrap; }
+  .metric { min-width: 120px; }
+  .metric .value { font-size: 22px; font-weight: 700; }
+  .metric .label { font-size: 12px; color: var(--muted); }
+  .disclaimer {
+    background: rgba(110,168,254,.08);
+    border: 1px solid rgba(110,168,254,.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .empty { color: var(--muted); padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pre-Show Reels — demo gratis</h1>
+  <p>
+    Genera un brief pre-visionado por plantilla (sin API, coste cero) y lo verifica en vivo
+    contra el ground truth de spoilers investigado para cada título. No es el sistema real
+    — ese necesita retrieval + un LLM y sí cuesta crédito (ver README).
+  </p>
+</header>
+<div class="layout">
+  <aside id="title-list"></aside>
+  <main id="content"><div class="empty">Elige un título de la izquierda.</div></main>
+</div>
+
+<script>
+async function loadTitles() {
+  const res = await fetch('/api/titles');
+  const titles = await res.json();
+  const groups = { mainstream: [], longtail: [] };
+  titles.forEach(t => groups[t.stratum].push(t));
+
+  const aside = document.getElementById('title-list');
+  aside.innerHTML = '';
+  for (const [stratum, items] of Object.entries(groups)) {
+    const label = document.createElement('div');
+    label.className = 'group-label';
+    label.textContent = stratum === 'mainstream' ? 'Mainstream' : 'Cola larga';
+    aside.appendChild(label);
+    items.forEach(t => {
+      const btn = document.createElement('button');
+      btn.textContent = `${t.title} (${t.year})`;
+      btn.onclick = () => selectTitle(t.title_id, btn);
+      aside.appendChild(btn);
+    });
+  }
+}
+
+async function selectTitle(titleId, btnEl) {
+  document.querySelectorAll('aside button').forEach(b => b.classList.remove('active'));
+  btnEl.classList.add('active');
+
+  const content = document.getElementById('content');
+  content.innerHTML = '<div class="empty">Generando…</div>';
+
+  const res = await fetch(`/api/brief/${titleId}`);
+  const data = await res.json();
+  render(data);
+}
+
+function bulletHtml(c) {
+  return `<div class="bullet"><span class="kind">${c.kind}${c.source_id ? ' · ' + c.source_id : ' · sin fuente'}</span><div>${c.text}</div></div>`;
+}
+
+function render(data) {
+  const { case: c, brief, eval: ev } = data;
+  const leakBadge = ev.leaked
+    ? `<span class="badge bad">FUGA DETECTADA</span>`
+    : `<span class="badge ok">sin fuga (${ev.n_labels_checked} spoilers comprobados)</span>`;
+
+  document.getElementById('content').innerHTML = `
+    <div class="disclaimer">
+      Brief generado por plantilla determinista (DemoGenerator), no por un LLM real.
+      La evaluación de fuga sí es real: corre <code>evaluate_case()</code> contra
+      ${ev.n_labels_checked} spoilers etiquetados de <strong>${c.title}</strong> con el
+      mismo <code>SubstringJudge</code> que usa <code>run_eval.py</code>.
+    </div>
+
+    <div class="card">
+      <h2>Verificación de fuga (en vivo)</h2>
+      ${leakBadge}
+      <div class="metrics" style="margin-top:16px">
+        <div class="metric"><div class="value">${ev.n_grounded_facts}/${ev.n_facts}</div><div class="label">hechos con fuente</div></div>
+        <div class="metric"><div class="value">${ev.n_claims}</div><div class="label">claims totales (richness)</div></div>
+        <div class="metric"><div class="value">${ev.leaks.length}</div><div class="label">fugas encontradas</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Context bullets</h2>
+      ${brief.context_bullets.map(bulletHtml).join('') || '<span class="empty">—</span>'}
+    </div>
+
+    <div class="card">
+      <h2>Author voice</h2>
+      ${brief.author_voice.map(bulletHtml).join('')}
+    </div>
+
+    <div class="card">
+      <h2>Emotional temperature / why now</h2>
+      <p><em>${brief.emotional_temperature}</em></p>
+      <p>${brief.why_now}</p>
+    </div>
+
+    <div class="card">
+      <h2>Guion</h2>
+      ${brief.script.map(b => `
+        <div class="bullet">
+          <span class="kind">${b.start_s}s–${b.end_s}s</span>
+          <div><strong>On screen:</strong> ${b.on_screen_text || '—'}</div>
+          <div><strong>Voiceover:</strong> ${b.voiceover || '—'}</div>
+          <div><strong>Visual:</strong> ${b.visual_direction || '—'}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+
+loadTitles();
+</script>
+</body>
+</html>

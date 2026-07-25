@@ -20,6 +20,7 @@ El entregable de este repo no son los guiones. Son los números.
 | — | Set de 20 títulos estratificado | ✅ |
 | 0 | Ground truth de spoilers (20 títulos) | ✅ 20/20 (investigado por LLM con fuentes citadas, ver D7 en `docs/DESIGN.md` — no es etiquetado humano) |
 | 0 | Baseline sin retrieval + medición | 🔴 código listo, falta correr con `ANTHROPIC_API_KEY` |
+| — | UI de demo local (gratis, sin retrieval real) | ✅ `webapp/` |
 | 1 | Retrieval + verificador | ⬜ |
 | 2 | Partición de contexto por spoiler | ⬜ |
 | 3 | Adaptador de libros | ⬜ |
@@ -51,6 +52,20 @@ pip install pydantic pytest pyyaml anthropic
 python -m pytest tests/ -q      # no necesita red ni API key
 export ANTHROPIC_API_KEY=sk-...  # solo hace falta para --generator baseline
 python evals/run_eval.py --generator baseline
+```
+
+### UI de demo (gratis, sin API key)
+
+Muestra un brief por plantilla para cada uno de los 20 títulos y lo verifica
+en vivo contra su ground truth real de spoilers, con el mismo harness que usa
+`run_eval.py`. No genera contenido nuevo con un LLM — eso es lo único del
+proyecto que cuesta crédito, y sigue sin ejecutarse (`baseline.py` está listo
+pero no se ha corrido, ver tabla de Resultados arriba).
+
+```bash
+pip install fastapi "uvicorn[standard]"
+python webapp/app.py
+# abre http://127.0.0.1:8000
 ```
 
 ## Fuentes y restricciones legales
