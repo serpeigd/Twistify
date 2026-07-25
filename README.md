@@ -35,10 +35,14 @@ Aún no hay. Se rellena cuando el Hito 0 esté medido.
 
 **Calibración del juez** (obligatorio antes de creerse la tabla de arriba):
 
-| Juez | precision | recall | n |
-|---|---|---|---|
-| Substring | — | — | — |
-| LLM | — | — | — |
+| Juez | precision | recall | n | fuente |
+|---|---|---|---|---|
+| Substring | 0.0* | 0.0 | 183 | interna (`evals/calibrate_substring.py`), no benchmark externo |
+| LLM | — | — | — | pendiente, requiere `ANTHROPIC_API_KEY` |
+
+\* precision=0.0 aquí es "0/0 predicciones positivas", no "siempre se equivoca al decir sí" — el juez nunca dijo sí (tp=0, fp=0). El número real e importante es el recall=0.0: en un split held-out (mitad de las paráfrasis de cada spoiler como needles conocidas, la otra mitad como texto de prueba nunca visto), el `SubstringJudge` no detecta NINGUNA paráfrasis nueva del mismo spoiler. Confirma cuantitativamente el motivo de tener un juez LLM.
+
+Calibración vs. benchmark externo (TV Tropes Movies, IMDB Spoiler Dataset): no se pudo hacer sin credencial — TV Tropes Movies (Boyd-Graber et al. 2013) no tiene descarga directa pública; el IMDB Spoiler Dataset vive en Kaggle y exige cuenta/API key del usuario.
 
 ## Correr
 
