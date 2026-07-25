@@ -1,0 +1,31 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: prestige_2006
+labels:
+  - id: prestige_borden_twins
+    canonical: "Alfred Borden es en realidad dos hermanos gemelos idénticos que se turnan para vivir como una sola persona."
+    severity: core
+    paraphrases:
+      - "el mago protagonista nunca fue una sola persona"
+      - "hay dos hombres compartiendo una identidad, un nombre y hasta un matrimonio"
+      - "el truco de la 'Transported Man' no era un truco, era literal"
+      - "uno de los dos amaba a una mujer, el otro a otra, y nadie lo sabía"
+      - "el que muere ejecutado no es necesariamente el que sobrevive al final"
+  - id: prestige_teslamachine_clones
+    canonical: "La máquina de Tesla no teletransporta a Angier, sino que crea un clon exacto cada vez que se usa, mientras el original cae a una trampilla y se ahoga."
+    severity: core
+    paraphrases:
+      - "cada función del espectáculo implica una muerte real que nadie sospecha"
+      - "el aparato no mueve a la persona de sitio, la duplica"
+      - "hay un tanque de agua escondido bajo el escenario lleno de versiones del mismo hombre"
+      - "el precio de ese truco final es morir todas las noches"
+      - "lo que Tesla construyó no hacía lo que Angier pensaba que hacía"
+  - id: prestige_angier_killed_by_borden
+    canonical: "Al final, el Borden superviviente dispara y mata a Angier, vengando a su hermano ejecutado."
+    severity: major
+    paraphrases:
+      - "la rivalidad termina con uno de los dos magos muerto a manos del otro"
+      - "el desenlace es literalmente un ajuste de cuentas con un arma"
+      - "la hija de Borden termina bajo la custodia del gemelo que quedó vivo"
+sources:
+  - "https://en.wikipedia.org/wiki/The_Prestige_(film)"

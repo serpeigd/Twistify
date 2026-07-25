@@ -1,0 +1,40 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: dune_2021
+labels:
+  - id: dune_leto_betrayal_death
+    canonical: "El Doctor Yueh traiciona a la Casa Atreides desactivando los escudos, lo que permite que el Barón Harkonnen mate al Duque Leto."
+    severity: core
+    paraphrases:
+      - "el padre de Paul no llega vivo al final de la película"
+      - "hay un traidor infiltrado en el círculo íntimo de los Atreides"
+      - "alguien de máxima confianza médica es quien abre la puerta al enemigo"
+      - "el duque cae en la trampa del Barón por culpa de uno de los suyos"
+      - "el líder de la familia protagonista no sobrevive al ataque en Arrakis"
+  - id: dune_paul_kwisatz_haderach
+    canonical: "Paul es el producto de un programa de cría selectiva de las Bene Gesserit para crear al Kwisatz Haderach, una figura mesiánica."
+    severity: major
+    paraphrases:
+      - "el joven protagonista fue 'diseñado' genéticamente por una orden de mujeres poderosas"
+      - "su madre desobedeció órdenes al tenerlo a él en vez de a una hija"
+      - "hay toda una conspiración religiosa detrás del nacimiento del héroe"
+      - "Paul podría ser el ser especial que llevan siglos esperando en secreto"
+  - id: dune_fremen_prophecy_manufactured
+    canonical: "La reverencia de los fremen hacia Paul se debe a una propaganda religiosa (Missionaria Protectiva) implantada siglos atrás por las Bene Gesserit, no a una profecía real."
+    severity: major
+    paraphrases:
+      - "la 'profecía' que todos veneran fue fabricada de antemano por manipuladoras políticas"
+      - "los nativos del desierto creen en un mito que en realidad fue plantado artificialmente"
+      - "el mesianismo que rodea al protagonista tiene un origen bastante menos místico de lo que parece"
+      - "hay una organización que sembró leyendas en varios planetas por si algún día les convenía usarlas"
+  - id: dune_part_one_open_ending
+    canonical: "La película termina sin resolución final: Paul se une a los fremen tras vencer a Jamis en combate, y la historia queda abierta ('esto es solo el principio')."
+    severity: minor
+    paraphrases:
+      - "no esperes un cierre de la trama, es solo la primera mitad de la historia"
+      - "la peli acaba justo cuando el protagonista empieza a integrarse con el pueblo del desierto"
+      - "el final deja todo el conflicto grande para una segunda parte"
+      - "termina con una frase que deja claro que lo importante todavía no ha pasado"
+sources:
+  - "https://en.wikipedia.org/wiki/Dune_(2021_film)"
+  - "https://flickside.com/dune-2021-explained/"

@@ -61,6 +61,29 @@ Efecto lateral: los tests corren en CI sin secretos.
 Sería medir la coherencia del modelo consigo mismo. El fallo exacto que el
 proyecto existe para detectar. 15 min/título, a mano.
 
+## D7 — El ground truth se genera con investigación web citada, no a mano
+
+Regla original: ningún LLM (ni Claude ni el usuario delegándolo) genera el
+ground truth de spoilers, porque eso mediría la coherencia del modelo consigo
+mismo — el mismo fallo que el proyecto existe para detectar.
+
+El usuario revirtió esto el 2026-07-25 para poder escalar el etiquetado de 20
+títulos sin gastar ~15 min/título a mano. Decisión suya, tomada con el
+trade-off explícito sobre la mesa.
+
+Mitigación parcial (no elimina el riesgo, lo acota): cada `canonical` se
+construye a partir de fuentes reales citadas (Wikipedia, reseñas, vlogs) en
+vez de memoria paramétrica del modelo — no es lo mismo que "alucinar" un
+spoiler plausible. Pero sigue siendo un LLM decidiendo qué cuenta como spoiler
+y qué severidad tiene, evaluado más tarde por otro LLM (el generador) y
+juzgado por un tercero (el juez). Tres etapas del mismo tipo de sesgo.
+
+Consecuencia obligatoria: el README y cualquier resultado publicado deben
+decir "ground truth investigado por LLM con fuentes citadas", nunca "ground
+truth humano" ni "etiquetado a mano". Son afirmaciones distintas y confundirlas
+sería reintroducir el problema original (semáforo autoetiquetado, ver D3) por
+otra vía.
+
 ## Descartado
 
 - **Multi-agente (researcher / writer / critic).** No hay decisión dinámica

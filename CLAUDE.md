@@ -137,12 +137,17 @@ README.md                  # estado, cómo correr, restricciones legales de fuen
 
 ## 4. Reglas de trabajo específicas de este repo
 
-- **El ground truth de spoilers NUNCA se genera con un LLM**, ni tú ni el
-  usuario. Sería medir la coherencia del modelo consigo mismo — el fallo
-  exacto que el proyecto existe para detectar. Si el usuario te pide "rellena
-  los 19 títulos que faltan", recuérdaselo y ofrécete a acompañarlo mientras
-  él los etiqueta (puedes ayudar a redactar paráfrasis una vez él confirme el
-  hecho central, pero el hecho en sí lo decide él viendo/consultando la obra).
+- **El ground truth de spoilers se genera con investigación web citada, no de
+  memoria del modelo.** Regla original (hasta 2026-07-25): nunca generado por
+  LLM, ni tú ni el usuario, para evitar medir la coherencia del modelo consigo
+  mismo. El usuario revirtió esa regla explícitamente (ver D7 en
+  `docs/DESIGN.md`) para poder escalar el etiquetado de los 20 títulos. Si lo
+  haces: cada `canonical` debe llevar fuente real (Wikipedia/reseña/vlog
+  citado, no conocimiento paramétrico), y el README/resultados deben decir
+  explícitamente que el ground truth es "investigado por LLM con fuentes
+  citadas", no "etiquetado a mano por humano" — son afirmaciones distintas y
+  mezclarlas sería el mismo error de autoevaluación que esta regla existía
+  para evitar.
 - **`run_eval.py` bloquea con <15 títulos etiquetados a propósito.** No lo
   desactives ni bajes el umbral para poder enseñar un número. Un leakage_rate
   sobre pocos casos no significa nada — es peor que no tener número.
@@ -171,10 +176,10 @@ README.md                  # estado, cómo correr, restricciones legales de fuen
 
 ## 5. Próxima tarea concreta (Hito 0)
 
-1. El usuario etiqueta manualmente los 14 títulos que faltan hasta 15
-   (`evals/dataset/spoilers/*.yaml`, formato en `sixth_sense_1999.yaml`). Tu
-   trabajo aquí: revisar sus etiquetas, no escribirlas. Si una paráfrasis es
-   demasiado literal o demasiado floja, dilo.
+1. Etiquetar los 19 títulos que faltan (`evals/dataset/spoilers/*.yaml`,
+   formato en `sixth_sense_1999.yaml`), investigado con fuentes web citadas
+   por Claude (ver D7 en DESIGN.md). Cada fichero debe listar las fuentes
+   consultadas.
 2. Implementar el generador baseline: una sola llamada a la API de Anthropic,
    sin retrieval, con el prompt original reescrito para forzar salida
    `PreShowBrief` (usa structured output / tool use, no parseo de markdown).

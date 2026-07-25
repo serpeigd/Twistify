@@ -1,0 +1,28 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+#
+# NOTA: Tetsuo es más body-horror/experimental que giro narrativo clásico.
+# Se etiqueta el elemento central que más sorprende/perturba a un
+# espectador nuevo, no un "twist" en sentido estricto.
+title_id: tetsuo_1989
+labels:
+  - id: tetsuo_central_transformation
+    canonical: "No hay un giro narrativo clásico: el elemento central perturbador es que el protagonista, un oficinista corriente, se transforma progresivamente en un ser de metal, incluyendo que su pene se convierte en un taladro metálico."
+    severity: core
+    paraphrases:
+      - "el cuerpo del protagonista deja de ser humano poco a poco, de forma muy gráfica"
+      - "hay una transformación corporal extrema que incluye los genitales del protagonista"
+      - "no es tanto un giro de trama como una escalada constante de horror corporal"
+      - "el body horror aquí es literal: carne fusionándose con chatarra y maquinaria"
+      - "una escena de intimidad de pareja termina de forma espantosa por culpa de esta mutación"
+  - id: tetsuo_ending_merge
+    canonical: "Al final, el oficinista y el 'fetichista del metal' que provocó la maldición se fusionan en un monstruo metálico gigante que planea convertir el mundo entero en metal."
+    severity: major
+    paraphrases:
+      - "los dos personajes principales terminan literalmente fundidos en uno solo"
+      - "el desenlace escala hasta convertirse en una amenaza a escala mundial"
+      - "el final no resuelve el conflicto, lo magnifica hasta lo apocalíptico"
+      - "los dos hombres que empezaron como enemigos acaban unidos en un mismo cuerpo monstruoso"
+sources:
+  - "https://en.wikipedia.org/wiki/Tetsuo:_The_Iron_Man"
+  - "https://www.imdb.com/title/tt0096251/plotsummary/"

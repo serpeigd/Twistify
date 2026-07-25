@@ -1,0 +1,33 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: cronocrimenes_2007
+labels:
+  - id: tc_hector_becomes_his_own_attacker
+    canonical: "Héctor viaja una hora atrás en el tiempo por accidente y, para no alterar lo ya sucedido, termina convirtiéndose él mismo en el 'hombre vendado' que ataca a su propio yo pasado."
+    severity: core
+    paraphrases:
+      - "el misterioso agresor enmascarado del principio resulta ser el propio protagonista, solo que de más tarde"
+      - "Héctor acaba persiguiéndose y atacándose a sí mismo sin quererlo"
+      - "hay dos y hasta tres versiones del mismo hombre coexistiendo el mismo día"
+      - "el villano que da miedo al inicio no es un desconocido, es él mismo en otro punto del bucle"
+      - "cada vez que intenta arreglar algo, termina siendo la causa del problema original"
+  - id: tc_clara_saved_by_decoy_death
+    canonical: "Héctor logra salvar a su esposa Clara sustituyéndola por una desconocida (a la que corta el pelo y viste con su abrigo), que muere en su lugar."
+    severity: major
+    paraphrases:
+      - "la mujer que muere al final no es en realidad quien todos creían"
+      - "para proteger a su esposa, sacrifica sin querer a otra persona que se le parece"
+      - "hay un intercambio de identidad involuntario que le cuesta la vida a una inocente"
+      - "la esposa del protagonista sobrevive, pero a un coste moral que él tiene que cargar"
+  - id: tc_deterministic_closed_loop
+    canonical: "La película termina con Héctor conduciendo de vuelta al laboratorio para convertirse en la próxima versión de sí mismo, cerrando el bucle sin escape posible ni explicación tranquilizadora."
+    severity: minor
+    paraphrases:
+      - "no hay una salida limpia del lío temporal, todo se cierra sobre sí mismo"
+      - "el final no es una explosión ni una huida, es la aceptación resignada de lo inevitable"
+      - "todo lo que ves al principio de la película ya estaba causado por el propio protagonista"
+      - "el ciclo se repite indefinidamente sin que nadie pueda romperlo del todo"
+sources:
+  - "https://en.wikipedia.org/wiki/Timecrimes"
+  - "https://www.highonfilms.com/timecrimes-los-cronocrimenes-2007-movie-ending-explained-themes-analysed/"
+  - "https://www.thisisbarry.com/film/los-cronocrimenes-timecrimes-2007-movie-plot-ending-explained/"

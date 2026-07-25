@@ -18,8 +18,8 @@ El entregable de este repo no son los guiones. Son los números.
 | — | Harness de evals (offline, determinista) | ✅ 8 tests en verde |
 | — | Contrato de datos (Pydantic) | ✅ |
 | — | Set de 20 títulos estratificado | ✅ |
-| 0 | Ground truth de spoilers (20 títulos) | 🔴 1/20 |
-| 0 | Baseline sin retrieval + medición | 🔴 |
+| 0 | Ground truth de spoilers (20 títulos) | ✅ 20/20 (investigado por LLM con fuentes citadas, ver D7 en `docs/DESIGN.md` — no es etiquetado humano) |
+| 0 | Baseline sin retrieval + medición | 🔴 código listo, falta correr con `ANTHROPIC_API_KEY` |
 | 1 | Retrieval + verificador | ⬜ |
 | 2 | Partición de contexto por spoiler | ⬜ |
 | 3 | Adaptador de libros | ⬜ |
@@ -43,8 +43,9 @@ Aún no hay. Se rellena cuando el Hito 0 esté medido.
 ## Correr
 
 ```bash
-pip install pydantic pytest pyyaml
+pip install pydantic pytest pyyaml anthropic
 python -m pytest tests/ -q      # no necesita red ni API key
+export ANTHROPIC_API_KEY=sk-...  # solo hace falta para --generator baseline
 python evals/run_eval.py --generator baseline
 ```
 

@@ -1,0 +1,33 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: coherence_2013
+labels:
+  - id: coh_multiple_realities_converge
+    canonical: "El paso de un cometa provoca que múltiples realidades paralelas con versiones duplicadas de los mismos ocho amigos se crucen esa noche."
+    severity: core
+    paraphrases:
+      - "los invitados de la cena empiezan a encontrarse con copias de sí mismos"
+      - "hay más de una versión de cada personaje circulando por el barrio esa noche"
+      - "hay una casa idéntica con gente idéntica a la vuelta de la esquina"
+      - "el evento astronómico rompe algo más que las luces de la casa"
+      - "cada grupo tiene una caja con fotos numeradas de 'los otros'"
+  - id: coh_emily_swaps_herself
+    canonical: "Emily droga a una versión alternativa de sí misma, la encierra y ocupa su lugar en una realidad que le parece mejor que la suya."
+    severity: core
+    paraphrases:
+      - "la protagonista decide robarle la vida a otra versión de ella misma"
+      - "al final ella no vuelve a 'su' propia realidad, sino a otra distinta"
+      - "sedan y encierran a una de las Emilys para que la otra pueda quedarse con su sitio"
+      - "la que termina la noche en el sofá no es exactamente la Emily con la que empezó la película"
+  - id: coh_ending_infinite_loop
+    canonical: "La llamada telefónica final de otra 'Emily' sugiere que el ciclo de realidades duplicadas nunca se cierra y que ella quedó atrapada para siempre en una vida que no es plenamente suya."
+    severity: major
+    paraphrases:
+      - "el final deja claro que esto no termina con una sola versión ganando"
+      - "el timbre del teléfono al final es una pista de que todavía hay más copias sueltas"
+      - "ella nunca podrá estar segura de haber elegido la realidad correcta"
+      - "la ambigüedad del cierre implica que el problema sigue sin resolverse"
+sources:
+  - "https://en.wikipedia.org/wiki/Coherence_(film)"
+  - "https://www.looper.com/899500/the-ending-of-coherence-explained/"
+  - "https://www.highonfilms.com/coherence-2013-movie-ending-title-explained-themes-analysed/"

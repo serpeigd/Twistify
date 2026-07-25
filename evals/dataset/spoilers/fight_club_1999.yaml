@@ -1,0 +1,23 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: fight_club_1999
+labels:
+  - id: fc_tyler_identity
+    canonical: "Tyler Durden es una personalidad disociada del propio narrador, no una persona real distinta."
+    severity: core
+    paraphrases:
+      - "los dos protagonistas masculinos son en realidad la misma persona"
+      - "el tipo carismático que lidera todo no existe fuera de la cabeza del narrador"
+      - "hay una identidad que el narrador no sabe que es él mismo"
+      - "el narrador ha estado actuando como su propio 'amigo' sin darse cuenta"
+      - "la película te hace confiar en un personaje que resulta ser una proyección mental"
+  - id: fc_narrator_kills_tyler
+    canonical: "El narrador se dispara a sí mismo en la mejilla para 'matar' a Tyler y liberarse de esa personalidad."
+    severity: major
+    paraphrases:
+      - "para deshacerse de su alter ego, el protagonista tiene que herirse a sí mismo"
+      - "el clímax implica un disparo que resuelve el conflicto interno del protagonista"
+      - "se libera de su otro yo de una forma bastante literal y violenta"
+sources:
+  - "https://screenrant.com/fight-club-tyler-durden-twist-explained/"
+  - "https://www.cbr.com/fight-club-ending-explained/"

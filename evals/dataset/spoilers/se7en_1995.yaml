@@ -1,0 +1,30 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: se7en_1995
+labels:
+  - id: s7_tracy_head_in_box
+    canonical: "La caja final contiene la cabeza cortada de Tracy, la esposa de Mills."
+    severity: core
+    paraphrases:
+      - "lo que hay dentro de la caja es lo peor que podría pasarle al detective joven"
+      - "el asesino se asegura de que el paquete final destruya la vida personal de uno de los policías"
+      - "hay un objeto que llega por mensajería al final y cambia todo"
+      - "el 'envidia' del asesino tiene que ver con la mujer del protagonista, no con él mismo"
+      - "lo que Somerset ve al abrir la caja lo deja sin palabras"
+  - id: s7_mills_becomes_wrath
+    canonical: "Mills mata a John Doe a sangre fría, completando sin saberlo el séptimo pecado (ira) del plan del asesino."
+    severity: core
+    paraphrases:
+      - "el propio detective termina cometiendo el último pecado de la lista"
+      - "el asesino diseña su propia muerte para que la cause el policía"
+      - "el final no es una victoria policial, es la última pieza del plan del villano"
+      - "Mills cae exactamente en la trampa psicológica que Doe preparó"
+  - id: s7_doe_surrenders_early
+    canonical: "John Doe se entrega voluntariamente a la policía antes de que se resuelvan los dos últimos asesinatos."
+    severity: minor
+    paraphrases:
+      - "el villano se rinde por su propia voluntad, no lo atrapan"
+      - "el criminal entra a la comisaría cubierto de sangre ajena"
+      - "todavía faltan dos crímenes cuando el asesino ya está detenido"
+sources:
+  - "https://en.wikipedia.org/wiki/Se7en"
