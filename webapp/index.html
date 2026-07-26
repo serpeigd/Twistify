@@ -275,8 +275,6 @@
   .sw li{font-size:14px;color:var(--text-dim);padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05)}
   .sw li:last-child{border:none}
 
-  .verdict-box{font-family:var(--serif);font-size:21px;line-height:1.5;font-style:italic;
-    color:#f0f2f7;border-left:3px solid var(--deep);padding-left:20px;margin-top:16px}
   .useless{background:linear-gradient(135deg,rgba(183,155,240,.1),rgba(224,163,92,.04))!important;
     border-color:rgba(183,155,240,.28)!important}
   .useless>h3{color:var(--violet)!important}
@@ -284,23 +282,57 @@
 
   .q-list li{font-size:16px;padding:15px 0;color:var(--text);line-height:1.5}
   .lede-inline{font-size:12.5px;color:var(--text-mute);margin:16px 0 4px}
-  .debate{margin:12px 0 0;padding:0;list-style:none}
-  .debate-card{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--text-dim);
-    padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(74,52,24,.5);
-    border-radius:11px;margin-bottom:10px;cursor:pointer;position:relative;
-    transition:background .14s,transform .1s,border-color .14s}
-  .debate-card:hover{background:rgba(224,163,92,.08);border-color:var(--deep-brd);transform:translateY(-1px)}
-  .reply-hint{display:block;margin-top:8px;font-family:var(--sans);font-style:normal;
-    font-size:11.5px;font-weight:650;letter-spacing:.03em;color:var(--deep)}
 
-  /* CTA cierre */
-  .cta-shell{margin-top:14px;text-align:center}
-  .cta-label{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
-    color:var(--deep);margin-bottom:10px}
-  .cta-box{padding:26px 28px;font-size:18px;line-height:1.5;font-weight:500;
-    font-family:var(--serif);font-style:italic;color:var(--deep-soft);
-    background:linear-gradient(135deg,rgba(224,163,92,.12),rgba(224,163,92,.02));
-    border:1px solid var(--deep-brd);border-radius:var(--radius)}
+  /* debate: tarjeta + votación de bando */
+  .debate{margin:12px 0 0;padding:0;list-style:none}
+  .debate-card{padding:18px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(74,52,24,.5);
+    border-radius:13px;margin-bottom:12px}
+  .debate-txt{font-family:var(--serif);font-size:16.5px;font-style:italic;color:#e9ecf3;line-height:1.55}
+  .debate-vote{display:flex;align-items:center;gap:10px;margin-top:16px}
+  .vote-btn{flex:1;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:650;
+    padding:11px 14px;border-radius:10px;border:1px solid var(--deep-brd);
+    background:rgba(255,255,255,.03);color:var(--text-dim);transition:all .15s}
+  .vote-btn:hover{border-color:var(--deep);color:var(--text);transform:translateY(-1px)}
+  .vote-btn.picked{background:linear-gradient(180deg,var(--deep-soft),var(--deep));
+    border-color:var(--deep);color:#140d04;box-shadow:0 8px 22px -10px rgba(224,163,92,.6)}
+  .vote-vs{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--text-mute)}
+
+  /* rewatch: cierre que empuja a volver a verla */
+  .rewatch-shell{margin-top:14px;position:relative;overflow:hidden;border-radius:var(--radius);
+    padding:30px 32px 28px;background:linear-gradient(135deg,rgba(183,155,240,.12),rgba(224,163,92,.05));
+    border:1px solid rgba(183,155,240,.28)}
+  .rewatch-shell::after{content:"\1F501";position:absolute;right:-8px;bottom:-26px;font-size:112px;
+    opacity:.07;transform:rotate(-10deg);pointer-events:none;line-height:1}
+  .rewatch-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:14px;
+    position:relative;z-index:1}
+  .rewatch-box{font-family:var(--serif);font-size:19px;line-height:1.58;font-style:italic;
+    color:#f1f2f8;position:relative;z-index:1}
+
+  /* telón: bloqueo/desbloqueo del deep-dive */
+  #deepZone{position:relative;overflow:hidden;transition:min-height .4s}
+  #deepZone.curtain-closed{min-height:360px}
+  .deep-content{position:relative;z-index:1}
+  .curtain-closed .deep-content{display:none}
+  .curtain{position:absolute;inset:0;z-index:5;pointer-events:none}
+  .curtain-closed .curtain{pointer-events:auto}
+  .curtain-panel{position:absolute;top:0;bottom:0;width:52%;
+    background:repeating-linear-gradient(90deg,rgba(0,0,0,.2) 0 3px,transparent 3px 22px),
+      linear-gradient(180deg,#63181f,#2c0a10 65%,#190508);
+    box-shadow:inset 0 0 70px rgba(0,0,0,.65);
+    transition:transform .6s cubic-bezier(.76,0,.24,1)}
+  .curtain-panel.cp-l{left:0;border-right:2px solid rgba(0,0,0,.45)}
+  .curtain-panel.cp-r{right:0;border-left:2px solid rgba(0,0,0,.45)}
+  .curtain.open .cp-l{transform:translateX(-101%)}
+  .curtain.open .cp-r{transform:translateX(101%)}
+  .curtain-prompt{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;padding:28px;
+    transition:opacity .3s,transform .3s}
+  .curtain.open .curtain-prompt{opacity:0;transform:scale(.94);pointer-events:none}
+  .curtain-prompt .ic{font-size:34px;margin-bottom:12px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.5))}
+  .curtain-prompt h4{margin:0 0 8px;font-size:22px;font-weight:720;color:#f3d9c8}
+  .curtain-prompt p{margin:0 auto 22px;max-width:420px;font-size:14px;color:rgba(255,255,255,.78)}
+  .curtain-prompt .warn{color:#ff8a72;font-weight:700;letter-spacing:.03em}
 
   /* comments */
   .cm-wrap{margin-top:30px}
@@ -457,10 +489,10 @@ function focusComment(spoiler, prefill) {
   main.scrollTo({ top, behavior: 'smooth' });
   setTimeout(() => { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }, 420);
 }
-function pickSide(stance) {
-  const w = stance.split(' ');
-  const short = w.length > 9 ? w.slice(0, 8).join(' ') + '…' : stance;
-  focusComment(true, `Sobre "${short}": `);
+function pickSide(label, quote) {
+  const w = quote.split(' ');
+  const short = w.length > 9 ? w.slice(0, 8).join(' ') + '…' : quote;
+  focusComment(true, `${label} — sobre "${short}": `);
 }
 
 let DEEP_SECTIONS = [];
@@ -481,12 +513,19 @@ function onScroll() {
   }
 }
 
-/* bloque de bloqueo (texto exacto pedido) */
-const LOCK_HTML = `<div class="unlock"><div class="ic">🗝️</div>
-  <h4>El mapa de easter eggs</h4>
-  <p>Metáforas, easter eggs, datos de rodaje, análisis de escenas y crítica.
-  <span class="warn">TODO ESTO CONTIENE SPOILERS.</span></p>
-  <button class="unlock-btn" id="unlockBtn">Ya la he visto — desbloquear <span class="arrow">▸</span></button></div>`;
+/* telón: bloquea/desbloquea el deep-dive (texto exacto pedido en el aviso) */
+const CURTAIN_HTML = `<div class="curtain" id="curtain">
+  <div class="curtain-panel cp-l"></div>
+  <div class="curtain-panel cp-r"></div>
+  <div class="curtain-prompt">
+    <div class="ic">🎭</div>
+    <h4>El mapa de easter eggs</h4>
+    <p>Metáforas, easter eggs, datos de rodaje, análisis de escenas y crítica.
+    <span class="warn">TODO ESTO CONTIENE SPOILERS.</span></p>
+    <button class="unlock-btn" id="unlockBtn">Ya la he visto — abrir el telón <span class="arrow">▸</span></button>
+  </div>
+</div>
+<div class="deep-content" id="deepContent"></div>`;
 
 function renderFilm(d) {
   const c = d.case, main = document.getElementById('main');
@@ -548,7 +587,7 @@ function renderFilm(d) {
 
   html += `</div></section>
 
-    <section class="zone zone-deep" id="deepZone">${LOCK_HTML}</section>
+    <section class="zone zone-deep curtain-closed" id="deepZone">${CURTAIN_HTML}</section>
 
     <div id="phase4"></div>
 
@@ -581,96 +620,119 @@ function renderPhase4(ct) {
   document.getElementById('phase4').innerHTML = h;
 }
 
-/* desbloqueo INLINE con navegación por chips */
+/* telón: la primera vez que se abre, carga; las siguientes solo abre/cierra */
+let CACHED_SECTIONS = [];
+
 async function unlockDeep() {
-  const btn = document.getElementById('unlockBtn');
-  btn.disabled = true; btn.innerHTML = 'Desbloqueando…';
-  const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
-  const ct = d.content;
-
-  const sections = [];
-  const push = (id, ico, title, inner, extra = '') =>
-    sections.push({ id, ico, title, html:
-      `<div class="card ${extra}" id="${id}"><h3><span class="ico">${ico}</span> ${title}</h3>${inner}</div>` });
-
-  if ((ct.metaphors || []).length)
-    push('sec-meta', '🪞', 'Lo que en realidad te cuenta', sourcedList(ct.metaphors));
-  if ((ct.intertextual_refs || []).length)
-    push('sec-ref', '🔗', 'Referencias y guiños', sourcedList(ct.intertextual_refs));
-  if ((ct.production_trivia || []).length)
-    push('sec-rod', '🎬', 'El rodaje por dentro', accordionList(ct.production_trivia));
-  if ((ct.scene_analysis || []).length)
-    push('sec-esc', '🔍', 'Escenas clave, explicadas',
-      `<ul class="clean">${ct.scene_analysis.map(s =>
-        `<li><div class="scene-name">${esc(s.scene)}</div><div class="scene-txt">${esc(s.text)}</div>${sourceTag(s)}</li>`).join('')}</ul>`);
-
-  const cc = ct.critical_consensus || {};
-  if (cc.summary || (cc.scores || []).length || (cc.awards || []).length)
-    push('sec-cri', '⭐', 'Qué dijo la crítica',
-      `${cc.summary ? `<div class="crit-sum">${esc(cc.summary)}</div>` : ''}
-       ${(cc.scores || []).length
-          ? `<div class="scores">${cc.scores.map(s => `<div class="score"><div class="s">${esc(s.source)}</div>
-             <div class="v">${esc(s.value)}</div>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">↗ verificar</a>` : ''}</div>`).join('')}</div>`
-          : `<div class="nosrc" style="margin-top:16px">⚠ sin puntuaciones verificadas — no se inventan</div>`}
-       ${(cc.awards || []).length ? `<div class="awards">${cc.awards.map(a => `<span class="award">${esc(a)}</span>`).join('')}</div>` : ''}`);
-
-  if ((ct.strengths || []).length || (ct.weaknesses || []).length)
-    push('sec-bal', '⚖️', 'Lo mejor y lo peor', `<div class="sw-grid">
-      <div class="sw good"><h4>▲ Lo que borda</h4><ul>${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
-      <div class="sw bad"><h4>▼ Lo discutible</h4><ul>${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div></div>`);
-
-  if ((ct.fun_facts || []).length)
-    push('sec-dato', '🎲', 'Datos curiosos de la película', factList(ct.fun_facts));
-  if (ct.verdict)
-    push('sec-ver', '🏛️', 'Su lugar en la historia', `<div class="verdict-box">${esc(ct.verdict)}</div>`);
-  if ((ct.debate_prompts || []).length)
-    push('sec-deb', '🔥', '¿Y tú de qué lado estás?',
-      `<div class="lede-inline">Pulsa una afirmación y suéltalo en los comentarios.</div>
-       <ul class="debate">${ct.debate_prompts.map(q =>
-         `<li class="debate-card" tabindex="0" data-q="${esc(q)}">${esc(q)}<span class="reply-hint">Responder ▾</span></li>`).join('')}</ul>`);
-
-  DEEP_SECTIONS = sections;
-  const chips = `<div class="chips">${sections.map(s =>
-    `<span class="chip" data-go="${s.id}">${s.ico} ${s.title}</span>`).join('')}</div>`;
-
-  let inner = `<div class="zone-frame">
-      <span class="zone-badge"><span class="pulse"></span> Ya has visto la obra</span>
-      <span class="zone-sub">Análisis completo, con spoilers</span>
-      <button class="relock" id="relockBtn">🔒 ocultar</button></div>
-    ${chips}
-    <div class="zone-body stagger">${sections.map(s => s.html).join('')}</div>`;
-
-  if (ct.cta)
-    inner += `<div class="zone-body" style="padding-top:0"><div class="cta-shell">
-      <div class="cta-label">Antes de irte</div><div class="cta-box">${esc(ct.cta)}</div></div></div>`;
-  if ((ct.sources || []).length)
-    inner += `<div class="zone-body" style="padding-top:0"><div class="card sources-card">
-      <h3>Fuentes consultadas · ${ct.sources.length}</h3>
-      <div class="src-list">${ct.sources.map(s => `<a class="src" href="${esc(s)}" target="_blank" rel="noopener">↗ ${esc(host(s))}</a>`).join('')}</div></div></div>`;
-
   const zone = document.getElementById('deepZone');
-  zone.innerHTML = inner;
-  zone.classList.add('reveal');
-  document.getElementById('relockBtn').onclick = relockDeep;
-  zone.querySelectorAll('.chip').forEach(ch => ch.onclick = () => {
-    const t = document.getElementById(ch.dataset.go);
-    const main = document.querySelector('main');
-    if (t && main) {
-      const top = main.scrollTop + t.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
-      main.scrollTo({ top, behavior: 'smooth' });
-    }
-  });
-  zone.querySelectorAll('.acc-head').forEach(h => h.onclick = () => h.parentElement.classList.toggle('open'));
-  zone.querySelectorAll('.debate-card').forEach(el => el.onclick = () => pickSide(el.dataset.q));
+  const curtain = document.getElementById('curtain');
+  const dc = document.getElementById('deepContent');
+
+  if (dc.dataset.loaded !== '1') {
+    const btn = document.getElementById('unlockBtn');
+    btn.disabled = true; btn.innerHTML = 'Abriendo el telón…';
+    const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
+    const ct = d.content;
+
+    const sections = [];
+    const push = (id, ico, title, inner, extra = '') =>
+      sections.push({ id, ico, title, html:
+        `<div class="card ${extra}" id="${id}"><h3><span class="ico">${ico}</span> ${title}</h3>${inner}</div>` });
+
+    if ((ct.metaphors || []).length)
+      push('sec-meta', '🪞', 'Lo que en realidad te cuenta', sourcedList(ct.metaphors));
+    if ((ct.intertextual_refs || []).length)
+      push('sec-ref', '🔗', 'Referencias y guiños', sourcedList(ct.intertextual_refs));
+    if ((ct.production_trivia || []).length)
+      push('sec-rod', '🎬', 'El rodaje por dentro', accordionList(ct.production_trivia));
+    if ((ct.scene_analysis || []).length)
+      push('sec-esc', '🔍', 'Escenas clave, explicadas',
+        `<ul class="clean">${ct.scene_analysis.map(s =>
+          `<li><div class="scene-name">${esc(s.scene)}</div><div class="scene-txt">${esc(s.text)}</div>${sourceTag(s)}</li>`).join('')}</ul>`);
+
+    const cc = ct.critical_consensus || {};
+    if (cc.summary || (cc.scores || []).length || (cc.awards || []).length)
+      push('sec-cri', '⭐', 'Qué dijo la crítica',
+        `${cc.summary ? `<div class="crit-sum">${esc(cc.summary)}</div>` : ''}
+         ${(cc.scores || []).length
+            ? `<div class="scores">${cc.scores.map(s => `<div class="score"><div class="s">${esc(s.source)}</div>
+               <div class="v">${esc(s.value)}</div>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">↗ verificar</a>` : ''}</div>`).join('')}</div>`
+            : `<div class="nosrc" style="margin-top:16px">⚠ sin puntuaciones verificadas — no se inventan</div>`}
+         ${(cc.awards || []).length ? `<div class="awards">${cc.awards.map(a => `<span class="award">${esc(a)}</span>`).join('')}</div>` : ''}`);
+
+    if ((ct.strengths || []).length || (ct.weaknesses || []).length)
+      push('sec-bal', '⚖️', 'Lo mejor y lo peor', `<div class="sw-grid">
+        <div class="sw good"><h4>▲ Lo que borda</h4><ul>${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
+        <div class="sw bad"><h4>▼ Lo discutible</h4><ul>${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div></div>`);
+
+    if ((ct.fun_facts || []).length)
+      push('sec-dato', '🎲', 'Datos curiosos de la película', factList(ct.fun_facts));
+    if ((ct.debate_prompts || []).length)
+      push('sec-deb', '🔥', '¿Y tú de qué lado estás?',
+        `<div class="lede-inline">Elige bando. Luego defiéndelo en los comentarios.</div>
+         <ul class="debate">${ct.debate_prompts.map(q => `<li class="debate-card" data-q="${esc(q)}">
+           <div class="debate-txt">${esc(q)}</div>
+           <div class="debate-vote">
+             <button class="vote-btn vote-yes">👊 Firmo esto</button>
+             <span class="vote-vs">VS</span>
+             <button class="vote-btn vote-no">🙅 Ni de coña</button>
+           </div></li>`).join('')}</ul>`);
+
+    CACHED_SECTIONS = sections;
+    const chips = `<div class="chips">${sections.map(s =>
+      `<span class="chip" data-go="${s.id}">${s.ico} ${s.title}</span>`).join('')}</div>`;
+
+    let inner = `<div class="zone-frame">
+        <span class="zone-badge"><span class="pulse"></span> Ya has visto la obra</span>
+        <span class="zone-sub">Análisis completo, con spoilers</span>
+        <button class="relock" id="relockBtn">🎭 cerrar telón</button></div>
+      ${chips}
+      <div class="zone-body stagger">${sections.map(s => s.html).join('')}</div>`;
+
+    if (ct.cta)
+      inner += `<div class="zone-body" style="padding-top:0"><div class="rewatch-shell">
+        <div class="rewatch-badge">🔁 Para la próxima vez que la veas</div>
+        <div class="rewatch-box">${esc(ct.cta)}</div></div></div>`;
+    if ((ct.sources || []).length)
+      inner += `<div class="zone-body" style="padding-top:0"><div class="card sources-card">
+        <h3>Fuentes consultadas · ${ct.sources.length}</h3>
+        <div class="src-list">${ct.sources.map(s => `<a class="src" href="${esc(s)}" target="_blank" rel="noopener">↗ ${esc(host(s))}</a>`).join('')}</div></div></div>`;
+
+    dc.innerHTML = inner;
+    dc.dataset.loaded = '1';
+    dc.classList.add('reveal');
+
+    document.getElementById('relockBtn').onclick = relockDeep;
+    dc.querySelectorAll('.chip').forEach(ch => ch.onclick = () => {
+      const t = document.getElementById(ch.dataset.go);
+      const main = document.querySelector('main');
+      if (t && main) {
+        const top = main.scrollTop + t.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
+        main.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+    dc.querySelectorAll('.acc-head').forEach(h => h.onclick = () => h.parentElement.classList.toggle('open'));
+    dc.querySelectorAll('.vote-btn').forEach(vb => vb.onclick = () => {
+      const card = vb.closest('.debate-card');
+      card.querySelectorAll('.vote-btn').forEach(b => b.classList.remove('picked'));
+      vb.classList.add('picked');
+      pickSide(vb.textContent.trim(), card.dataset.q);
+    });
+
+    btn.disabled = false;
+    btn.innerHTML = 'Ya la he visto — abrir el telón <span class="arrow">▸</span>';
+  }
+
+  DEEP_SECTIONS = CACHED_SECTIONS;
+  zone.classList.remove('curtain-closed');
+  curtain.classList.add('open');
 }
 
 function relockDeep() {
   DEEP_SECTIONS = [];
-  const zone = document.getElementById('deepZone');
-  zone.classList.remove('reveal');
-  zone.innerHTML = LOCK_HTML;
-  document.getElementById('unlockBtn').onclick = unlockDeep;
-  zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  document.getElementById('curtain').classList.remove('open');
+  document.getElementById('deepZone').classList.add('curtain-closed');
+  document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 async function loadComments() {
