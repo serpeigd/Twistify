@@ -34,7 +34,7 @@ DATA = ROOT / "evals" / "dataset"
 
 
 def load_cases() -> list[TitleCase]:
-    raw = yaml.safe_load((DATA / "titles.yaml").read_text())
+    raw = yaml.safe_load((DATA / "titles.yaml").read_text(encoding="utf-8"))
     return [TitleCase(kind="film", **f) for f in raw["films"]]
 
 

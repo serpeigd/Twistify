@@ -2,206 +2,568 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Pre-Show Reels — demo gratis</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pre-Show Reels</title>
 <style>
   :root {
-    --bg: #0f1115;
-    --panel: #171a21;
-    --border: #2a2e38;
-    --text: #e6e8ec;
-    --muted: #9aa1ac;
-    --accent: #6ea8fe;
-    --ok: #4caf7d;
-    --bad: #e5534b;
+    --bg:        #0b0d12;
+    --bg-soft:   #11141b;
+    --panel:     #161a23;
+    --panel-2:   #1c212c;
+    --border:    #262c3a;
+    --border-hi: #384156;
+    --text:      #e8eaf0;
+    --text-dim:  #99a1b3;
+    --text-mute: #6b7488;
+    --accent:    #7aa2f7;
+    --accent-dk: #3d5a99;
+    --green:     #4db892;
+    --amber:     #e0af68;
+    --red:       #f07178;
+    --violet:    #bb9af7;
+    --radius:    12px;
+    --serif: ui-serif, Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; }
+  html, body { height: 100%; }
   body {
     margin: 0;
-    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: var(--sans);
     background: var(--bg);
     color: var(--text);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
   }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: #262c3a; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: #38415a; }
+
+  /* ---------------------------------------------------------------- header */
   header {
-    padding: 24px 32px 12px;
+    display: flex; align-items: center; gap: 24px;
+    padding: 14px 24px;
     border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg-soft), var(--bg));
+    position: sticky; top: 0; z-index: 20;
   }
-  header h1 { margin: 0 0 4px; font-size: 20px; }
-  header p { margin: 0; color: var(--muted); font-size: 14px; max-width: 720px; }
-  .layout {
-    display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 0;
-    min-height: calc(100vh - 90px);
-  }
+  .brand { display: flex; align-items: baseline; gap: 10px; flex-shrink: 0; }
+  .brand h1 { margin: 0; font-size: 17px; letter-spacing: -0.01em; font-weight: 650; }
+  .brand .sub { font-size: 12px; color: var(--text-mute); }
+  .stats-bar { display: flex; gap: 22px; margin-left: auto; flex-wrap: wrap; }
+  .stat { text-align: right; }
+  .stat .v { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 10.5px; color: var(--text-mute); text-transform: uppercase; letter-spacing: .05em; }
+  .stat .v.good { color: var(--green); }
+  .stat .v.warn { color: var(--amber); }
+
+  /* ---------------------------------------------------------------- layout */
+  .layout { display: grid; grid-template-columns: 290px 1fr; height: calc(100vh - 58px); }
   aside {
     border-right: 1px solid var(--border);
-    padding: 16px;
-    overflow-y: auto;
+    background: var(--bg-soft);
+    display: flex; flex-direction: column; min-height: 0;
   }
-  aside .group-label {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin: 16px 4px 6px;
+  .search-wrap { padding: 12px; border-bottom: 1px solid var(--border); }
+  .search-wrap input {
+    width: 100%; padding: 8px 11px;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 13.5px; font-family: inherit;
   }
-  aside button {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    color: var(--text);
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 13.5px;
+  .search-wrap input:focus { outline: none; border-color: var(--accent-dk); }
+  .filters { display: flex; gap: 6px; margin-top: 9px; }
+  .filters button {
+    flex: 1; padding: 5px 8px; font-size: 11.5px; cursor: pointer;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 6px; color: var(--text-dim); font-family: inherit;
   }
-  aside button:hover { background: var(--panel); }
-  aside button.active { background: var(--accent); color: #0f1115; font-weight: 600; }
-  main { padding: 24px 32px; overflow-y: auto; }
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 16px;
+  .filters button.on { background: var(--accent-dk); border-color: var(--accent); color: #fff; }
+  .catalogue { overflow-y: auto; padding: 8px; flex: 1; min-height: 0; }
+  .group-label {
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em;
+    color: var(--text-mute); margin: 14px 8px 6px; font-weight: 600;
   }
-  .card h2 { margin-top: 0; font-size: 15px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .bullet { margin: 8px 0; padding-left: 14px; border-left: 2px solid var(--border); }
-  .bullet .kind { font-size: 11px; color: var(--muted); text-transform: uppercase; }
-  .badge {
-    display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
+  .film-btn {
+    display: block; width: 100%; text-align: left; cursor: pointer;
+    background: none; border: 1px solid transparent; border-radius: 8px;
+    padding: 9px 11px; margin-bottom: 2px; color: var(--text);
+    font-family: inherit; font-size: 13.5px; line-height: 1.35;
+    transition: background .12s, border-color .12s;
   }
-  .badge.ok { background: rgba(76,175,125,.15); color: var(--ok); }
-  .badge.bad { background: rgba(229,83,75,.15); color: var(--bad); }
-  .metrics { display: flex; gap: 24px; flex-wrap: wrap; }
-  .metric { min-width: 120px; }
-  .metric .value { font-size: 22px; font-weight: 700; }
-  .metric .label { font-size: 12px; color: var(--muted); }
-  .disclaimer {
-    background: rgba(110,168,254,.08);
-    border: 1px solid rgba(110,168,254,.3);
-    border-radius: 8px;
-    padding: 12px 16px;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 20px;
+  .film-btn:hover { background: var(--panel); }
+  .film-btn.active { background: var(--panel-2); border-color: var(--accent-dk); }
+  .film-btn .t { font-weight: 550; }
+  .film-btn .meta { display: flex; align-items: center; gap: 7px; margin-top: 4px; }
+  .film-btn .yr { font-size: 11.5px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+  .bar { flex: 1; height: 3px; background: #232936; border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--green); border-radius: 2px; }
+  .bar i.low { background: var(--amber); }
+  .bar i.none { background: #333a4a; }
+  .pct { font-size: 10.5px; color: var(--text-mute); font-variant-numeric: tabular-nums; min-width: 26px; text-align: right; }
+
+  /* ------------------------------------------------------------------ main */
+  main { overflow-y: auto; min-height: 0; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 40px 100px; }
+  .placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; color: var(--text-mute); gap: 10px; text-align: center; padding: 40px; }
+  .placeholder .big { font-size: 40px; opacity: .35; }
+
+  /* hero */
+  .hero { margin-bottom: 26px; }
+  .hero .kicker { font-size: 11.5px; text-transform: uppercase; letter-spacing: .09em;
+    color: var(--accent); font-weight: 600; margin-bottom: 7px; }
+  .hero h2 { margin: 0; font-size: 34px; letter-spacing: -0.025em; line-height: 1.12; font-weight: 680; }
+  .hero .yr { color: var(--text-mute); font-weight: 400; }
+  .hero .note { margin-top: 9px; font-size: 13px; color: var(--text-dim); font-style: italic; }
+
+  /* seen toggle */
+  .gate {
+    display: flex; align-items: center; gap: 14px; margin: 22px 0 26px;
+    padding: 14px 18px; border-radius: var(--radius);
+    background: var(--panel); border: 1px solid var(--border);
   }
-  .empty { color: var(--muted); padding: 40px; text-align: center; }
+  .gate.on { border-color: var(--amber); background: rgba(224,175,104,.07); }
+  .gate .lbl { flex: 1; }
+  .gate .lbl b { display: block; font-size: 14px; margin-bottom: 2px; }
+  .gate .lbl span { font-size: 12.5px; color: var(--text-dim); }
+  .switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; cursor: pointer; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider { position: absolute; inset: 0; background: #2b3243; border-radius: 26px; transition: .18s; }
+  .slider:before { content: ""; position: absolute; height: 20px; width: 20px; left: 3px; bottom: 3px;
+    background: #8d95a8; border-radius: 50%; transition: .18s; }
+  .switch input:checked + .slider { background: var(--amber); }
+  .switch input:checked + .slider:before { transform: translateX(20px); background: #1a1207; }
+
+  /* cards */
+  .card { background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px 24px; margin-bottom: 16px; }
+  .card > h3 {
+    margin: 0 0 14px; font-size: 11.5px; text-transform: uppercase;
+    letter-spacing: .08em; color: var(--text-mute); font-weight: 650;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card > h3 .n { color: var(--text-mute); font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .phase-tag { font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; letter-spacing: .03em; }
+  .phase-tag.p1 { background: rgba(77,184,146,.14); color: var(--green); }
+  .phase-tag.p2 { background: rgba(240,113,120,.13); color: var(--red); }
+  .phase-tag.p3 { background: rgba(187,154,247,.13); color: var(--violet); }
+  .phase-tag.p4 { background: rgba(122,162,247,.13); color: var(--accent); }
+
+  /* verification */
+  .verify { display: flex; flex-direction: column; gap: 12px; }
+  .verdict-row { display: flex; align-items: center; gap: 12px; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; padding: 6px 13px;
+    border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .pill.ok { background: rgba(77,184,146,.13); color: var(--green); }
+  .pill.bad { background: rgba(240,113,120,.14); color: var(--red); }
+  .caveat { font-size: 12.5px; color: var(--amber); background: rgba(224,175,104,.07);
+    border-left: 2px solid var(--amber); padding: 10px 13px; border-radius: 0 7px 7px 0; }
+  .caveat b { color: #f0c489; }
+  .metrics { display: flex; gap: 26px; flex-wrap: wrap; padding-top: 4px; }
+  .metric .v { font-size: 19px; font-weight: 650; font-variant-numeric: tabular-nums; }
+  .metric .k { font-size: 11px; color: var(--text-mute); }
+
+  /* story */
+  .story { font-family: var(--serif); font-size: 17.5px; line-height: 1.72; color: #dfe3ec; }
+  .story p { margin: 0 0 1.05em; }
+  .story p:first-child::first-letter {
+    float: left; font-size: 3.1em; line-height: .82; padding: 3px 9px 0 0;
+    color: var(--accent); font-weight: 600;
+  }
+
+  /* lists */
+  ul.clean { list-style: none; margin: 0; padding: 0; }
+  ul.clean li { padding: 10px 0; border-bottom: 1px solid rgba(38,44,58,.6); }
+  ul.clean li:last-child { border-bottom: none; padding-bottom: 0; }
+  ul.clean li:first-child { padding-top: 0; }
+  .bullets li { display: flex; gap: 11px; align-items: flex-start; }
+  .bullets .num { color: var(--accent); font-variant-numeric: tabular-nums;
+    font-size: 12px; font-weight: 650; padding-top: 3px; min-width: 15px; }
+  .scene-name { font-weight: 620; margin-bottom: 4px; font-size: 14.5px; }
+  .src {
+    display: inline-flex; align-items: center; gap: 4px; margin-top: 6px;
+    font-size: 11px; color: var(--text-mute); text-decoration: none;
+    padding: 2px 8px; background: rgba(122,162,247,.08); border-radius: 5px;
+    font-family: var(--mono);
+  }
+  .src:hover { color: var(--accent); background: rgba(122,162,247,.16); }
+  .nosrc { display: inline-block; margin-top: 6px; font-size: 11px; color: var(--amber);
+    padding: 2px 8px; background: rgba(224,175,104,.09); border-radius: 5px; }
+  .interp { display: inline-block; margin-top: 6px; font-size: 11px; color: var(--violet);
+    padding: 2px 8px; background: rgba(187,154,247,.09); border-radius: 5px; }
+
+  /* scores */
+  .scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 11px; }
+  .score { background: var(--panel-2); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; }
+  .score .s { font-size: 11px; color: var(--text-mute); text-transform: uppercase;
+    letter-spacing: .05em; margin-bottom: 4px; }
+  .score .v { font-size: 13.5px; font-weight: 600; line-height: 1.35; }
+  .score a { color: var(--accent); text-decoration: none; font-size: 11px; }
+  .awards { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .award { font-size: 11.5px; background: var(--panel-2); border: 1px solid var(--border);
+    padding: 4px 9px; border-radius: 6px; color: var(--text-dim); }
+
+  .sw-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 720px) { .sw-grid { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; } aside { display: none; } }
+  .sw h4 { margin: 0 0 9px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+  .sw.good h4 { color: var(--green); }
+  .sw.bad h4 { color: var(--amber); }
+  .sw li { font-size: 13.5px; }
+
+  .verdict-box { font-family: var(--serif); font-size: 18px; line-height: 1.55;
+    font-style: italic; color: #e9ecf3; border-left: 3px solid var(--accent); padding-left: 18px; }
+  .useless { background: linear-gradient(135deg, rgba(187,154,247,.09), rgba(122,162,247,.05));
+    border: 1px solid rgba(187,154,247,.22); }
+  .useless h3 { color: var(--violet) !important; }
+
+  .q-list li { font-size: 14.5px; padding: 12px 0; }
+  .debate li { font-family: var(--serif); font-size: 15.5px; font-style: italic;
+    padding: 12px 15px; background: var(--panel-2); border-radius: 8px; margin-bottom: 8px; border: none; }
+  .cta-box { text-align: center; padding: 20px; font-size: 15.5px; font-weight: 550;
+    background: linear-gradient(135deg, rgba(122,162,247,.11), rgba(122,162,247,.03));
+    border: 1px solid rgba(122,162,247,.25); border-radius: var(--radius); }
+
+  /* locked */
+  .locked { text-align: center; padding: 44px 30px; border: 1px dashed var(--border);
+    border-radius: var(--radius); background: rgba(22,26,35,.5); margin-bottom: 16px; }
+  .locked .ic { font-size: 30px; margin-bottom: 10px; opacity: .5; }
+  .locked h4 { margin: 0 0 6px; font-size: 15px; }
+  .locked p { margin: 0 auto; max-width: 460px; font-size: 13px; color: var(--text-dim); }
+  .locked code { font-family: var(--mono); font-size: 11.5px; background: var(--panel-2);
+    padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+
+  /* comments */
+  .cm-form { display: flex; flex-direction: column; gap: 9px; margin-bottom: 18px; }
+  .cm-form input, .cm-form textarea {
+    background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; color: var(--text); font-family: inherit; font-size: 13.5px; resize: vertical;
+  }
+  .cm-form input:focus, .cm-form textarea:focus { outline: none; border-color: var(--accent-dk); }
+  .cm-row { display: flex; gap: 9px; align-items: center; }
+  .cm-row input[type=text] { flex: 1; }
+  .cm-check { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--text-dim); }
+  .cm-form button {
+    align-self: flex-start; padding: 8px 18px; background: var(--accent-dk);
+    border: 1px solid var(--accent); color: #fff; border-radius: 8px;
+    cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 550;
+  }
+  .cm-form button:hover { background: #46639f; }
+  .cm { padding: 13px 0; border-bottom: 1px solid rgba(38,44,58,.6); }
+  .cm:last-child { border-bottom: none; }
+  .cm .head { display: flex; gap: 9px; align-items: center; margin-bottom: 5px; }
+  .cm .who { font-weight: 600; font-size: 13px; }
+  .cm .when { font-size: 11px; color: var(--text-mute); font-variant-numeric: tabular-nums; }
+  .cm .sp { font-size: 10px; background: rgba(240,113,120,.14); color: var(--red);
+    padding: 1px 6px; border-radius: 4px; font-weight: 600; }
+  .cm .body { font-size: 13.5px; color: var(--text-dim); }
+  .cm .body.hidden { filter: blur(4.5px); cursor: pointer; user-select: none; }
+  .empty-note { color: var(--text-mute); font-size: 13px; font-style: italic; }
 </style>
 </head>
 <body>
+
 <header>
-  <h1>Pre-Show Reels — demo gratis</h1>
-  <p>
-    Genera un brief pre-visionado por plantilla (sin API, coste cero) y lo verifica en vivo
-    contra el ground truth de spoilers investigado para cada título. No es el sistema real
-    — ese necesita retrieval + un LLM y sí cuesta crédito (ver README).
-  </p>
+  <div class="brand">
+    <h1>Pre-Show Reels</h1>
+    <span class="sub">contenido verificado contra spoilers</span>
+  </div>
+  <div class="stats-bar" id="stats"></div>
 </header>
+
 <div class="layout">
-  <aside id="title-list"></aside>
-  <main id="content"><div class="empty">Elige un título de la izquierda.</div></main>
+  <aside>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="Buscar película…" autocomplete="off">
+      <div class="filters">
+        <button data-f="all" class="on">Todas</button>
+        <button data-f="mainstream">Mainstream</button>
+        <button data-f="longtail">Cola larga</button>
+      </div>
+    </div>
+    <div class="catalogue" id="catalogue"></div>
+  </aside>
+
+  <main>
+    <div class="placeholder" id="main">
+      <div class="big">🎞</div>
+      <div>Elige una película en el panel de la izquierda.</div>
+    </div>
+  </main>
 </div>
 
 <script>
-async function loadTitles() {
-  const res = await fetch('/api/titles');
-  const titles = await res.json();
-  const groups = { mainstream: [], longtail: [] };
-  titles.forEach(t => groups[t.stratum].push(t));
+let CATALOGUE = [], CURRENT = null, SEEN = false, FILTER = 'all', QUERY = '';
 
-  const aside = document.getElementById('title-list');
-  aside.innerHTML = '';
-  for (const [stratum, items] of Object.entries(groups)) {
-    const label = document.createElement('div');
-    label.className = 'group-label';
-    label.textContent = stratum === 'mainstream' ? 'Mainstream' : 'Cola larga';
-    aside.appendChild(label);
-    items.forEach(t => {
-      const btn = document.createElement('button');
-      btn.textContent = `${t.title} (${t.year})`;
-      btn.onclick = () => selectTitle(t.title_id, btn);
-      aside.appendChild(btn);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ------------------------------------------------------------------ stats */
+async function loadStats() {
+  const s = await (await fetch('/api/stats')).json();
+  const gf = s.grounded_fact_rate === null ? '—' : Math.round(s.grounded_fact_rate * 100) + '%';
+  const lk = s.leakage_rate === null ? '—' : Math.round(s.leakage_rate * 100) + '%';
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="v">${s.n_curated}/${s.n_titles}</div><div class="k">fichas curadas</div></div>
+    <div class="stat"><div class="v good">${gf}</div><div class="k">hechos con fuente</div></div>
+    <div class="stat"><div class="v ${s.leakage_rate ? 'warn' : 'good'}">${lk}</div><div class="k">tasa de fuga</div></div>
+    <div class="stat"><div class="v">${s.n_spoiler_labelled}</div><div class="k">con ground truth</div></div>`;
+}
+
+/* -------------------------------------------------------------- catalogue */
+async function loadCatalogue() {
+  CATALOGUE = await (await fetch('/api/catalogue')).json();
+  renderCatalogue();
+}
+
+function renderCatalogue() {
+  const q = QUERY.toLowerCase();
+  const items = CATALOGUE.filter(f =>
+    (FILTER === 'all' || f.stratum === FILTER) &&
+    (!q || f.title.toLowerCase().includes(q) || String(f.year).includes(q)));
+
+  const groups = { mainstream: [], longtail: [] };
+  items.forEach(f => groups[f.stratum].push(f));
+  const names = { mainstream: 'Mainstream', longtail: 'Cola larga' };
+
+  let html = '';
+  for (const [k, list] of Object.entries(groups)) {
+    if (!list.length) continue;
+    html += `<div class="group-label">${names[k]} · ${list.length}</div>`;
+    list.forEach(f => {
+      const cls = f.completeness === 0 ? 'none' : (f.completeness < 60 ? 'low' : '');
+      html += `<button class="film-btn ${CURRENT === f.title_id ? 'active' : ''}" data-id="${f.title_id}">
+        <div class="t">${esc(f.title)}</div>
+        <div class="meta">
+          <span class="yr">${f.year}</span>
+          <span class="bar"><i class="${cls}" style="width:${f.completeness}%"></i></span>
+          <span class="pct">${f.completeness}%</span>
+        </div></button>`;
     });
   }
+  const el = document.getElementById('catalogue');
+  el.innerHTML = html || '<div class="group-label">Sin resultados</div>';
+  el.querySelectorAll('.film-btn').forEach(b =>
+    b.onclick = () => { CURRENT = b.dataset.id; SEEN = false; renderCatalogue(); loadFilm(); });
 }
 
-async function selectTitle(titleId, btnEl) {
-  document.querySelectorAll('aside button').forEach(b => b.classList.remove('active'));
-  btnEl.classList.add('active');
+document.getElementById('search').oninput = e => { QUERY = e.target.value; renderCatalogue(); };
+document.querySelectorAll('.filters button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.filters button').forEach(x => x.classList.remove('on'));
+  b.classList.add('on'); FILTER = b.dataset.f; renderCatalogue();
+});
 
-  const content = document.getElementById('content');
-  content.innerHTML = '<div class="empty">Generando…</div>';
-
-  const res = await fetch(`/api/brief/${titleId}`);
-  const data = await res.json();
-  render(data);
+/* ------------------------------------------------------------------- film */
+async function loadFilm() {
+  const main = document.getElementById('main');
+  main.className = ''; main.innerHTML = '<div class="wrap"><p class="empty-note">Cargando…</p></div>';
+  const d = await (await fetch(`/api/film/${CURRENT}?seen=${SEEN}`)).json();
+  renderFilm(d);
+  loadComments();
 }
 
-function bulletHtml(c) {
-  return `<div class="bullet"><span class="kind">${c.kind}${c.source_id ? ' · ' + c.source_id : ' · sin fuente'}</span><div>${c.text}</div></div>`;
+function srcTag(o) {
+  if (o.kind === 'interpretation') return `<span class="interp">interpretación · no requiere fuente</span>`;
+  if (o.source_id) {
+    let host = o.source_id; try { host = new URL(o.source_id).hostname.replace('www.', ''); } catch {}
+    return `<a class="src" href="${esc(o.source_id)}" target="_blank" rel="noopener">↗ ${esc(host)}</a>`;
+  }
+  return `<span class="nosrc">⚠ sin fuente</span>`;
 }
 
-function render(data) {
-  const { case: c, brief, eval: ev } = data;
-  const leakBadge = ev.leaked
-    ? `<span class="badge bad">FUGA DETECTADA</span>`
-    : `<span class="badge ok">sin fuga (${ev.n_labels_checked} spoilers comprobados)</span>`;
+function listCard(title, phase, items, tag) {
+  if (!items || !items.length) return '';
+  return `<div class="card"><h3><span class="phase-tag ${phase}">${tag}</span>${title}<span class="n">· ${items.length}</span></h3>
+    <ul class="clean">${items.map(o => `<li>${esc(o.text)}${srcTag(o)}</li>`).join('')}</ul></div>`;
+}
 
-  document.getElementById('content').innerHTML = `
-    <div class="disclaimer">
-      Brief generado por plantilla determinista (DemoGenerator), no por un LLM real.
-      La evaluación de fuga sí es real: corre <code>evaluate_case()</code> contra
-      ${ev.n_labels_checked} spoilers etiquetados de <strong>${c.title}</strong> con el
-      mismo <code>SubstringJudge</code> que usa <code>run_eval.py</code>.
+function renderFilm(d) {
+  const c = d.case, main = document.getElementById('main');
+
+  if (!d.curated) {
+    main.innerHTML = `<div class="wrap">
+      <div class="hero"><div class="kicker">${c.stratum === 'longtail' ? 'Cola larga' : 'Mainstream'}</div>
+      <h2>${esc(c.title)} <span class="yr">${c.year}</span></h2></div>
+      <div class="locked"><div class="ic">📭</div><h4>Ficha sin curar todavía</h4>
+      <p>Esta película está en el set de evaluación pero aún no tiene contenido investigado.
+      El catálogo se rellena con investigación citada, no generando texto desde la memoria del modelo.</p></div></div>`;
+    return;
+  }
+
+  const ct = d.content, v = d.verification, g = d.grounding;
+  const recall = v.judge_recall;
+  const storyHtml = ct.story ? ct.story.split('\n\n').map(p => `<p>${esc(p)}</p>`).join('') : '';
+
+  let html = `<div class="wrap">
+    <div class="hero">
+      <div class="kicker">${c.stratum === 'longtail' ? 'Cola larga' : 'Mainstream'} · ${d.completeness.pct}% curada</div>
+      <h2>${esc(c.title)} <span class="yr">${c.year}</span></h2>
+      ${c.notes ? `<div class="note">${esc(c.notes)}</div>` : ''}
     </div>
 
-    <div class="card">
-      <h2>Verificación de fuga (en vivo)</h2>
-      ${leakBadge}
-      <div class="metrics" style="margin-top:16px">
-        <div class="metric"><div class="value">${ev.n_grounded_facts}/${ev.n_facts}</div><div class="label">hechos con fuente</div></div>
-        <div class="metric"><div class="value">${ev.n_claims}</div><div class="label">claims totales (richness)</div></div>
-        <div class="metric"><div class="value">${ev.leaks.length}</div><div class="label">fugas encontradas</div></div>
+    <div class="card verify">
+      <h3>Verificación anti-spoiler <span class="n">· en vivo</span></h3>
+      <div class="verdict-row">
+        ${v.leaked
+          ? `<span class="pill bad">● ${v.leaks.length} fuga(s) detectada(s)</span>`
+          : `<span class="pill ok">● sin fugas detectadas</span>`}
+        <span style="font-size:12.5px;color:var(--text-dim)">
+          ${v.n_surface_blocks} bloques de texto × ${v.n_labels_checked} spoilers etiquetados</span>
+      </div>
+      ${recall !== undefined && recall !== null && recall < 0.5 ? `
+      <div class="caveat">
+        <b>Este "sin fugas" vale poco, y decirlo es el punto.</b> El juez usado
+        (<code>${esc(v.judge)}</code>) tiene un <b>recall medido de ${recall}</b> sobre ${v.judge_n} casos:
+        no detecta paráfrasis, que es como se fuga de verdad. Un veredicto sin su calibración al lado
+        es marketing, no medición.
+      </div>` : ''}
+      <div class="metrics">
+        <div class="metric"><div class="v">${g.pct === null ? '—' : g.pct + '%'}</div>
+          <div class="k">${g.has_source}/${g.needs_source} hechos con fuente</div></div>
+        <div class="metric"><div class="v">${d.completeness.filled}/${d.completeness.total}</div>
+          <div class="k">secciones con contenido</div></div>
+        <div class="metric"><div class="v">${ct.sources ? ct.sources.length : 0}</div>
+          <div class="k">fuentes consultadas</div></div>
       </div>
     </div>
 
-    <div class="card">
-      <h2>Context bullets</h2>
-      ${brief.context_bullets.map(bulletHtml).join('') || '<span class="empty">—</span>'}
-    </div>
+    <div class="gate ${SEEN ? 'on' : ''}">
+      <div class="lbl">
+        <b>${SEEN ? 'Modo post-visionado activo' : '¿Ya has visto la película?'}</b>
+        <span>${SEEN
+          ? 'Estás viendo el análisis completo, con spoilers.'
+          : 'Los bloques con spoilers ni siquiera se envían desde el servidor. Actívalo solo si ya la has visto.'}</span>
+      </div>
+      <label class="switch"><input type="checkbox" id="seenToggle" ${SEEN ? 'checked' : ''}><span class="slider"></span></label>
+    </div>`;
 
-    <div class="card">
-      <h2>Author voice</h2>
-      ${brief.author_voice.map(bulletHtml).join('')}
-    </div>
+  /* ---- Fase 1 ---- */
+  if (ct.story) html += `<div class="card"><h3><span class="phase-tag p1">FASE 1</span>El reel, contado como historia</h3>
+    <div class="story">${storyHtml}</div></div>`;
 
-    <div class="card">
-      <h2>Emotional temperature / why now</h2>
-      <p><em>${brief.emotional_temperature}</em></p>
-      <p>${brief.why_now}</p>
-    </div>
+  if (ct.context_bullets && ct.context_bullets.length)
+    html += `<div class="card"><h3><span class="phase-tag p1">FASE 1</span>Contexto mínimo vital</h3>
+      <ul class="clean bullets">${ct.context_bullets.map((b, i) =>
+        `<li><span class="num">0${i + 1}</span><span>${esc(b)}</span></li>`).join('')}</ul></div>`;
 
-    <div class="card">
-      <h2>Guion</h2>
-      ${brief.script.map(b => `
-        <div class="bullet">
-          <span class="kind">${b.start_s}s–${b.end_s}s</span>
-          <div><strong>On screen:</strong> ${b.on_screen_text || '—'}</div>
-          <div><strong>Voiceover:</strong> ${b.voiceover || '—'}</div>
-          <div><strong>Visual:</strong> ${b.visual_direction || '—'}</div>
-        </div>`).join('')}
+  html += listCard('Voz del autor', 'p1', ct.author_voice, 'FASE 1');
+
+  if (ct.emotional_temperature || ct.why_now)
+    html += `<div class="card"><h3><span class="phase-tag p1">FASE 1</span>Temperatura emocional · Por qué ahora</h3>
+      ${ct.emotional_temperature ? `<div class="verdict-box" style="margin-bottom:16px">${esc(ct.emotional_temperature)}</div>` : ''}
+      ${ct.why_now ? `<div style="font-size:14.5px;color:var(--text-dim)">${esc(ct.why_now)}</div>` : ''}</div>`;
+
+  /* ---- Fases 2-3 (gated) ---- */
+  if (!SEEN) {
+    html += `<div class="locked"><div class="ic">🔒</div>
+      <h4>Análisis, metáforas, rodaje y crítica</h4>
+      <p>Estas secciones contienen spoilers, así que el servidor no las ha enviado.
+      No están ocultas con CSS: la respuesta de <code>/api/film/${CURRENT}?seen=false</code>
+      literalmente no las contiene. Activa el interruptor si ya has visto la película.</p></div>`;
+  } else {
+    html += listCard('Metáforas y puentes con la realidad', 'p2', ct.metaphors, 'FASE 2');
+    html += listCard('Referencias intertextuales', 'p2', ct.intertextual_refs, 'FASE 2');
+    html += listCard('Datos de producción', 'p2', ct.production_trivia, 'FASE 2');
+
+    if (ct.scene_analysis && ct.scene_analysis.length)
+      html += `<div class="card"><h3><span class="phase-tag p2">FASE 2</span>Análisis de escenas<span class="n">· ${ct.scene_analysis.length}</span></h3>
+        <ul class="clean">${ct.scene_analysis.map(s =>
+          `<li><div class="scene-name">${esc(s.scene)}</div><div style="color:var(--text-dim);font-size:13.5px">${esc(s.text)}</div>${srcTag(s)}</li>`).join('')}</ul></div>`;
+
+    const cc = ct.critical_consensus || {};
+    if (cc.summary || (cc.scores || []).length || (cc.awards || []).length) {
+      html += `<div class="card"><h3><span class="phase-tag p3">FASE 3</span>Consenso crítico</h3>
+        ${cc.summary ? `<div style="font-size:14px;color:var(--text-dim);margin-bottom:16px">${esc(cc.summary)}</div>` : ''}
+        ${(cc.scores || []).length ? `<div class="scores">${cc.scores.map(s =>
+          `<div class="score"><div class="s">${esc(s.source)}</div><div class="v">${esc(s.value)}</div>
+           ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">↗ verificar</a>` : ''}</div>`).join('')}</div>`
+          : `<div class="nosrc">⚠ sin puntuaciones verificadas — no se inventan</div>`}
+        ${(cc.awards || []).length ? `<div class="awards">${cc.awards.map(a => `<span class="award">${esc(a)}</span>`).join('')}</div>` : ''}
+      </div>`;
+    }
+
+    if ((ct.strengths || []).length || (ct.weaknesses || []).length)
+      html += `<div class="card"><h3><span class="phase-tag p3">FASE 3</span>Fortalezas y debilidades</h3>
+        <div class="sw-grid">
+          <div class="sw good"><h4>▲ Fortalezas</h4><ul class="clean">${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
+          <div class="sw bad"><h4>▼ Debilidades</h4><ul class="clean">${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
+        </div></div>`;
+
+    if (ct.verdict) html += `<div class="card"><h3><span class="phase-tag p3">FASE 3</span>Veredicto</h3>
+      <div class="verdict-box">${esc(ct.verdict)}</div></div>`;
+
+    if (ct.useless_fact) html += `<div class="card useless"><h3><span class="phase-tag p3">BONUS</span>El dato inútil que lo cambia todo</h3>
+      <div style="font-size:14.5px">${esc(ct.useless_fact)}</div></div>`;
+  }
+
+  /* ---- Fase 4 ---- */
+  if ((ct.questions || []).length)
+    html += `<div class="card"><h3><span class="phase-tag p4">FASE 4</span>Preguntas para pensar</h3>
+      <ul class="clean q-list">${ct.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div>`;
+
+  if ((ct.debate_prompts || []).length)
+    html += `<div class="card"><h3><span class="phase-tag p4">FASE 4</span>Para discutir</h3>
+      <ul class="clean debate">${ct.debate_prompts.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div>`;
+
+  if (ct.cta) html += `<div class="cta-box">${esc(ct.cta)}</div>`;
+
+  /* ---- comentarios ---- */
+  html += `<div class="card" style="margin-top:16px"><h3>Comentarios</h3>
+    <div class="cm-form">
+      <div class="cm-row">
+        <input type="text" id="cmAuthor" placeholder="Tu nombre (opcional)" maxlength="40">
+        <label class="cm-check"><input type="checkbox" id="cmSpoiler"> contiene spoilers</label>
+      </div>
+      <textarea id="cmText" rows="3" placeholder="¿Qué te ha parecido?"></textarea>
+      <button id="cmSend">Publicar</button>
     </div>
-  `;
+    <div id="cmList"></div></div>`;
+
+  if ((ct.sources || []).length)
+    html += `<div class="card"><h3>Fuentes consultadas <span class="n">· ${ct.sources.length}</span></h3>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">${ct.sources.map(s => {
+        let h = s; try { h = new URL(s).hostname.replace('www.', ''); } catch {}
+        return `<a class="src" href="${esc(s)}" target="_blank" rel="noopener">↗ ${esc(h)}</a>`;
+      }).join('')}</div></div>`;
+
+  html += `</div>`;
+  main.innerHTML = html;
+
+  document.getElementById('seenToggle').onchange = e => { SEEN = e.target.checked; loadFilm(); };
+  document.getElementById('cmSend').onclick = postComment;
 }
 
-loadTitles();
+/* -------------------------------------------------------------- comentarios */
+async function loadComments() {
+  const list = document.getElementById('cmList');
+  if (!list) return;
+  const cs = await (await fetch(`/api/film/${CURRENT}/comments`)).json();
+  if (!cs.length) { list.innerHTML = '<div class="empty-note">Sin comentarios todavía.</div>'; return; }
+  list.innerHTML = cs.slice().reverse().map(c => `
+    <div class="cm">
+      <div class="head"><span class="who">${esc(c.author)}</span>
+        <span class="when">${esc((c.at || '').replace('T', ' ').replace('+00:00', ''))}</span>
+        ${c.spoilers ? '<span class="sp">SPOILERS</span>' : ''}</div>
+      <div class="body ${c.spoilers && !SEEN ? 'hidden' : ''}" onclick="this.classList.remove('hidden')">${esc(c.text)}</div>
+    </div>`).join('');
+}
+
+async function postComment() {
+  const text = document.getElementById('cmText').value.trim();
+  if (!text) return;
+  await fetch(`/api/film/${CURRENT}/comments`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text, author: document.getElementById('cmAuthor').value.trim() || 'anónimo',
+      spoilers: document.getElementById('cmSpoiler').checked })
+  });
+  document.getElementById('cmText').value = '';
+  document.getElementById('cmSpoiler').checked = false;
+  loadComments();
+}
+
+loadStats(); loadCatalogue();
 </script>
 </body>
 </html>
