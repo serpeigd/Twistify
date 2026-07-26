@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pre-Show Reels</title>
+<title>Twistify</title>
 <!--
   NOTA DE DISEÑO (por qué esta versión NO muestra un veredicto de verificación):
   se eliminaron a propósito la tarjeta "● sin fugas detectadas" y el panel de
@@ -43,8 +43,9 @@
   header{display:flex;align-items:center;gap:14px;padding:15px 26px;
     border-bottom:1px solid var(--border);background:linear-gradient(180deg,var(--bg-soft),rgba(15,17,22,0));
     position:sticky;top:0;z-index:30;backdrop-filter:blur(8px)}
-  .brand h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.02em}
-  .brand .dot{color:var(--safe)}
+  .brand h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.02em;
+    display:flex;align-items:center;gap:9px}
+  .logo-mark{flex-shrink:0}
   .tag{margin-left:4px;font-size:12.5px;color:var(--text-mute);
     border-left:1px solid var(--border);padding-left:14px}
 
@@ -57,12 +58,19 @@
     border:1px solid var(--border);border-radius:10px;color:var(--text);
     font-size:13.5px;font-family:inherit;transition:border-color .15s,box-shadow .15s}
   .search-wrap input:focus{outline:none;border-color:var(--safe);box-shadow:0 0 0 3px var(--safe-glow)}
-  .filters{display:flex;gap:6px;margin-top:10px}
-  .filters button{flex:1;padding:6px 8px;font-size:11.5px;cursor:pointer;
-    background:var(--panel);border:1px solid var(--border);border-radius:8px;
-    color:var(--text-dim);font-family:inherit;transition:all .14s}
-  .filters button:hover{color:var(--text);border-color:#333949}
-  .filters button.on{background:var(--safe);border-color:var(--safe);color:#06120d;font-weight:600}
+  .filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+  .filter-chip{display:flex;align-items:center;gap:7px;padding:9px 10px;border-radius:11px;
+    cursor:pointer;background:var(--panel);border:1px solid var(--border);
+    color:var(--text-dim);font-family:inherit;font-size:12px;font-weight:600;
+    transition:background .16s,border-color .16s,color .16s,transform .16s;text-align:left}
+  .filter-chip:hover{border-color:#333949;color:var(--text);transform:translateY(-1px)}
+  .filter-chip .f-ico{font-size:15px;flex-shrink:0;line-height:1}
+  .filter-chip .f-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .filter-chip .f-count{font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;
+    background:rgba(255,255,255,.06);color:var(--text-mute);font-variant-numeric:tabular-nums}
+  .filter-chip.on{background:linear-gradient(135deg,rgba(82,201,154,.2),rgba(82,201,154,.06));
+    border-color:var(--safe);color:var(--safe-soft)}
+  .filter-chip.on .f-count{background:rgba(82,201,154,.24);color:var(--safe-soft)}
   .catalogue{overflow-y:auto;padding:10px;flex:1;min-height:0}
   .group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
     color:var(--text-mute);margin:16px 10px 8px;font-weight:700}
@@ -184,15 +192,17 @@
     mask-image:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
   .chips::-webkit-scrollbar{display:none}
   .chip{cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:600;flex-shrink:0;
-    display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;
+    display:inline-flex;align-items:center;height:34px;padding:0 9px;border-radius:999px;
     color:var(--deep-soft);background:rgba(224,163,92,.07);border:1px solid transparent;
-    white-space:nowrap;transition:background .18s,transform .18s,color .18s,
+    overflow:hidden;max-width:32px;white-space:nowrap;
+    transition:max-width .38s cubic-bezier(.2,.85,.25,1),background .18s,color .18s,
       box-shadow .18s,border-color .18s}
   .chip-ico{font-size:15px;flex-shrink:0}
-  .chip-label{margin-left:7px}
-  .chip:hover{background:rgba(224,163,92,.18);transform:translateY(-1px)}
-  .chip.active{background:linear-gradient(135deg,var(--deep-soft),var(--deep));color:#140d04;
-    border-color:transparent;box-shadow:0 10px 22px -10px rgba(224,163,92,.75)}
+  .chip-label{margin-left:7px;opacity:0;transition:opacity .16s}
+  .chip:hover{background:rgba(224,163,92,.18)}
+  .chip.active{max-width:280px;background:linear-gradient(135deg,var(--deep-soft),var(--deep));
+    color:#140d04;border-color:transparent;box-shadow:0 10px 22px -10px rgba(224,163,92,.75)}
+  .chip.active .chip-label{opacity:1;transition:opacity .2s .12s}
 
   /* póster / hero ambientado por película */
   .poster{position:relative;border-radius:20px;overflow:hidden;padding:44px 40px 38px;
@@ -443,19 +453,24 @@
 </button>
 
 <header>
-  <div class="brand"><h1><span class="dot">●</span> Pre-Show Reels</h1></div>
-  <span class="tag">Antes de verla, sin spoilers. Después, sin filtros.</span>
+  <div class="brand"><h1>
+    <svg class="logo-mark" viewBox="0 0 32 20" width="28" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="psrLogoA" x1="0" y1="0" x2="18" y2="20"><stop offset="0" stop-color="#84e0bd"/><stop offset="1" stop-color="#52c99a"/></linearGradient>
+        <linearGradient id="psrLogoB" x1="14" y1="0" x2="32" y2="20"><stop offset="0" stop-color="#f0c58e"/><stop offset="1" stop-color="#e0a35c"/></linearGradient>
+      </defs>
+      <circle cx="10" cy="10" r="7.5" fill="none" stroke="url(#psrLogoA)" stroke-width="3"/>
+      <circle cx="22" cy="10" r="7.5" fill="none" stroke="url(#psrLogoB)" stroke-width="3"/>
+    </svg>
+    Twistify</h1></div>
+  <span class="tag">Sin spoilers antes. Con todos los giros después.</span>
 </header>
 
 <div class="layout">
   <aside>
     <div class="search-wrap">
       <input id="search" type="text" placeholder="Buscar película…" autocomplete="off">
-      <div class="filters">
-        <button data-f="all" class="on">Todas</button>
-        <button data-f="mainstream">Populares</button>
-        <button data-f="longtail">Cola larga</button>
-      </div>
+      <div class="filters" id="filters"></div>
     </div>
     <div class="catalogue" id="catalogue"></div>
   </aside>
@@ -475,12 +490,43 @@ const host = u => { try { return new URL(u).hostname.replace('www.', ''); } catc
 
 async function loadCatalogue() {
   CATALOGUE = await (await fetch('/api/catalogue')).json();
+  renderFilters();
   renderCatalogue();
 }
+
+const FILTERS = [
+  { key: 'all', ico: '🎬', label: 'Todas' },
+  { key: 'mainstream', ico: '⭐', label: 'Populares' },
+  { key: 'longtail', ico: '🌀', label: 'Cola larga' },
+  { key: 'curated', ico: '✅', label: 'Con contenido' },
+];
+
+function matchesFilter(f) {
+  if (FILTER === 'all') return true;
+  if (FILTER === 'curated') return f.curated;
+  return f.stratum === FILTER;
+}
+
+function renderFilters() {
+  const box = document.getElementById('filters');
+  box.innerHTML = FILTERS.map(f => {
+    const count = f.key === 'all' ? CATALOGUE.length : CATALOGUE.filter(c =>
+      f.key === 'curated' ? c.curated : c.stratum === f.key).length;
+    return `<button class="filter-chip ${FILTER === f.key ? 'on' : ''}" data-f="${f.key}" title="${esc(f.label)}">
+      <span class="f-ico">${f.ico}</span><span class="f-label">${esc(f.label)}</span>
+      <span class="f-count">${count}</span></button>`;
+  }).join('');
+  box.querySelectorAll('.filter-chip').forEach(b => b.onclick = () => {
+    FILTER = b.dataset.f;
+    renderFilters();
+    renderCatalogue();
+  });
+}
+
 function renderCatalogue() {
   const q = QUERY.toLowerCase();
   const items = CATALOGUE.filter(f =>
-    (FILTER === 'all' || f.stratum === FILTER) &&
+    matchesFilter(f) &&
     (!q || f.title.toLowerCase().includes(q) || String(f.year).includes(q)));
   const groups = { mainstream: [], longtail: [] };
   items.forEach(f => groups[f.stratum].push(f));
@@ -504,11 +550,6 @@ function renderCatalogue() {
       document.querySelector('main').scrollTop = 0; loadFilm(); });
 }
 document.getElementById('search').oninput = e => { QUERY = e.target.value; renderCatalogue(); };
-document.querySelectorAll('.filters button').forEach(b => b.onclick = () => {
-  document.querySelectorAll('.filters button').forEach(x => x.classList.remove('on'));
-  b.classList.add('on'); FILTER = b.dataset.f; renderCatalogue();
-});
-
 async function loadFilm() {
   NAV_SECTIONS = []; PRE_SECTIONS = []; CACHED_SECTIONS = []; LAST_ACTIVE_CHIP = null;
   const fab = document.getElementById('curtainFab'); if (fab) fab.classList.remove('show');
@@ -563,8 +604,8 @@ let PRE_SECTIONS = [];
 let NAV_SECTIONS = [];
 let LAST_ACTIVE_CHIP = null;
 
-const chipHtml = s => `<span class="chip" data-go="${s.id}">
-  <span class="chip-ico">${s.ico}</span><span class="chip-label">${s.title}</span></span>`;
+const chipHtml = s => `<span class="chip" data-go="${s.id}" title="${esc(s.title)}">
+  <span class="chip-ico">${s.ico}</span><span class="chip-label">${esc(s.title)}</span></span>`;
 
 function centerChipInRail(chipEl) {
   const rail = document.getElementById('masterChips');
@@ -639,7 +680,7 @@ function renderFilm(d) {
   }
 
   const ct = d.content;
-  document.title = `${c.title} — Pre-Show Reels`;
+  document.title = `${c.title} — Twistify`;
   const storyHtml = ct.story ? ct.story.split('\n\n').map(p => `<p>${esc(p)}</p>`).join('') : '';
 
   const preSections = [];
@@ -781,10 +822,23 @@ async function unlockDeep() {
   const masterChips = document.getElementById('masterChips');
 
   if (dc.dataset.loaded !== '1') {
-    const btn = document.getElementById('unlockBtn');
-    btn.disabled = true; btn.innerHTML = 'Abriendo el telón…';
-    const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
-    const ct = d.content;
+    // un solo vuelo: si ya hay una carga en curso (doble clic, chip + botón a
+    // la vez), todos esperan la MISMA promesa en vez de duplicar fetch/chips.
+    if (!dc._loading) dc._loading = loadDeepDive(dc, masterChips);
+    await dc._loading;
+  }
+
+  NAV_SECTIONS = PRE_SECTIONS.concat(CACHED_SECTIONS);
+  zone.classList.remove('curtain-closed');
+  curtain.classList.add('open');
+  document.getElementById('curtainFab').classList.add('show');
+}
+
+async function loadDeepDive(dc, masterChips) {
+  const btn = document.getElementById('unlockBtn');
+  btn.disabled = true; btn.innerHTML = 'Abriendo el telón…';
+  const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
+  const ct = d.content;
 
     const sections = [];
     const push = (id, ico, title, inner, extra = '') =>
@@ -878,12 +932,6 @@ async function unlockDeep() {
 
     btn.disabled = false;
     btn.innerHTML = 'Ya la he visto — abrir el telón <span class="arrow">▸</span>';
-  }
-
-  NAV_SECTIONS = PRE_SECTIONS.concat(CACHED_SECTIONS);
-  zone.classList.remove('curtain-closed');
-  curtain.classList.add('open');
-  document.getElementById('curtainFab').classList.add('show');
 }
 
 function relockDeep() {
