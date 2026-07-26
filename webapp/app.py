@@ -73,10 +73,12 @@ CALIBRATION = load_calibration()
 def verify_pre_show(pack: ContentPack, labels: list[SpoilerLabel]) -> dict:
     """Pasa la superficie pre-visionado por el detector de fugas.
 
-    Devuelve el resultado JUNTO al recall medido del juez. Reportar el
-    veredicto sin la calibración sería exactamente el error que este
-    proyecto existe para evitar: un 0.0 que parece una garantía y es una
-    limitación del instrumento.
+    NOTA (rediseño): la UI ya NO muestra este veredicto al usuario. Un badge
+    "sin fugas" comunica una garantía que la medición no respalda: el juez
+    tiene recall 0.0 (no ve paráfrasis). Presentarlo en verde era engañoso.
+    El endpoint se mantiene para auditar el pipeline (evals/, /api/stats),
+    no para venderlo en la ficha. El campo `judge_recall` acompaña siempre al
+    veredicto para que nadie lo lea sin su barra de error.
     """
     hits = []
     for loc, text in pack.pre_show_text():
