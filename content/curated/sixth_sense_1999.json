@@ -7,15 +7,43 @@
     "Espera un tono pausado y melancólico, más inquietud que sustos."
   ],
   "before_watching": [
-    {"lead": "Nació como otra película", "text": "En los primeros borradores era casi un thriller de asesino en serie, heredero de El silencio de los corderos; Shyamalan lo reescribió hacia el drama familiar antes de rodar.", "source_id": "https://movieweb.com/m-night-shyamalan-the-sixth-sense-original-script/"},
-    {"lead": "Una apuesta de 25 años", "text": "Shyamalan vendió el guion con dos condiciones innegociables: dirigirlo él y cobrar más de un millón; un ejecutivo de Disney lo compró sin permiso y acabó despedido por ello.", "source_id": "https://www.hollywoodreporter.com/movies/movie-news/i-wasnt-bluffing-m-night-shyamalan-recalls-sixth-sense-pitch-frenzy-followed-1228534/"},
-    {"lead": "El rojo tiene reglas", "text": "Fíjate en el color: Shyamalan reservó el rojo para marcar ciertos momentos y lo eliminó del resto del encuadre. Es un idioma visual que la película nunca te explica en voz alta.", "source_id": "https://nofilmschool.com/the-sixth-sense-red-symbolism"}
+    {
+      "lead": "Nació como otra película",
+      "text": "En los primeros borradores era casi un thriller de asesino en serie, heredero de El silencio de los corderos; Shyamalan lo reescribió hacia el drama familiar antes de rodar.",
+      "source_id": "https://movieweb.com/m-night-shyamalan-the-sixth-sense-original-script/"
+    },
+    {
+      "lead": "Una apuesta de 25 años",
+      "text": "Shyamalan vendió el guion con dos condiciones innegociables: dirigirlo él y cobrar más de un millón; un ejecutivo de Disney lo compró sin permiso y acabó despedido por ello.",
+      "source_id": "https://www.hollywoodreporter.com/movies/movie-news/i-wasnt-bluffing-m-night-shyamalan-recalls-sixth-sense-pitch-frenzy-followed-1228534/"
+    },
+    {
+      "lead": "El rojo tiene reglas",
+      "text": "Fíjate en el color: Shyamalan reservó el rojo para marcar ciertos momentos y lo eliminó del resto del encuadre. Es un idioma visual que la película nunca te explica en voz alta.",
+      "source_id": "https://nofilmschool.com/the-sixth-sense-red-symbolism"
+    }
   ],
   "fun_facts": [
-    {"lead": "Frío de verdad", "text": "El vaho de los actores no es CGI: bombeaban aire helado a los platós. Osment recordaba rodar casi en calzoncillos entre el frío.", "source_id": "https://www.eonline.com/news/1062628/a-haunted-set-a-star-moonlighting-as-a-dj-and-a-soundtrack-that-spoiled-everything-20-fascinating-facts-about-the-sixth-sense"},
-    {"lead": "Collette no lo sabía", "text": "Toni Collette pensaba que rodaba 'una historia bonita y espiritual' y no se enteró de que era una película de terror hasta pasar por la sala de montaje.", "source_id": "https://www.aol.com/lifestyle/toni-collette-didnt-know-sixth-170000676.html"},
-    {"lead": "El spoiler en el CD", "text": "El corte final de la banda sonora se titula, literalmente, 'Malcolm Is Dead': cualquiera que comprara el disco antes de entrar al cine tenía el giro impreso en letra pequeña.", "source_id": "https://en.wikipedia.org/wiki/The_Sixth_Sense_(soundtrack)"},
-    {"lead": "Casi Michael Cera", "text": "Michael Cera audicionó para el papel de Cole sin saber de qué iba la película e interpretó la escena en tono alegre.", "source_id": "https://www.eonline.com/news/1062628/a-haunted-set-a-star-moonlighting-as-a-dj-and-a-soundtrack-that-spoiled-everything-20-fascinating-facts-about-the-sixth-sense"}
+    {
+      "lead": "Frío de verdad",
+      "text": "El vaho de los actores no es CGI: bombeaban aire helado a los platós. Osment recordaba rodar casi en calzoncillos entre el frío.",
+      "source_id": "https://www.eonline.com/news/1062628/a-haunted-set-a-star-moonlighting-as-a-dj-and-a-soundtrack-that-spoiled-everything-20-fascinating-facts-about-the-sixth-sense"
+    },
+    {
+      "lead": "Collette no lo sabía",
+      "text": "Toni Collette pensaba que rodaba 'una historia bonita y espiritual' y no se enteró de que era una película de terror hasta pasar por la sala de montaje.",
+      "source_id": "https://www.aol.com/lifestyle/toni-collette-didnt-know-sixth-170000676.html"
+    },
+    {
+      "lead": "El spoiler en el CD",
+      "text": "El corte final de la banda sonora se titula, literalmente, 'Malcolm Is Dead': cualquiera que comprara el disco antes de entrar al cine tenía el giro impreso en letra pequeña.",
+      "source_id": "https://en.wikipedia.org/wiki/The_Sixth_Sense_(soundtrack)"
+    },
+    {
+      "lead": "Casi Michael Cera",
+      "text": "Michael Cera audicionó para el papel de Cole sin saber de qué iba la película e interpretó la escena en tono alegre.",
+      "source_id": "https://www.eonline.com/news/1062628/a-haunted-set-a-star-moonlighting-as-a-dj-and-a-soundtrack-that-spoiled-everything-20-fascinating-facts-about-the-sixth-sense"
+    }
   ],
   "author_voice": [
     {
@@ -190,12 +218,9 @@
     "¿El don de Cole es una maldición o simplemente una sensibilidad que la sociedad no tiene protocolo para acoger?"
   ],
   "debate_prompts": [
-    "El giro de 'El sexto sentido' es lo menos interesante de 'El sexto sentido', y decirlo en voz alta debería ser el consenso desde 2005.",
-    "Toni Collette hace la mejor interpretación de la película y llevamos 25 años hablando del niño.",
-    "Su éxito no elevó el terror mainstream: lo condenó a dos décadas de finales tramposos escritos antes que las historias.",
-    "Que ganara cero Oscars con seis nominaciones dice más sobre los prejuicios de la Academia hacia el género que sobre la película."
+    "El giro de 'El sexto sentido' es lo menos interesante de 'El sexto sentido', y decirlo en voz alta debería ser el consenso desde 2005."
   ],
-  "cta": "Vuelve a verla sin mirar a los personajes: mira dónde puso Shyamalan el color rojo. Lleva 25 años contándotelo todo en un idioma que la primera vez nadie te enseñó a leer.",
+  "cta": "Esta vez no mires a los personajes: mira dónde mete Shyamalan el color rojo. Lleva 25 años contándote la película entera en un idioma que la primera vez nadie te enseñó a leer.",
   "useless_fact": "La última pista del filme está en la contraportada del CD: el corte final de la banda sonora de James Newton Howard se titula literalmente 'Malcolm Is Dead'. Es decir, cualquiera que en 1999 hubiera comprado el disco antes de entrar al cine tenía el giro impreso, en letra pequeña, junto a los créditos de orquestación.",
   "sources": [
     "https://en.wikipedia.org/wiki/The_Sixth_Sense",

@@ -7,57 +7,173 @@
     "Espera una atmósfera opresiva, lluviosa y sin alivio cómico."
   ],
   "before_watching": [
-    {"lead": "El casi rechazo de Fincher", "text": "Tras la pesadilla de Alien 3, Fincher no quería volver a dirigir; aceptó al leer un guion tan poco convencional, que además llegó a sus manos por error (le enviaron la versión original en vez de la reescrita).", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"lead": "La guerra por el final", "text": "New Line presionó por un desenlace más comercial, pero Fincher y Brad Pitt amenazaron con marcharse si se tocaba el clímax original del guion.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"lead": "Lluvia a propósito", "text": "Se rodó en Los Ángeles en mojado de forma sistemática para borrar el sol de la ciudad y construir una metrópolis anónima, sucia y sin esperanza.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"}
+    {
+      "lead": "El casi rechazo de Fincher",
+      "text": "Tras la pesadilla de Alien 3, Fincher no quería volver a dirigir; aceptó al leer un guion tan poco convencional, que además llegó a sus manos por error (le enviaron la versión original en vez de la reescrita).",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "lead": "La guerra por el final",
+      "text": "New Line presionó por un desenlace más comercial, pero Fincher y Brad Pitt amenazaron con marcharse si se tocaba el clímax original del guion.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "lead": "Lluvia a propósito",
+      "text": "Se rodó en Los Ángeles en mojado de forma sistemática para borrar el sol de la ciudad y construir una metrópolis anónima, sucia y sin esperanza.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    }
   ],
   "fun_facts": [
-    {"lead": "El cadáver estaba vivo", "text": "La víctima de la Pereza la interpretaba un actor real inmóvil unas 14 horas con prótesis; el susto de John C. McGinley al verlo moverse en pantalla es una reacción genuina.", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"},
-    {"lead": "Spacey, sin créditos", "text": "Kevin Spacey exigió no aparecer en la promoción ni en los títulos de apertura para proteger el efecto de la película; rodó su parte en solo 12 días.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"lead": "Títulos a cuchilla", "text": "La mítica secuencia de créditos de Kyle Cooper se hizo rayando y marcando el negativo físicamente, no con CGI; el público llegó a aplaudirla en el estreno.", "source_id": "https://www.artofthetitle.com/title/se7en/"},
-    {"lead": "Cuadernos de verdad", "text": "La producción gastó unos 15.000 dólares y dos meses escribiendo a mano los cuadernos del asesino, con collages de recortes sobre texto real.", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"}
+    {
+      "lead": "El cadáver estaba vivo",
+      "text": "La víctima de la Pereza la interpretaba un actor real inmóvil unas 14 horas con prótesis; el susto de John C. McGinley al verlo moverse en pantalla es una reacción genuina.",
+      "source_id": "https://nofilmschool.com/tiny-details-in-se7en"
+    },
+    {
+      "lead": "Spacey, sin créditos",
+      "text": "Kevin Spacey exigió no aparecer en la promoción ni en los títulos de apertura para proteger el efecto de la película; rodó su parte en solo 12 días.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "lead": "Títulos a cuchilla",
+      "text": "La mítica secuencia de créditos de Kyle Cooper se hizo rayando y marcando el negativo físicamente, no con CGI; el público llegó a aplaudirla en el estreno.",
+      "source_id": "https://www.artofthetitle.com/title/se7en/"
+    },
+    {
+      "lead": "Cuadernos de verdad",
+      "text": "La producción gastó unos 15.000 dólares y dos meses escribiendo a mano los cuadernos del asesino, con collages de recortes sobre texto real.",
+      "source_id": "https://nofilmschool.com/tiny-details-in-se7en"
+    }
   ],
   "author_voice": [
-    {"text": "Fincher aspiraba, en sus palabras, a que si lo hacían «smart and sharp and committed» la película tuviera la oportunidad de ser «a grungy horror movie masquerading as a thriller»: una película de terror sucia disfrazada de thriller policíaco.", "source_id": "https://www.avclub.com/david-fincher-se7en-interview"},
-    {"text": "Cuando llamó por teléfono a Darius Khondji para plantearle la fotografía, el encargo cabía en una frase: «Darius, it has to be scary». Su primera nota sobre el proyecto fue simplemente «It's got to be frightening».", "source_id": "https://www.studiobinder.com/blog/darius-khondji-cinematography/"},
-    {"text": "El brief para los títulos de crédito de Kyle Cooper fue igual de extremo: «all I want is for the audience to want to run screaming from the theater during the title section».", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"text": "El rodaje le pasó factura: «I found myself getting more and more trapped in this kind of evil», declaró a Empire en 1996. Fincher entiende la película menos como un thriller de detectives que como una meditación sobre el mal que hay dentro de todos.", "source_id": "https://www.theringer.com/2021/11/15/movies/seven-david-fincher-mind-games-adam-nayman-brad-pitt"}
+    {
+      "text": "Fincher aspiraba, en sus palabras, a que si lo hacían «smart and sharp and committed» la película tuviera la oportunidad de ser «a grungy horror movie masquerading as a thriller»: una película de terror sucia disfrazada de thriller policíaco.",
+      "source_id": "https://www.avclub.com/david-fincher-se7en-interview"
+    },
+    {
+      "text": "Cuando llamó por teléfono a Darius Khondji para plantearle la fotografía, el encargo cabía en una frase: «Darius, it has to be scary». Su primera nota sobre el proyecto fue simplemente «It's got to be frightening».",
+      "source_id": "https://www.studiobinder.com/blog/darius-khondji-cinematography/"
+    },
+    {
+      "text": "El brief para los títulos de crédito de Kyle Cooper fue igual de extremo: «all I want is for the audience to want to run screaming from the theater during the title section».",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "text": "El rodaje le pasó factura: «I found myself getting more and more trapped in this kind of evil», declaró a Empire en 1996. Fincher entiende la película menos como un thriller de detectives que como una meditación sobre el mal que hay dentro de todos.",
+      "source_id": "https://www.theringer.com/2021/11/15/movies/seven-david-fincher-mind-games-adam-nayman-brad-pitt"
+    }
   ],
   "emotional_temperature": "Un descenso lento, húmedo y sin salida: la película no acelera, se estrecha. Prepárate para el desasosiego y la incomodidad, no para el entretenimiento ligero.",
   "why_now": "Se7en inventó el lenguaje visual con el que hoy vemos el crimen: la textura desaturada de True Detective, el forense como espectáculo de CSI, el asesino-artista de Hannibal. Y su idea central envejeció de forma incómoda: un tipo que mata para obligar al mundo a mirar, convencido de que solo lo atroz consigue atención, es una descripción exacta de la economía de la indignación en la que vivimos. En 2025 volvió a IMAX y a 4K restaurada por el propio Fincher, y lo que asusta no es la sangre: es lo poco que ha caducado la tesis.",
   "metaphors": [
-    {"text": "La estructura de siete crímenes replica el contrapasso de Dante: cada castigo está diseñado para que la forma del daño sea la forma del pecado. No es sadismo de guion, es teología medieval aplicada con manual de instrucciones.", "kind": "fact", "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"},
-    {"text": "Somerset funciona como el Virgilio de Mills: el guía mayor que ya conoce el mapa del descenso y sabe que no puede evitar que el otro lo recorra entero.", "kind": "fact", "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"},
-    {"text": "La ciudad sin nombre opera como el pueblo genérico de un experimento psicológico: al quitarle coordenadas deja de ser un sitio al que no vas y pasa a ser cualquier sitio donde estás. La lluvia perpetua no es atmósfera, es un borrador de geografía.", "kind": "interpretation", "source_id": "https://lataco.com/se7en-film-locations"},
-    {"text": "El metrónomo de la mesilla de Somerset es un pequeño pacto con el orden: mientras haya un pulso regular que tape el ruido de la calle, se puede dormir. La película entera consiste en ir subiendo el volumen de la calle.", "kind": "interpretation", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"}
+    {
+      "text": "La estructura de siete crímenes replica el contrapasso de Dante: cada castigo está diseñado para que la forma del daño sea la forma del pecado. No es sadismo de guion, es teología medieval aplicada con manual de instrucciones.",
+      "kind": "fact",
+      "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"
+    },
+    {
+      "text": "Somerset funciona como el Virgilio de Mills: el guía mayor que ya conoce el mapa del descenso y sabe que no puede evitar que el otro lo recorra entero.",
+      "kind": "fact",
+      "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"
+    },
+    {
+      "text": "La ciudad sin nombre opera como el pueblo genérico de un experimento psicológico: al quitarle coordenadas deja de ser un sitio al que no vas y pasa a ser cualquier sitio donde estás. La lluvia perpetua no es atmósfera, es un borrador de geografía.",
+      "kind": "interpretation",
+      "source_id": "https://lataco.com/se7en-film-locations"
+    },
+    {
+      "text": "El metrónomo de la mesilla de Somerset es un pequeño pacto con el orden: mientras haya un pulso regular que tape el ruido de la calle, se puede dormir. La película entera consiste en ir subiendo el volumen de la calle.",
+      "kind": "interpretation",
+      "source_id": "https://nofilmschool.com/tiny-details-in-se7en"
+    }
   ],
   "intertextual_refs": [
-    {"text": "La Divina Comedia de Dante: la escalada de los crímenes calca el descenso por círculos, y el Purgatorio ordena precisamente los siete pecados capitales.", "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"},
-    {"text": "Los Cuentos de Canterbury de Chaucer, y en concreto El cuento del párroco, que Somerset consulta como tratado sobre los siete pecados.", "source_id": "https://filmobsessive.com/film/film-analysis/one-key-detail-will-change-the-way-you-watch-se7en/"},
-    {"text": "La Summa Theologica de Tomás de Aquino sobre los pecados capitales: es una de las señales bibliográficas que orientan la investigación.", "source_id": "https://filmobsessive.com/film/film-analysis/one-key-detail-will-change-the-way-you-watch-se7en/"},
-    {"text": "El Paraíso perdido de Milton, epopeya sobre la caída y la expulsión, aparece entre las lecturas que perfilan la mentalidad del caso; y la voz en off de cierre cita a Hemingway.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"}
+    {
+      "text": "La Divina Comedia de Dante: la escalada de los crímenes calca el descenso por círculos, y el Purgatorio ordena precisamente los siete pecados capitales.",
+      "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"
+    },
+    {
+      "text": "Los Cuentos de Canterbury de Chaucer, y en concreto El cuento del párroco, que Somerset consulta como tratado sobre los siete pecados.",
+      "source_id": "https://filmobsessive.com/film/film-analysis/one-key-detail-will-change-the-way-you-watch-se7en/"
+    },
+    {
+      "text": "La Summa Theologica de Tomás de Aquino sobre los pecados capitales: es una de las señales bibliográficas que orientan la investigación.",
+      "source_id": "https://filmobsessive.com/film/film-analysis/one-key-detail-will-change-the-way-you-watch-se7en/"
+    },
+    {
+      "text": "El Paraíso perdido de Milton, epopeya sobre la caída y la expulsión, aparece entre las lecturas que perfilan la mentalidad del caso; y la voz en off de cierre cita a Hemingway.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    }
   ],
   "production_trivia": [
-    {"text": "A Fincher le enviaron por error el guion original de Andrew Kevin Walker en lugar de la versión reescrita, y aceptó dirigir con una condición: que el final permaneciera intacto. New Line presionó por desenlaces más comerciales y llegó a barajar varias alternativas. Brad Pitt firmó también a condición de que no se tocara, escarmentado porque a Leyendas de pasión le habían recortado el suyo.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"text": "Kevin Spacey exigió que su nombre no apareciera ni en la promoción ni en los títulos de apertura: «I felt very strongly that it was the right thing to do for the movie». Rodó su parte en solo 12 días, tras recibir la llamada un viernes e incorporarse el martes.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"text": "Los títulos de Kyle Cooper costaron 50.000 dólares, se rodaron en 8 días y se montaron durante 5 semanas. Aunque en 1995 ya existía el compositing digital, el equipo lo ensambló a mano y arañó, rasgó y marcó el negativo físicamente: «People think there's computer graphics in there, but we assembled the majority of the sequence by hand».", "source_id": "https://www.artofthetitle.com/title/se7en/"},
-    {"text": "La secuencia de títulos nació como pieza provisional para un pase de ejecutivos, después de que se eliminara una escena inicial de Somerset en una casa de campo. Se quedó para siempre. En el estreno, el público aplaudió al terminar los créditos de apertura.", "source_id": "https://thefincheranalyst.com/2025/09/26/30-years-of-kyle-coopers-classic-title-sequence-for-se7en/"},
-    {"text": "Se rodó íntegramente en el centro de Los Ángeles entre el 12 de diciembre de 1994 y el 10 de marzo de 1995. Llovió a menudo y Fincher decidió rodar en mojado de forma sistemática: le resolvía el raccord y borraba la asociación soleada de LA. Pitt solo tenía 55 días disponibles antes de empezar 12 monos.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"text": "Khondji y Fincher usaron bleach bypass (retención de plata en la emulsión) para lograr negros aplastados, alto contraste y una desaturación enfermiza; la luz viene sobre todo de fuentes prácticas, linternas y flexos. Khondji citó Klute (1971) como referencia clave.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"text": "Ned Beatty, primera opción de Fincher y Walker, rechazó el papel calificando el guion como «the most evil thing I've ever read». También dijeron que no Stallone, Denzel Washington, Duvall, Hackman, Pacino, Val Kilmer y Gary Oldman.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
-    {"text": "La producción invirtió unos 15.000 dólares y dos meses en escribir a mano los cuadernos del asesino, con collages de recortes y fotos superpuestos sobre texto real: un detalle que solo se aprecia del todo en la restauración 4K supervisada por Fincher para el 30 aniversario.", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"}
+    {
+      "text": "A Fincher le enviaron por error el guion original de Andrew Kevin Walker en lugar de la versión reescrita, y aceptó dirigir con una condición: que el final permaneciera intacto. New Line presionó por desenlaces más comerciales y llegó a barajar varias alternativas. Brad Pitt firmó también a condición de que no se tocara, escarmentado porque a Leyendas de pasión le habían recortado el suyo.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "text": "Kevin Spacey exigió que su nombre no apareciera ni en la promoción ni en los títulos de apertura: «I felt very strongly that it was the right thing to do for the movie». Rodó su parte en solo 12 días, tras recibir la llamada un viernes e incorporarse el martes.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "text": "Los títulos de Kyle Cooper costaron 50.000 dólares, se rodaron en 8 días y se montaron durante 5 semanas. Aunque en 1995 ya existía el compositing digital, el equipo lo ensambló a mano y arañó, rasgó y marcó el negativo físicamente: «People think there's computer graphics in there, but we assembled the majority of the sequence by hand».",
+      "source_id": "https://www.artofthetitle.com/title/se7en/"
+    },
+    {
+      "text": "La secuencia de títulos nació como pieza provisional para un pase de ejecutivos, después de que se eliminara una escena inicial de Somerset en una casa de campo. Se quedó para siempre. En el estreno, el público aplaudió al terminar los créditos de apertura.",
+      "source_id": "https://thefincheranalyst.com/2025/09/26/30-years-of-kyle-coopers-classic-title-sequence-for-se7en/"
+    },
+    {
+      "text": "Se rodó íntegramente en el centro de Los Ángeles entre el 12 de diciembre de 1994 y el 10 de marzo de 1995. Llovió a menudo y Fincher decidió rodar en mojado de forma sistemática: le resolvía el raccord y borraba la asociación soleada de LA. Pitt solo tenía 55 días disponibles antes de empezar 12 monos.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "text": "Khondji y Fincher usaron bleach bypass (retención de plata en la emulsión) para lograr negros aplastados, alto contraste y una desaturación enfermiza; la luz viene sobre todo de fuentes prácticas, linternas y flexos. Khondji citó Klute (1971) como referencia clave.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "text": "Ned Beatty, primera opción de Fincher y Walker, rechazó el papel calificando el guion como «the most evil thing I've ever read». También dijeron que no Stallone, Denzel Washington, Duvall, Hackman, Pacino, Val Kilmer y Gary Oldman.",
+      "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"
+    },
+    {
+      "text": "La producción invirtió unos 15.000 dólares y dos meses en escribir a mano los cuadernos del asesino, con collages de recortes y fotos superpuestos sobre texto real: un detalle que solo se aprecia del todo en la restauración 4K supervisada por Fincher para el 30 aniversario.",
+      "source_id": "https://nofilmschool.com/tiny-details-in-se7en"
+    }
   ],
   "scene_analysis": [
-    {"scene": "Títulos de crédito", "text": "En lugar de reservar al antagonista para el tercer acto, Cooper y Fincher lo presentan en dos minutos sin enseñarle la cara: solo manos, herramientas y obsesión metódica. La tipografía está grabada a cuchilla sobre scratchboard y mezclada con Helvetica, de modo que lo institucional y lo demente conviven en el mismo plano. La banda sonora es un remix de Coil sobre Trent Reznor, con textura de uña en la pizarra. Sales de ahí sabiendo cómo piensa alguien antes de saber quién es.", "source_id": "https://www.artofthetitle.com/title/se7en/"},
-    {"scene": "La biblioteca nocturna", "text": "Es la única pausa real del metraje y está construida desde el sonido: Ren Klyce retira el caos urbano y deja entrar el Aria en la cuerda de sol de Bach, creando una sensación de santidad. Visualmente es también el único espacio con luz dorada y arquitectura noble en una película de fluorescentes y goteras. El chiste amargo es que ese templo del conocimiento es exactamente donde aparece el rastro del horror.", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"},
-    {"scene": "El apartamento de la Pereza", "text": "Fincher lo ilumina con neones intermitentes que vuelven el espacio casi onírico en lugar de forense. La cámara, habitualmente estática y controlada, se rompe en el pasaje de persecución con planos a hombro: el desorden formal irrumpe justo cuando se derrumba el orden moral. Es el punto donde la película deja de ser investigación y pasa a ser experiencia física.", "source_id": "https://colorculture.org/cinematography-analysis-of-se7en-in-depth/"}
+    {
+      "scene": "Títulos de crédito",
+      "text": "En lugar de reservar al antagonista para el tercer acto, Cooper y Fincher lo presentan en dos minutos sin enseñarle la cara: solo manos, herramientas y obsesión metódica. La tipografía está grabada a cuchilla sobre scratchboard y mezclada con Helvetica, de modo que lo institucional y lo demente conviven en el mismo plano. La banda sonora es un remix de Coil sobre Trent Reznor, con textura de uña en la pizarra. Sales de ahí sabiendo cómo piensa alguien antes de saber quién es.",
+      "source_id": "https://www.artofthetitle.com/title/se7en/"
+    },
+    {
+      "scene": "La biblioteca nocturna",
+      "text": "Es la única pausa real del metraje y está construida desde el sonido: Ren Klyce retira el caos urbano y deja entrar el Aria en la cuerda de sol de Bach, creando una sensación de santidad. Visualmente es también el único espacio con luz dorada y arquitectura noble en una película de fluorescentes y goteras. El chiste amargo es que ese templo del conocimiento es exactamente donde aparece el rastro del horror.",
+      "source_id": "https://nofilmschool.com/tiny-details-in-se7en"
+    },
+    {
+      "scene": "El apartamento de la Pereza",
+      "text": "Fincher lo ilumina con neones intermitentes que vuelven el espacio casi onírico en lugar de forense. La cámara, habitualmente estática y controlada, se rompe en el pasaje de persecución con planos a hombro: el desorden formal irrumpe justo cuando se derrumba el orden moral. Es el punto donde la película deja de ser investigación y pasa a ser experiencia física.",
+      "source_id": "https://colorculture.org/cinematography-analysis-of-se7en-in-depth/"
+    }
   ],
   "critical_consensus": {
     "summary": "En 1995 la crítica se partió: hubo elogios inmediatos a la atmósfera, al oficio y sobre todo a Morgan Freeman (Ebert y Desson Howe la defendieron), pero también acusaciones de solemnidad, de gore gratuito (Siskel, Berardinelli) y de traicionar al espectador con su desenlace; Janet Maslin llegó a llamarla aburrida en The New York Times. El público dudó bastante menos: fue número uno con la mejor apertura de septiembre hasta entonces y acabó siendo el séptimo mayor éxito de 1995. Tres décadas después el consenso se ha invertido: el análisis académico (Richard Dyer, 2008) la trata como un caso donde el estilo se convierte en sustancia, y se la considera una de las películas más influyentes de los noventa tanto en cine como en televisión.",
     "scores": [
-      {"source": "Rotten Tomatoes", "value": "84% Tomatometer (156 críticas); Popcornmeter 95%", "url": "https://www.rottentomatoes.com/m/seven"},
-      {"source": "Metacritic", "value": "65/100 (22 críticas); nota de usuarios 8.6", "url": "https://www.metacritic.com/movie/seven/"},
-      {"source": "IMDb", "value": "8.6/10", "url": "https://www.imdb.com/title/tt0114369/"}
+      {
+        "source": "Rotten Tomatoes",
+        "value": "84% Tomatometer (156 críticas); Popcornmeter 95%",
+        "url": "https://www.rottentomatoes.com/m/seven"
+      },
+      {
+        "source": "Metacritic",
+        "value": "65/100 (22 críticas); nota de usuarios 8.6",
+        "url": "https://www.metacritic.com/movie/seven/"
+      },
+      {
+        "source": "IMDb",
+        "value": "8.6/10",
+        "url": "https://www.imdb.com/title/tt0114369/"
+      }
     ],
     "awards": [
       "Nominación al Oscar 1996 a Mejor Montaje (Richard Francis-Bruce)",
@@ -83,10 +199,9 @@
     "Treinta años después, la idea de que solo lo monstruoso consigue atención se ha cumplido. ¿Qué responsabilidad tiene una obra que lo predijo con tanta elegancia?"
   ],
   "debate_prompts": [
-    "Se7en no es una película sobre un asesino: es la primera gran película sobre la lógica del contenido viral, y su antagonista es esencialmente un creador que entendió antes que nadie que la única moneda es la atención.",
-    "El verdadero protagonista no es ninguno de los dos detectives sino la ciudad, y por eso funciona mejor como pieza de diseño de producción y sonido que como relato de personajes: quítale la lluvia y queda un procedural correcto."
+    "Se7en no es una película sobre un asesino: es la primera gran película sobre la lógica del contenido viral, y su antagonista es esencialmente un creador que entendió antes que nadie que la única moneda es la atención."
   ],
-  "cta": "Vuelve a verla y, en cada escena, cierra los ojos diez segundos. La lluvia, los radiadores, las sirenas: la ciudad te lo cuenta todo mucho antes que los diálogos. Solo que la primera vez no la estabas escuchando.",
+  "cta": "Esta vez cierra los ojos diez segundos en cada escena. La lluvia, los radiadores, las sirenas — la ciudad te lo estaba contando todo antes que ningún personaje abriera la boca. Solo que la primera vez no la escuchabas.",
   "useless_fact": "El maquillaje de la víctima de la Pereza tardó 14 horas: Michael Reid MacKay entró de madrugada para una convocatoria de rodaje nocturna, con prótesis de Rob Bottin cubriéndole cara, brazos y torso, y aguantó horas inmóvil conteniendo la respiración para que no se le moviera el abdomen. Fincher avisó al equipo de que verían un cadáver «really, really creepy», pero se guardó el detalle de que lo interpretaba un actor vivo. El sobresalto de John C. McGinley en pantalla no es interpretación: es una persona sorprendida de verdad. La secuencia más famosa de la película es, técnicamente, un documental de dos segundos.",
   "sources": [
     "https://en.wikipedia.org/wiki/Seven_(1995_film)",

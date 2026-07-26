@@ -7,15 +7,43 @@
     "Espera incomodidad satírica: terror y crítica social a la vez."
   ],
   "before_watching": [
-    {"lead": "El 'social thriller'", "text": "Jordan Peele acuñó un género propio: terror donde 'el monstruo es la sociedad'. Empezó a escribirla durante la etapa Obama, contra la idea de una América ya 'post-racial'.", "source_id": "https://www.scifinow.co.uk/interviews/jordan-peele-on-get-out-horror-and-the-post-racial-lie-in-america/"},
-    {"lead": "23 días, 4,5 millones", "text": "El debut de Peele se rodó en solo 23 días con un presupuesto mínimo y acabó recaudando unos 260 millones: uno de los estrenos más rentables de su año.", "source_id": "https://en.wikipedia.org/wiki/Get_Out"},
-    {"lead": "Comedia, según los Globos", "text": "Universal la presentó a los Globos de Oro como 'comedia'; Peele respondió que 'Get Out es un documental'. Ve esperando incomodidad y sátira, no risa fácil.", "source_id": "https://www.wmagazine.com/story/get-out-comedy-drama-jordan-peele-golden-globes"}
+    {
+      "lead": "El 'social thriller'",
+      "text": "Jordan Peele acuñó un género propio: terror donde 'el monstruo es la sociedad'. Empezó a escribirla durante la etapa Obama, contra la idea de una América ya 'post-racial'.",
+      "source_id": "https://www.scifinow.co.uk/interviews/jordan-peele-on-get-out-horror-and-the-post-racial-lie-in-america/"
+    },
+    {
+      "lead": "23 días, 4,5 millones",
+      "text": "El debut de Peele se rodó en solo 23 días con un presupuesto mínimo y acabó recaudando unos 260 millones: uno de los estrenos más rentables de su año.",
+      "source_id": "https://en.wikipedia.org/wiki/Get_Out"
+    },
+    {
+      "lead": "Comedia, según los Globos",
+      "text": "Universal la presentó a los Globos de Oro como 'comedia'; Peele respondió que 'Get Out es un documental'. Ve esperando incomodidad y sátira, no risa fácil.",
+      "source_id": "https://www.wmagazine.com/story/get-out-comedy-drama-jordan-peele-golden-globes"
+    }
   ],
   "fun_facts": [
-    {"lead": "Final alternativo brutal", "text": "Existió un desenlace mucho más sombrío que Peele descartó tras los pases de prueba, buscando un cierre más esperanzador.", "source_id": "https://en.wikipedia.org/wiki/Get_Out"},
-    {"lead": "Voces en suajili", "text": "El tema principal, 'Sikiliza Kwa Wahenga', es una advertencia cantada en suajili: 'escucha a los ancestros', 'sálvate'. Abels eligió esa lengua a propósito.", "source_id": "https://www.hollywoodreporter.com/news/general-news/meaning-behind-get-outs-haunting-score-1060508/"},
-    {"lead": "Fobia a los conejos", "text": "Peele tiene fobia a los conejos: por eso la cancioncilla más inquietante del arranque es 'Run Rabbit Run', un conejo huyendo de una escopeta.", "source_id": "https://screenrant.com/get-out-movie-hidden-details-message/"},
-    {"lead": "El músico de YouTube", "text": "La banda sonora es de Michael Abels, profesor de música que jamás había compuesto para cine y al que Peele descubrió en YouTube.", "source_id": "https://www.hollywoodreporter.com/news/general-news/meaning-behind-get-outs-haunting-score-1060508/"}
+    {
+      "lead": "Final alternativo brutal",
+      "text": "Existió un desenlace mucho más sombrío que Peele descartó tras los pases de prueba, buscando un cierre más esperanzador.",
+      "source_id": "https://en.wikipedia.org/wiki/Get_Out"
+    },
+    {
+      "lead": "Voces en suajili",
+      "text": "El tema principal, 'Sikiliza Kwa Wahenga', es una advertencia cantada en suajili: 'escucha a los ancestros', 'sálvate'. Abels eligió esa lengua a propósito.",
+      "source_id": "https://www.hollywoodreporter.com/news/general-news/meaning-behind-get-outs-haunting-score-1060508/"
+    },
+    {
+      "lead": "Fobia a los conejos",
+      "text": "Peele tiene fobia a los conejos: por eso la cancioncilla más inquietante del arranque es 'Run Rabbit Run', un conejo huyendo de una escopeta.",
+      "source_id": "https://screenrant.com/get-out-movie-hidden-details-message/"
+    },
+    {
+      "lead": "El músico de YouTube",
+      "text": "La banda sonora es de Michael Abels, profesor de música que jamás había compuesto para cine y al que Peele descubrió en YouTube.",
+      "source_id": "https://www.hollywoodreporter.com/news/general-news/meaning-behind-get-outs-haunting-score-1060508/"
+    }
   ],
   "author_voice": [
     {
@@ -163,10 +191,9 @@
     "¿Por qué necesitamos el género fantástico para poder hablar en serio de algo que ocurre a plena luz del día?"
   ],
   "debate_prompts": [
-    "'Déjame salir' no envejeció bien porque el mundo cambiara, sino porque su vocabulario se convirtió en eslogan: hoy es más citada que vista.",
-    "Presentarla a los Globos de Oro como comedia no fue un error de categoría: fue la demostración más literal de la tesis de la propia película."
+    "'Déjame salir' no envejeció bien porque el mundo cambiara, sino porque su vocabulario se convirtió en eslogan: hoy es más citada que vista."
   ],
-  "cta": "Vuelve a verla atento a cada cumplido y cada sonrisa de la primera media hora. O mejor: pónsela a alguien que no la haya visto y obsérvale la cara durante la cena.",
+  "cta": "Rebobina a la primera media hora y cuenta los cumplidos. Cada uno es una pista disfrazada de cortesía. Mejor aún: pónsela a alguien que no la haya visto y no le quites ojo a la cara durante la cena.",
   "useless_fact": "Peele tiene fobia a los conejos. Por eso la canción que suena en el primer minuto de la película, el momento más indefenso de todo el metraje, es 'Run Rabbit Run': una cancioncilla de music-hall de 1939 sobre un conejo huyendo de una escopeta. El terror más privado del director puesto de banda sonora al terror más político del film.",
   "sources": [
     "https://en.wikipedia.org/wiki/Get_Out",

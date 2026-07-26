@@ -7,15 +7,43 @@
     "Espera un tono que muta de comedia a thriller, mordaz y elegante."
   ],
   "before_watching": [
-    {"lead": "Una casa desde cero", "text": "La mansión de los Park no existe: se construyó como decorado al aire libre y los pisos superiores se añadieron con efectos. Bong dibujó él mismo todo el storyboard.", "source_id": "https://en.wikipedia.org/wiki/Parasite_(2019_film)"},
-    {"lead": "Doble hito histórico", "text": "Ganó la Palma de Oro por unanimidad y fue la primera película en lengua no inglesa en llevarse el Óscar a Mejor Película.", "source_id": "https://en.wikipedia.org/wiki/Parasite_(2019_film)"},
-    {"lead": "Cine de escaleras", "text": "Bong se declara 'un amante de las escaleras' y organiza la película en un eje arriba/abajo. Empieza como comedia y cambia de tono sin avisar: ve sin saber nada.", "source_id": "https://www.austinchronicle.com/daily/screens/2019-10-30/upstairs-downstairs-the-visual-metaphors-of-parasite/"}
+    {
+      "lead": "Una casa desde cero",
+      "text": "La mansión de los Park no existe: se construyó como decorado al aire libre y los pisos superiores se añadieron con efectos. Bong dibujó él mismo todo el storyboard.",
+      "source_id": "https://en.wikipedia.org/wiki/Parasite_(2019_film)"
+    },
+    {
+      "lead": "Doble hito histórico",
+      "text": "Ganó la Palma de Oro por unanimidad y fue la primera película en lengua no inglesa en llevarse el Óscar a Mejor Película.",
+      "source_id": "https://en.wikipedia.org/wiki/Parasite_(2019_film)"
+    },
+    {
+      "lead": "Cine de escaleras",
+      "text": "Bong se declara 'un amante de las escaleras' y organiza la película en un eje arriba/abajo. Empieza como comedia y cambia de tono sin avisar: ve sin saber nada.",
+      "source_id": "https://www.austinchronicle.com/daily/screens/2019-10-30/upstairs-downstairs-the-visual-metaphors-of-parasite/"
+    }
   ],
   "fun_facts": [
-    {"lead": "Rodado en una piscina", "text": "El semisótano y su calle se construyeron dentro de un tanque de agua gigante para poder inundarlos; el último día echaron agua de alcantarilla de verdad.", "source_id": "https://www.cinemablend.com/news/2489927/the-surprising-way-parasite-flooded-those-basement-apartments"},
-    {"lead": "Una palabra inventada", "text": "El 'ram-don' no existe en ningún idioma: se lo inventó el traductor Darcy Paquet para subtitular el jjapaguri, fusionando 'ramen' y 'udon'.", "source_id": "https://www.scmp.com/magazines/style/news-trends/article/3051403/what-are-ram-don-noodles-oscar-winning-film-paradise"},
-    {"lead": "Versión en blanco y negro", "text": "Existe un montaje en blanco y negro regradado plano a plano junto al director de fotografía, no un simple filtro; se estrenó en el Festival de Róterdam.", "source_id": "https://www.dazeddigital.com/film-tv/article/47621/1/bong-joon-ho-black-and-white-version-parasite-us-cinemas-theaters-rotterdam"},
-    {"lead": "El jingle de 'Jessica'", "text": "La cancioncilla de 'Jessica, hija única' se canta sobre la melodía de 'Dokdo es nuestra tierra', un tema popular coreano que los estudiantes usan como truco para memorizar.", "source_id": "https://www.acmi.net.au/stories-and-ideas/parasite-illinois-chicago/"}
+    {
+      "lead": "Rodado en una piscina",
+      "text": "El semisótano y su calle se construyeron dentro de un tanque de agua gigante para poder inundarlos; el último día echaron agua de alcantarilla de verdad.",
+      "source_id": "https://www.cinemablend.com/news/2489927/the-surprising-way-parasite-flooded-those-basement-apartments"
+    },
+    {
+      "lead": "Una palabra inventada",
+      "text": "El 'ram-don' no existe en ningún idioma: se lo inventó el traductor Darcy Paquet para subtitular el jjapaguri, fusionando 'ramen' y 'udon'.",
+      "source_id": "https://www.scmp.com/magazines/style/news-trends/article/3051403/what-are-ram-don-noodles-oscar-winning-film-paradise"
+    },
+    {
+      "lead": "Versión en blanco y negro",
+      "text": "Existe un montaje en blanco y negro regradado plano a plano junto al director de fotografía, no un simple filtro; se estrenó en el Festival de Róterdam.",
+      "source_id": "https://www.dazeddigital.com/film-tv/article/47621/1/bong-joon-ho-black-and-white-version-parasite-us-cinemas-theaters-rotterdam"
+    },
+    {
+      "lead": "El jingle de 'Jessica'",
+      "text": "La cancioncilla de 'Jessica, hija única' se canta sobre la melodía de 'Dokdo es nuestra tierra', un tema popular coreano que los estudiantes usan como truco para memorizar.",
+      "source_id": "https://www.acmi.net.au/stories-and-ideas/parasite-illinois-chicago/"
+    }
   ],
   "author_voice": [
     {
@@ -165,10 +193,9 @@
     "¿Hay algo tuyo —una forma de hablar, un barrio, un olor— que no podrías disimular por mucho dinero que ganaras?"
   ],
   "debate_prompts": [
-    "Parasite no es una película de izquierdas: no propone nada, solo convierte la desigualdad en un espectáculo tan bien hecho que se puede disfrutar sin cambiar de opinión sobre nada.",
-    "Su Óscar a Mejor Película no abrió ninguna puerta: fue una excepción decorativa que permitió a Hollywood sentirse global sin dejar de ser exactamente igual de endogámico."
+    "Parasite no es una película de izquierdas: no propone nada, solo convierte la desigualdad en un espectáculo tan bien hecho que se puede disfrutar sin cambiar de opinión sobre nada."
   ],
-  "cta": "Vuelve a verla mirando solo una cosa: cuándo la cámara sube y cuándo baja. La película entera cabe en esa cuenta — y ya no vas a poder dejar de verla.",
+  "cta": "Esta vez ignora los diálogos y mira solo una cosa: cuándo sube la cámara y cuándo baja. La película entera es esa cuenta, y una vez que empiezas a llevarla ya no puedes dejar de hacerlo.",
   "useless_fact": "La palabra «ram-don» no existe en coreano, ni en inglés, ni en ningún idioma: se la inventó el traductor Darcy Paquet para subtitular el jjapaguri (una mezcla casera de dos fideos instantáneos de Nongshim, Jjapaghetti y Neoguri), fusionando «ramen» y «udon» porque le pareció lo único que el público internacional reconocería. La buscó en Google antes de escribirla y no aparecía nada. Un plato que millones de personas cocinaron en 2020 llevaba un nombre que un traductor se sacó de la manga: la película que pidió al mundo superar «la barrera de un centímetro de los subtítulos» viajó, literalmente, sobre una palabra falsa.",
   "sources": [
     "https://en.wikipedia.org/wiki/Parasite_(2019_film)",

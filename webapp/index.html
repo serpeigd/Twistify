@@ -225,6 +225,18 @@
   #toTop.show{opacity:1;pointer-events:auto;transform:none}
   #toTop:hover{border-color:var(--deep);color:var(--deep-soft)}
 
+  /* fab para cerrar el telón desde donde sea */
+  #curtainFab{position:fixed;right:22px;bottom:78px;display:inline-flex;align-items:center;gap:9px;
+    padding:12px 18px 12px 14px;border-radius:999px;cursor:pointer;font-family:inherit;
+    font-size:13px;font-weight:680;color:#f3d9c8;
+    background:linear-gradient(180deg,#63181f,#330c12);border:1px solid rgba(224,163,92,.4);
+    box-shadow:0 14px 34px -14px rgba(0,0,0,.6);opacity:0;pointer-events:none;
+    transform:translateY(12px) scale(.94);
+    transition:opacity .2s,transform .2s,border-color .14s;z-index:41}
+  #curtainFab.show{opacity:1;pointer-events:auto;transform:none}
+  #curtainFab:hover{border-color:var(--deep-soft)}
+  #curtainFab .ico{font-size:17px}
+
   /* unlock */
   .unlock{text-align:center;padding:42px 28px}
   .unlock .ic{font-size:32px;margin-bottom:12px}
@@ -283,31 +295,50 @@
   .q-list li{font-size:16px;padding:15px 0;color:var(--text);line-height:1.5}
   .lede-inline{font-size:12.5px;color:var(--text-mute);margin:16px 0 4px}
 
-  /* debate: tarjeta + votación de bando */
-  .debate{margin:12px 0 0;padding:0;list-style:none}
-  .debate-card{padding:18px 20px;background:rgba(255,255,255,.03);border:1px solid rgba(74,52,24,.5);
-    border-radius:13px;margin-bottom:12px}
-  .debate-txt{font-family:var(--serif);font-size:16.5px;font-style:italic;color:#e9ecf3;line-height:1.55}
-  .debate-vote{display:flex;align-items:center;gap:10px;margin-top:16px}
-  .vote-btn{flex:1;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:650;
-    padding:11px 14px;border-radius:10px;border:1px solid var(--deep-brd);
-    background:rgba(255,255,255,.03);color:var(--text-dim);transition:all .15s}
-  .vote-btn:hover{border-color:var(--deep);color:var(--text);transform:translateY(-1px)}
-  .vote-btn.picked{background:linear-gradient(180deg,var(--deep-soft),var(--deep));
-    border-color:var(--deep);color:#140d04;box-shadow:0 8px 22px -10px rgba(224,163,92,.6)}
-  .vote-vs{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--text-mute)}
+  /* poll: una pregunta, dos bandos, votos en vivo */
+  .poll{margin-top:12px;padding:22px 24px 24px;background:rgba(255,255,255,.03);
+    border:1px solid rgba(74,52,24,.5);border-radius:15px}
+  .poll-txt{font-family:var(--serif);font-size:18px;font-style:italic;color:#eef0f7;line-height:1.5}
+  .poll-options{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+  .poll-opt{cursor:pointer;font-family:inherit;text-align:left;border-radius:11px;
+    border:1px solid var(--deep-brd);background:rgba(255,255,255,.025);padding:12px 14px;
+    display:flex;flex-direction:column;gap:8px;transition:border-color .15s,background .15s}
+  .poll-opt:hover{border-color:var(--deep);background:rgba(224,163,92,.06)}
+  .poll-opt.voted{cursor:default}
+  .poll-label{font-size:14.5px;font-weight:650;color:var(--text)}
+  .poll-bar{position:relative;height:10px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden}
+  .poll-fill{position:absolute;inset:0 auto 0 0;height:100%;border-radius:6px;
+    background:linear-gradient(90deg,var(--deep-soft),var(--deep));transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .poll-opt[data-side="b"] .poll-fill{background:linear-gradient(90deg,var(--violet),#8f74d6)}
+  .poll-meta{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-mute);
+    font-variant-numeric:tabular-nums}
+  .poll-opt.picked{border-color:var(--deep);box-shadow:0 0 0 1px var(--deep) inset}
+  .poll-opt.picked .poll-pct{color:var(--deep-soft);font-weight:700}
+  .defend-btn{margin-top:16px;display:none;align-items:center;gap:8px;cursor:pointer;
+    font-family:inherit;font-size:13.5px;font-weight:680;padding:11px 20px;border-radius:10px;
+    border:none;color:#140d04;background:linear-gradient(180deg,var(--deep-soft),var(--deep));
+    box-shadow:0 10px 26px -12px rgba(224,163,92,.6);transition:transform .14s}
+  .defend-btn:hover{transform:translateY(-1px)}
+  .defend-btn.show{display:inline-flex}
 
-  /* rewatch: cierre que empuja a volver a verla */
-  .rewatch-shell{margin-top:14px;position:relative;overflow:hidden;border-radius:var(--radius);
-    padding:30px 32px 28px;background:linear-gradient(135deg,rgba(183,155,240,.12),rgba(224,163,92,.05));
-    border:1px solid rgba(183,155,240,.28)}
-  .rewatch-shell::after{content:"\1F501";position:absolute;right:-8px;bottom:-26px;font-size:112px;
-    opacity:.07;transform:rotate(-10deg);pointer-events:none;line-height:1}
-  .rewatch-badge{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;
-    letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:14px;
+  /* rewatch: cierre que empuja a volver a verla, con más presencia visual */
+  .rewatch-shell{margin-top:14px;position:relative;overflow:hidden;border-radius:20px;
+    padding:38px 40px 36px;isolation:isolate;
+    background:radial-gradient(120% 140% at 10% -10%,rgba(224,163,92,.16),transparent 55%),
+      radial-gradient(120% 140% at 100% 120%,rgba(183,155,240,.18),transparent 55%),
+      linear-gradient(160deg,rgba(28,20,14,.94),rgba(13,9,7,.97));
+    border:1px solid rgba(183,155,240,.32);box-shadow:0 34px 74px -42px rgba(183,155,240,.4)}
+  .rewatch-shell::after{content:"↺";position:absolute;right:-10px;bottom:-46px;font-size:170px;
+    font-weight:800;opacity:.07;color:var(--violet);pointer-events:none;line-height:1}
+  .rewatch-badge{display:inline-flex;align-items:center;gap:9px;font-size:11.5px;font-weight:800;
+    letter-spacing:.13em;text-transform:uppercase;color:var(--violet);margin-bottom:16px;
     position:relative;z-index:1}
-  .rewatch-box{font-family:var(--serif);font-size:19px;line-height:1.58;font-style:italic;
-    color:#f1f2f8;position:relative;z-index:1}
+  .rewatch-badge::before{content:"";width:7px;height:7px;flex-shrink:0;border-radius:50%;
+    background:var(--violet);box-shadow:0 0 0 4px rgba(183,155,240,.2)}
+  .rewatch-box{font-family:var(--serif);font-size:21px;line-height:1.64;font-style:italic;
+    color:#f6f4fb;position:relative;z-index:1;letter-spacing:-.005em}
+  .rewatch-box::first-letter{font-size:2.15em;font-weight:700;color:var(--violet);
+    float:left;line-height:.78;padding:6px 9px 0 0}
 
   /* telón: bloqueo/desbloqueo del deep-dive */
   #deepZone{position:relative;overflow:hidden;transition:min-height .4s}
@@ -373,6 +404,9 @@
 
 <div id="progbar"></div>
 <button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
+<button id="curtainFab" title="Cerrar telón y volver a modo sin spoilers">
+  <span class="ico">🎭</span> cerrar telón
+</button>
 
 <header>
   <div class="brand"><h1><span class="dot">●</span> Pre-Show Reels</h1></div>
@@ -442,7 +476,8 @@ document.querySelectorAll('.filters button').forEach(b => b.onclick = () => {
 });
 
 async function loadFilm() {
-  DEEP_SECTIONS = [];
+  NAV_SECTIONS = []; PRE_SECTIONS = []; CACHED_SECTIONS = [];
+  const fab = document.getElementById('curtainFab'); if (fab) fab.classList.remove('show');
   const main = document.getElementById('main');
   main.className = ''; main.innerHTML = '<div class="wrap"><p class="empty-note">Cargando…</p></div>';
   const d = await (await fetch(`/api/film/${CURRENT}?seen=false`)).json();
@@ -489,23 +524,35 @@ function focusComment(spoiler, prefill) {
   main.scrollTo({ top, behavior: 'smooth' });
   setTimeout(() => { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }, 420);
 }
-function pickSide(label, quote) {
-  const w = quote.split(' ');
-  const short = w.length > 9 ? w.slice(0, 8).join(' ') + '…' : quote;
-  focusComment(true, `${label} — sobre "${short}": `);
+/* navegación unificada: pre-show + deep-dive (una vez desbloqueado) */
+let PRE_SECTIONS = [];
+let NAV_SECTIONS = [];
+
+function wireChipClicks(container) {
+  container.querySelectorAll('.chip').forEach(ch => {
+    ch.onclick = async () => {
+      let t = document.getElementById(ch.dataset.go);
+      if (t && t.offsetParent === null) await unlockDeep(); // sección tras el telón: ábrelo primero
+      t = document.getElementById(ch.dataset.go);
+      const main = document.querySelector('main');
+      if (t && main) {
+        const top = main.scrollTop + t.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
+        main.scrollTo({ top, behavior: 'smooth' });
+      }
+    };
+  });
 }
 
-let DEEP_SECTIONS = [];
 function onScroll() {
   const m = document.querySelector('main');
   if (!m) return;
   const ratio = m.scrollTop / Math.max(1, m.scrollHeight - m.clientHeight);
   const pb = document.getElementById('progbar'); if (pb) pb.style.transform = `scaleX(${ratio})`;
   const tt = document.getElementById('toTop'); if (tt) tt.classList.toggle('show', m.scrollTop > 600);
-  if (DEEP_SECTIONS.length) {
-    let active = DEEP_SECTIONS[0].id;
+  if (NAV_SECTIONS.length) {
+    let active = NAV_SECTIONS[0].id;
     const mtop = m.getBoundingClientRect().top;
-    for (const s of DEEP_SECTIONS) {
+    for (const s of NAV_SECTIONS) {
       const el = document.getElementById(s.id);
       if (el && el.getBoundingClientRect().top - mtop < 130) active = s.id;
     }
@@ -545,6 +592,9 @@ function renderFilm(d) {
   document.title = `${c.title} — Pre-Show Reels`;
   const storyHtml = ct.story ? ct.story.split('\n\n').map(p => `<p>${esc(p)}</p>`).join('') : '';
 
+  const preSections = [];
+  const pushPre = (id, ico, title) => preSections.push({ id, ico, title });
+
   const theme = THEMES[c.title_id] || THEMES._default;
   let html = `<div class="wrap">
     <div class="poster" style="--film-accent:${theme.accent};background:linear-gradient(160deg, ${theme.bg1}, ${theme.bg2})">
@@ -554,6 +604,8 @@ function renderFilm(d) {
       ${c.notes ? `<div class="note">${esc(c.notes)}</div>` : ''}
     </div>
 
+    <div class="chips" id="masterChips"></div>
+
     <section class="zone zone-safe">
       <div class="zone-frame">
         <span class="zone-badge"><span class="pulse"></span> Zona sin spoilers</span>
@@ -561,29 +613,38 @@ function renderFilm(d) {
       </div>
       <div class="zone-body stagger">`;
 
-  if (ct.story) html += `<div class="card">
+  if (ct.story) {
+    pushPre('sec-story', '🎬', 'Cómo se vive');
+    html += `<div class="card" id="sec-story">
       <h3><span class="ico">🎬</span> Cómo se vive, en una historia</h3>
       <div class="lede">El tráiler, pero contado. Nada de spoilers.</div>
       <div class="story">${storyHtml}</div></div>`;
+  }
 
-  if (ct.before_watching && ct.before_watching.length)
-    html += `<div class="card">
+  if (ct.before_watching && ct.before_watching.length) {
+    pushPre('sec-before', '🧠', 'Antes de verla');
+    html += `<div class="card" id="sec-before">
       <h3><span class="ico">🧠</span> Antes de verla</h3>
       <div class="lede">Lo que conviene saber para entrar. Nada de la trama.</div>
       ${factList(ct.before_watching)}</div>`;
+  }
 
-  if (ct.author_voice && ct.author_voice.length)
-    html += `<div class="card">
+  if (ct.author_voice && ct.author_voice.length) {
+    pushPre('sec-voice', '🎥', 'Qué buscaba');
+    html += `<div class="card" id="sec-voice">
       <h3><span class="ico">🎥</span> Qué buscaba quien la hizo</h3>
       <div class="lede">Su intención, en palabras del propio director.</div>
       <div class="voices">${ct.author_voice.map(o =>
         `<div class="voice"><div class="q">${esc(o.text)}</div>${sourceTag(o)}</div>`).join('')}</div></div>`;
+  }
 
-  if (ct.emotional_temperature || ct.why_now)
-    html += `<div class="card">
+  if (ct.emotional_temperature || ct.why_now) {
+    pushPre('sec-tone', '🎭', 'El tono');
+    html += `<div class="card" id="sec-tone">
       <h3><span class="ico">🎭</span> El tono que te espera</h3>
       ${ct.emotional_temperature ? `<p class="tone-lead">${esc(ct.emotional_temperature)}</p>` : ''}
       ${ct.why_now ? `<div class="why-head">Por qué verla ahora</div><div class="why">${esc(ct.why_now)}</div>` : ''}</div>`;
+  }
 
   html += `</div></section>
 
@@ -604,6 +665,12 @@ function renderFilm(d) {
   </div>`;
 
   main.innerHTML = html;
+  PRE_SECTIONS = preSections;
+  NAV_SECTIONS = preSections;
+  const masterChips = document.getElementById('masterChips');
+  masterChips.innerHTML = preSections.map(s =>
+    `<span class="chip" data-go="${s.id}">${s.ico} ${s.title}</span>`).join('');
+  wireChipClicks(masterChips);
   document.getElementById('unlockBtn').onclick = unlockDeep;
   document.getElementById('cmSend').onclick = postComment;
   renderPhase4(ct);
@@ -621,12 +688,49 @@ function renderPhase4(ct) {
 }
 
 /* telón: la primera vez que se abre, carga; las siguientes solo abre/cierra */
+/* poll: una pregunta, dos bandos, votos simulados en vivo (100 cada uno de salida) */
+function updatePollUI(card) {
+  const a = Number(card.dataset.a), b = Number(card.dataset.b), total = a + b;
+  const pa = Math.round(100 * a / total), pb = 100 - pa;
+  const optA = card.querySelector('.poll-opt[data-side="a"]');
+  const optB = card.querySelector('.poll-opt[data-side="b"]');
+  optA.querySelector('.poll-fill').style.width = pa + '%';
+  optA.querySelector('.poll-pct').textContent = pa + '%';
+  optA.querySelector('.poll-n').textContent = a + ' votos';
+  optB.querySelector('.poll-fill').style.width = pb + '%';
+  optB.querySelector('.poll-pct').textContent = pb + '%';
+  optB.querySelector('.poll-n').textContent = b + ' votos';
+}
+
+function pollVote(card, side) {
+  if (card.dataset.voted) return; // un voto por lector
+  card.dataset.voted = side;
+  card.dataset[side] = String(Number(card.dataset[side]) + 1);
+  updatePollUI(card);
+  card.querySelectorAll('.poll-opt').forEach(b => {
+    b.classList.toggle('picked', b.dataset.side === side);
+    b.classList.add('voted');
+  });
+  const defend = card.querySelector('.defend-btn');
+  defend.classList.add('show');
+  defend.onclick = () => {
+    const q = card.dataset.q;
+    const w = q.split(' ');
+    const short = w.length > 9 ? w.slice(0, 8).join(' ') + '…' : q;
+    const starter = side === 'a'
+      ? `Estoy con esto: "${short}". Lo que más me convence es que `
+      : `No lo comparto: "${short}". Para mí el fallo está en `;
+    focusComment(true, starter);
+  };
+}
+
 let CACHED_SECTIONS = [];
 
 async function unlockDeep() {
   const zone = document.getElementById('deepZone');
   const curtain = document.getElementById('curtain');
   const dc = document.getElementById('deepContent');
+  const masterChips = document.getElementById('masterChips');
 
   if (dc.dataset.loaded !== '1') {
     const btn = document.getElementById('unlockBtn');
@@ -667,31 +771,43 @@ async function unlockDeep() {
 
     if ((ct.fun_facts || []).length)
       push('sec-dato', '🎲', 'Datos curiosos de la película', factList(ct.fun_facts));
-    if ((ct.debate_prompts || []).length)
-      push('sec-deb', '🔥', '¿Y tú de qué lado estás?',
-        `<div class="lede-inline">Elige bando. Luego defiéndelo en los comentarios.</div>
-         <ul class="debate">${ct.debate_prompts.map(q => `<li class="debate-card" data-q="${esc(q)}">
-           <div class="debate-txt">${esc(q)}</div>
-           <div class="debate-vote">
-             <button class="vote-btn vote-yes">👊 Firmo esto</button>
-             <span class="vote-vs">VS</span>
-             <button class="vote-btn vote-no">🙅 Ni de coña</button>
-           </div></li>`).join('')}</ul>`);
+
+    if ((ct.debate_prompts || []).length) {
+      const q = ct.debate_prompts[0];
+      push('sec-deb', '🔥', '¿Y tú de qué lado estás?', `
+        <div class="lede-inline">Un tema, dos bandos. Vota y defiende tu postura.</div>
+        <div class="poll" id="pollCard" data-q="${esc(q)}" data-a="100" data-b="100">
+          <div class="poll-txt">${esc(q)}</div>
+          <div class="poll-options">
+            <button class="poll-opt" data-side="a">
+              <span class="poll-label">🔥 Suscribo cada palabra</span>
+              <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
+              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">100 votos</span></span>
+            </button>
+            <button class="poll-opt" data-side="b">
+              <span class="poll-label">💀 Aquí me bajo</span>
+              <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
+              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">100 votos</span></span>
+            </button>
+          </div>
+          <button class="defend-btn">✍️ Defiende tu voto</button>
+        </div>`);
+    }
 
     CACHED_SECTIONS = sections;
-    const chips = `<div class="chips">${sections.map(s =>
-      `<span class="chip" data-go="${s.id}">${s.ico} ${s.title}</span>`).join('')}</div>`;
+    masterChips.insertAdjacentHTML('beforeend', sections.map(s =>
+      `<span class="chip" data-go="${s.id}">${s.ico} ${s.title}</span>`).join(''));
+    wireChipClicks(masterChips);
 
     let inner = `<div class="zone-frame">
         <span class="zone-badge"><span class="pulse"></span> Ya has visto la obra</span>
         <span class="zone-sub">Análisis completo, con spoilers</span>
         <button class="relock" id="relockBtn">🎭 cerrar telón</button></div>
-      ${chips}
       <div class="zone-body stagger">${sections.map(s => s.html).join('')}</div>`;
 
     if (ct.cta)
       inner += `<div class="zone-body" style="padding-top:0"><div class="rewatch-shell">
-        <div class="rewatch-badge">🔁 Para la próxima vez que la veas</div>
+        <div class="rewatch-badge">La segunda vez la ves distinta</div>
         <div class="rewatch-box">${esc(ct.cta)}</div></div></div>`;
     if ((ct.sources || []).length)
       inner += `<div class="zone-body" style="padding-top:0"><div class="card sources-card">
@@ -703,35 +819,26 @@ async function unlockDeep() {
     dc.classList.add('reveal');
 
     document.getElementById('relockBtn').onclick = relockDeep;
-    dc.querySelectorAll('.chip').forEach(ch => ch.onclick = () => {
-      const t = document.getElementById(ch.dataset.go);
-      const main = document.querySelector('main');
-      if (t && main) {
-        const top = main.scrollTop + t.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
-        main.scrollTo({ top, behavior: 'smooth' });
-      }
-    });
     dc.querySelectorAll('.acc-head').forEach(h => h.onclick = () => h.parentElement.classList.toggle('open'));
-    dc.querySelectorAll('.vote-btn').forEach(vb => vb.onclick = () => {
-      const card = vb.closest('.debate-card');
-      card.querySelectorAll('.vote-btn').forEach(b => b.classList.remove('picked'));
-      vb.classList.add('picked');
-      pickSide(vb.textContent.trim(), card.dataset.q);
-    });
+    const pollCard = dc.querySelector('#pollCard');
+    if (pollCard) pollCard.querySelectorAll('.poll-opt').forEach(b =>
+      b.onclick = () => pollVote(pollCard, b.dataset.side));
 
     btn.disabled = false;
     btn.innerHTML = 'Ya la he visto — abrir el telón <span class="arrow">▸</span>';
   }
 
-  DEEP_SECTIONS = CACHED_SECTIONS;
+  NAV_SECTIONS = PRE_SECTIONS.concat(CACHED_SECTIONS);
   zone.classList.remove('curtain-closed');
   curtain.classList.add('open');
+  document.getElementById('curtainFab').classList.add('show');
 }
 
 function relockDeep() {
-  DEEP_SECTIONS = [];
+  NAV_SECTIONS = PRE_SECTIONS;
   document.getElementById('curtain').classList.remove('open');
   document.getElementById('deepZone').classList.add('curtain-closed');
+  document.getElementById('curtainFab').classList.remove('show');
   document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -761,6 +868,10 @@ async function postComment() {
 document.querySelector('main').addEventListener('scroll', onScroll);
 document.getElementById('toTop').onclick = () =>
   document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+document.getElementById('curtainFab').onclick = () => {
+  relockDeep();
+  document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 loadCatalogue();
 </script>

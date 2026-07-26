@@ -7,15 +7,43 @@
     "Espera un relato frío y meticuloso sobre obsesión y rivalidad."
   ],
   "before_watching": [
-    {"lead": "Escrito como un truco", "text": "Nolan estructuró el guion según las tres partes de un número de magia (la promesa, el giro y el prestigio) y las mezcló en el tiempo a propósito.", "source_id": "https://www.empireonline.com/movies/features/the-prestige-inside-christopher-nolan-movie-magic-trick/"},
-    {"lead": "Cinco años de cocina", "text": "Nolan leyó la novela de Christopher Priest en 2000 y tardó un lustro en adaptarla con su hermano Jonathan, entre Batman Begins y El caballero oscuro.", "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"},
-    {"lead": "Tesla existió de verdad", "text": "El duelo de los magos rima con la 'guerra de las corrientes' histórica entre Edison y Tesla. Saberlo no adelanta nada de la trama, pero ayuda a leer la película.", "source_id": "https://en.wikipedia.org/wiki/War_of_the_currents"}
+    {
+      "lead": "Escrito como un truco",
+      "text": "Nolan estructuró el guion según las tres partes de un número de magia (la promesa, el giro y el prestigio) y las mezcló en el tiempo a propósito.",
+      "source_id": "https://www.empireonline.com/movies/features/the-prestige-inside-christopher-nolan-movie-magic-trick/"
+    },
+    {
+      "lead": "Cinco años de cocina",
+      "text": "Nolan leyó la novela de Christopher Priest en 2000 y tardó un lustro en adaptarla con su hermano Jonathan, entre Batman Begins y El caballero oscuro.",
+      "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"
+    },
+    {
+      "lead": "Tesla existió de verdad",
+      "text": "El duelo de los magos rima con la 'guerra de las corrientes' histórica entre Edison y Tesla. Saberlo no adelanta nada de la trama, pero ayuda a leer la película.",
+      "source_id": "https://en.wikipedia.org/wiki/War_of_the_currents"
+    }
   ],
   "fun_facts": [
-    {"lead": "Nolan le suplicó a Bowie", "text": "David Bowie rechazó el papel de Tesla y fue el único actor al que Nolan volvió a insistir; admite que le 'suplicó', reescribió su presentación y voló a verle en persona.", "source_id": "https://www.loudersound.com/features/christopher-nolan-on-working-with-david-bowie"},
-    {"lead": "Cuatro días de rodaje", "text": "Bowie solo estuvo cuatro o cinco días en el set, pero según Nolan tenía 'un carisma más allá de lo normal' al que todo el equipo respondió.", "source_id": "https://www.loudersound.com/features/christopher-nolan-on-working-with-david-bowie"},
-    {"lead": "Londres era Los Ángeles", "text": "El Londres victoriano se rodó en unas 70 localizaciones de Los Ángeles; solo se construyó un decorado fijo: la maquinaria bajo el escenario.", "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"},
-    {"lead": "Magos de verdad como tutores", "text": "Ricky Jay y Michael Weber entrenaron a los actores dándoles información deliberadamente limitada: lo justo para cada escena y ni un dato más.", "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"}
+    {
+      "lead": "Nolan le suplicó a Bowie",
+      "text": "David Bowie rechazó el papel de Tesla y fue el único actor al que Nolan volvió a insistir; admite que le 'suplicó', reescribió su presentación y voló a verle en persona.",
+      "source_id": "https://www.loudersound.com/features/christopher-nolan-on-working-with-david-bowie"
+    },
+    {
+      "lead": "Cuatro días de rodaje",
+      "text": "Bowie solo estuvo cuatro o cinco días en el set, pero según Nolan tenía 'un carisma más allá de lo normal' al que todo el equipo respondió.",
+      "source_id": "https://www.loudersound.com/features/christopher-nolan-on-working-with-david-bowie"
+    },
+    {
+      "lead": "Londres era Los Ángeles",
+      "text": "El Londres victoriano se rodó en unas 70 localizaciones de Los Ángeles; solo se construyó un decorado fijo: la maquinaria bajo el escenario.",
+      "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"
+    },
+    {
+      "lead": "Magos de verdad como tutores",
+      "text": "Ricky Jay y Michael Weber entrenaron a los actores dándoles información deliberadamente limitada: lo justo para cada escena y ni un dato más.",
+      "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"
+    }
   ],
   "author_voice": [
     {
@@ -161,10 +189,9 @@
     "¿Cuándo prefieres que no te expliquen el truco: en el cine, en la política, en tu propia vida?"
   ],
   "debate_prompts": [
-    "El giro de The Prestige está anunciado tantas veces que adivinarlo no es un fallo de la película sino el efecto que buscaba: quien lo ve venir está jugando bien, no ganando.",
-    "La frialdad emocional que muchos críticos le reprocharon en 2006 es justamente su tesis, y por eso su reputación no ha dejado de subir mientras la de películas más cálidas de su año ha bajado."
+    "El giro de The Prestige está anunciado tantas veces que adivinarlo no es un fallo de la película sino el efecto que buscaba: quien lo ve venir está jugando bien, no ganando."
   ],
-  "cta": "Vuelve al primer plano, cuando te preguntan si estás mirando con atención. Esta vez sí lo estás — y descubrirás que el truco estuvo sobre la mesa desde el segundo uno.",
+  "cta": "Vuelve al primer minuto, cuando te preguntan si estás mirando con atención de verdad. Esta vez la respuesta es sí — y vas a ver que el truco llevaba puesto encima de la mesa desde el segundo uno.",
   "useless_fact": "David Bowie estuvo solo cuatro o cinco días en el rodaje, y Nolan nunca tuvo un plan B: fue el único actor al que le insistió después de un no, hasta el punto de admitir que le suplicó. Todo el bloque final de la película, el que abre el relato hacia lo imposible, dependía de que un cantante de 59 años cambiara de opinión.",
   "sources": [
     "https://en.wikipedia.org/wiki/The_Prestige_(film)",
