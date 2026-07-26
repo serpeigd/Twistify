@@ -133,12 +133,19 @@
   .story p:first-child::first-letter{float:left;font-family:var(--serif);font-size:3.6em;
     line-height:.76;padding:6px 12px 0 0;color:var(--safe);font-weight:600}
 
-  /* context bullets */
-  .ctx{margin:16px 0 0;padding:0}
-  .ctx li{list-style:none;display:flex;gap:14px;align-items:baseline;padding:13px 0;
-    border-bottom:1px solid rgba(31,68,56,.4);font-size:15.5px}
-  .ctx li:last-child{border-bottom:none;padding-bottom:0}
-  .ctx .k{font-family:var(--mono);font-size:11px;color:var(--safe);min-width:22px;padding-top:2px}
+  /* fact bullets (antes de verla / datos curiosos) */
+  .facts{margin:16px 0 0;padding:0;list-style:none}
+  .facts li{padding:15px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  .facts li:last-child{border-bottom:none;padding-bottom:0}
+  .facts li:first-child{padding-top:0}
+  .fact-lead{display:block;font-weight:680;font-size:15px;margin-bottom:4px}
+  .zone-safe .fact-lead{color:var(--safe-soft)}
+  .zone-deep .fact-lead{color:var(--deep-soft)}
+  .fact-txt{display:block;font-size:14.5px;color:var(--text-dim);line-height:1.6}
+
+  /* tono */
+  .tone-lead{margin:16px 0 0;font-size:16.5px;line-height:1.6;color:#e9ecf3;font-weight:450}
+  .tone-lead b{color:var(--safe-soft);font-weight:650}
 
   /* author voice — pull quotes */
   .voices{margin-top:16px;display:flex;flex-direction:column;gap:14px}
@@ -234,8 +241,15 @@
   .useless .body-txt{margin-top:16px;font-size:15px;color:var(--text-dim);line-height:1.65}
 
   .q-list li{font-size:16px;padding:15px 0;color:var(--text);line-height:1.5}
-  .debate li{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--text-dim);
-    padding:14px 17px;background:rgba(255,255,255,.03);border-radius:10px;margin-bottom:9px;border:none}
+  .lede-inline{font-size:12.5px;color:var(--text-mute);margin:16px 0 4px}
+  .debate{margin:12px 0 0;padding:0;list-style:none}
+  .debate-card{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--text-dim);
+    padding:16px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(74,52,24,.5);
+    border-radius:11px;margin-bottom:10px;cursor:pointer;position:relative;
+    transition:background .14s,transform .1s,border-color .14s}
+  .debate-card:hover{background:rgba(224,163,92,.08);border-color:var(--deep-brd);transform:translateY(-1px)}
+  .reply-hint{display:block;margin-top:8px;font-family:var(--sans);font-style:normal;
+    font-size:11.5px;font-weight:650;letter-spacing:.03em;color:var(--deep)}
 
   /* CTA cierre */
   .cta-shell{margin-top:14px;text-align:center}
@@ -363,6 +377,18 @@ function sourceTag(o) {
   return `<span class="nosrc">⚠ sin fuente</span>`;
 }
 const sourcedList = items => `<ul class="clean">${items.map(o => `<li>${esc(o.text)}${sourceTag(o)}</li>`).join('')}</ul>`;
+const factList = items => `<ul class="facts">${items.map(o =>
+  `<li><span class="fact-lead">${esc(o.lead)}</span><span class="fact-txt">${esc(o.text)}</span>${sourceTag(o)}</li>`).join('')}</ul>`;
+
+function focusComment(spoiler) {
+  const box = document.getElementById('cmText'), chk = document.getElementById('cmSpoiler');
+  const main = document.querySelector('main');
+  if (!box || !main) return;
+  if (chk && spoiler) chk.checked = true;
+  const top = main.scrollTop + box.getBoundingClientRect().top - main.getBoundingClientRect().top - 90;
+  main.scrollTo({ top, behavior: 'smooth' });
+  setTimeout(() => box.focus(), 420);
+}
 
 /* bloque de bloqueo (texto exacto pedido) */
 const LOCK_HTML = `<div class="unlock"><div class="ic">🗝️</div>
@@ -408,12 +434,11 @@ function renderFilm(d) {
       <div class="lede">El tráiler, pero contado. Nada de spoilers.</div>
       <div class="story">${storyHtml}</div></div>`;
 
-  if (ct.context_bullets && ct.context_bullets.length)
+  if (ct.before_watching && ct.before_watching.length)
     html += `<div class="card">
-      <h3><span class="ico">🧭</span> Lo justo para entrar</h3>
-      <div class="lede">Época, corriente y tono — cero trama.</div>
-      <ul class="ctx">${ct.context_bullets.map((b, i) =>
-        `<li><span class="k">0${i + 1}</span><span>${esc(b)}</span></li>`).join('')}</ul></div>`;
+      <h3><span class="ico">🧠</span> Antes de verla</h3>
+      <div class="lede">Lo que conviene saber para entrar. Nada de la trama.</div>
+      ${factList(ct.before_watching)}</div>`;
 
   if (ct.author_voice && ct.author_voice.length)
     html += `<div class="card">
@@ -424,9 +449,9 @@ function renderFilm(d) {
 
   if (ct.emotional_temperature || ct.why_now)
     html += `<div class="card">
-      <h3><span class="ico">🌡️</span> Qué vas a sentir</h3>
-      ${ct.emotional_temperature ? `<div class="temp-hero">${esc(ct.emotional_temperature)}</div>` : ''}
-      ${ct.why_now ? `<div class="why-head">Por qué verla justo ahora</div><div class="why">${esc(ct.why_now)}</div>` : ''}</div>`;
+      <h3><span class="ico">🎭</span> El tono que te espera</h3>
+      ${ct.emotional_temperature ? `<p class="tone-lead">${esc(ct.emotional_temperature)}</p>` : ''}
+      ${ct.why_now ? `<div class="why-head">Por qué verla ahora</div><div class="why">${esc(ct.why_now)}</div>` : ''}</div>`;
 
   html += `</div></section>
 
@@ -501,13 +526,15 @@ async function unlockDeep() {
       <div class="sw good"><h4>▲ Lo que borda</h4><ul>${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
       <div class="sw bad"><h4>▼ Lo discutible</h4><ul>${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div></div>`);
 
+  if ((ct.fun_facts || []).length)
+    push('sec-dato', '🎲', 'Datos curiosos de la película', factList(ct.fun_facts));
   if (ct.verdict)
-    push('sec-ver', '🎯', 'El veredicto', `<div class="verdict-box">${esc(ct.verdict)}</div>`);
-  if (ct.useless_fact)
-    push('sec-dato', '🃏', 'El dato inútil que lo cambia todo', `<div class="body-txt">${esc(ct.useless_fact)}</div>`, 'useless');
+    push('sec-ver', '🏛️', 'Su lugar en la historia', `<div class="verdict-box">${esc(ct.verdict)}</div>`);
   if ((ct.debate_prompts || []).length)
-    push('sec-deb', '💥', 'Para encender los comentarios',
-      `<ul class="clean debate">${ct.debate_prompts.map(q => `<li>${esc(q)}</li>`).join('')}</ul>`);
+    push('sec-deb', '🔥', '¿Y tú de qué lado estás?',
+      `<div class="lede-inline">Pulsa una afirmación y suéltalo en los comentarios.</div>
+       <ul class="debate">${ct.debate_prompts.map(q =>
+         `<li class="debate-card" tabindex="0">${esc(q)}<span class="reply-hint">Responder ▾</span></li>`).join('')}</ul>`);
 
   const chips = `<div class="chips">${sections.map(s =>
     `<span class="chip" data-go="${s.id}">${s.ico} ${s.title}</span>`).join('')}</div>`;
@@ -539,6 +566,7 @@ async function unlockDeep() {
       main.scrollTo({ top, behavior: 'smooth' });
     }
   });
+  zone.querySelectorAll('.debate-card').forEach(el => el.onclick = () => focusComment(true));
 }
 
 function relockDeep() {

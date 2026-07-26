@@ -6,6 +6,17 @@
     "Ambientada en el Londres del ilusionismo victoriano.",
     "Espera un relato frío y meticuloso sobre obsesión y rivalidad."
   ],
+  "before_watching": [
+    {"lead": "Escrito como un truco", "text": "Nolan estructuró el guion según las tres partes de un número de magia (la promesa, el giro y el prestigio) y las mezcló en el tiempo a propósito.", "source_id": "https://www.empireonline.com/movies/features/the-prestige-inside-christopher-nolan-movie-magic-trick/"},
+    {"lead": "Cinco años de cocina", "text": "Nolan leyó la novela de Christopher Priest en 2000 y tardó un lustro en adaptarla con su hermano Jonathan, entre Batman Begins y El caballero oscuro.", "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"},
+    {"lead": "Tesla existió de verdad", "text": "El duelo de los magos rima con la 'guerra de las corrientes' histórica entre Edison y Tesla. Saberlo no adelanta nada de la trama, pero ayuda a leer la película.", "source_id": "https://en.wikipedia.org/wiki/War_of_the_currents"}
+  ],
+  "fun_facts": [
+    {"lead": "Nolan le suplicó a Bowie", "text": "David Bowie rechazó el papel de Tesla y fue el único actor al que Nolan volvió a insistir; admite que le 'suplicó', reescribió su presentación y voló a verle en persona.", "source_id": "https://www.loudersound.com/features/christopher-nolan-on-working-with-david-bowie"},
+    {"lead": "Cuatro días de rodaje", "text": "Bowie solo estuvo cuatro o cinco días en el set, pero según Nolan tenía 'un carisma más allá de lo normal' al que todo el equipo respondió.", "source_id": "https://www.loudersound.com/features/christopher-nolan-on-working-with-david-bowie"},
+    {"lead": "Londres era Los Ángeles", "text": "El Londres victoriano se rodó en unas 70 localizaciones de Los Ángeles; solo se construyó un decorado fijo: la maquinaria bajo el escenario.", "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"},
+    {"lead": "Magos de verdad como tutores", "text": "Ricky Jay y Michael Weber entrenaron a los actores dándoles información deliberadamente limitada: lo justo para cada escena y ni un dato más.", "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"}
+  ],
   "author_voice": [
     {
       "text": "Nolan declara que el guion se escribió siguiendo los principios de funcionamiento de un truco de magia: 'The film has been written according to the principles of how a magic trick works', con los tres actos del ilusionismo (la promesa, el giro, el prestigio) como armazón dramático. Y añade que, por la construcción no lineal, 'the three acts are all scrambled together'.",
@@ -16,7 +27,7 @@
       "source_id": "https://en.wikipedia.org/wiki/The_Prestige_(film)"
     }
   ],
-  "emotional_temperature": "Terciopelo caliente de teatro por delante y agua helada de bambalinas por detrás: te aplauden mientras se te congelan las manos.",
+  "emotional_temperature": "Elegante y fría como un truco de salón: preciosa por fuera, obsesiva por dentro. Espera un rompecabezas que te pide atención constante, no calidez.",
   "why_now": "Vivimos rodeados de gente que convierte su vida entera en material de espectáculo y luego no sabe dónde termina el número y empieza la persona. La película lleva casi veinte años preguntando cuánto estás dispuesto a pagar por un aplauso que dura tres segundos, y hoy esa factura se paga a diario en público. Además habla de algo muy 2026: la sospecha permanente de que el truco está delante de tus ojos y aun así prefieres no verlo.",
   "metaphors": [
     {

@@ -30,6 +30,7 @@ from pydantic import BaseModel, Field
 PRE_SHOW_FIELDS = (
     "story",
     "context_bullets",
+    "before_watching",
     "author_voice",
     "emotional_temperature",
     "why_now",
@@ -45,6 +46,7 @@ POST_SHOW_FIELDS = (
     "weaknesses",
     "verdict",
     "useless_fact",
+    "fun_facts",
 )
 
 # Ni pre ni post: son preguntas/debate, no revelan trama por sí mismas.
@@ -70,6 +72,15 @@ class SceneNote(BaseModel):
     source_id: str | None = None
 
 
+class FactBullet(BaseModel):
+    """Dato con titular en negrita + explicación. Usado en 'antes de verla'
+    (spoiler-free) y en 'datos curiosos' (post-visionado)."""
+
+    lead: str
+    text: str
+    source_id: str | None = None
+
+
 class Score(BaseModel):
     source: str
     value: str
@@ -91,6 +102,7 @@ class ContentPack(BaseModel):
     # --- Fase 1: pre-visionado (spoiler-free) ---
     story: str | None = None
     context_bullets: list[str] = Field(default_factory=list)
+    before_watching: list[FactBullet] = Field(default_factory=list)
     author_voice: list[SourcedText] = Field(default_factory=list)
     emotional_temperature: str | None = None
     why_now: str | None = None
@@ -107,6 +119,7 @@ class ContentPack(BaseModel):
     weaknesses: list[str] = Field(default_factory=list)
     verdict: str | None = None
     useless_fact: str | None = None
+    fun_facts: list[FactBullet] = Field(default_factory=list)
 
     # --- Fase 4: engagement ---
     questions: list[str] = Field(default_factory=list)
@@ -118,11 +131,14 @@ class ContentPack(BaseModel):
     # ---- Métricas de completitud / fundamentación ----
 
     def all_sourced(self) -> list[SourcedText]:
+        as_st = lambda b: SourcedText(text=b.text, source_id=b.source_id, kind="fact")
         return [
             *self.author_voice,
             *self.metaphors,
             *self.intertextual_refs,
             *self.production_trivia,
+            *[as_st(b) for b in self.before_watching],
+            *[as_st(b) for b in self.fun_facts],
         ]
 
     def grounding(self) -> tuple[int, int]:
@@ -140,8 +156,9 @@ class ContentPack(BaseModel):
         información útil, no un fallo a esconder."""
         sections = {
             "story": bool(self.story),
-            "context_bullets": bool(self.context_bullets),
+            "before_watching": bool(self.before_watching),
             "author_voice": bool(self.author_voice),
+            "fun_facts": bool(self.fun_facts),
             "metaphors": bool(self.metaphors),
             "intertextual_refs": bool(self.intertextual_refs),
             "production_trivia": bool(self.production_trivia),
@@ -168,6 +185,9 @@ class ContentPack(BaseModel):
             out.append(("story", self.story))
         for i, b in enumerate(self.context_bullets):
             out.append((f"context_bullets[{i}]", b))
+        for i, b in enumerate(self.before_watching):
+            out.append((f"before_watching[{i}].lead", b.lead))
+            out.append((f"before_watching[{i}]", b.text))
         for i, a in enumerate(self.author_voice):
             out.append((f"author_voice[{i}]", a.text))
         if self.emotional_temperature:

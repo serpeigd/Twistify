@@ -6,6 +6,17 @@
     "Fracaso en cines, después clásico de culto absoluto en DVD.",
     "Espera sátira nihilista, violencia estilizada y humor muy negro."
   ],
+  "before_watching": [
+    {"lead": "El diagnóstico de Fincher", "text": "Fincher la vendió como 'El graduado' invertida para treintañeros sin futuro: un retrato de hombres a los que el consumo dejó sin nada contra lo que pelear.", "source_id": "https://cinephiliabeyond.org/fight-club-david-finchers-stylish-exploration-modern-day-mans-estrangement-disillusionment/"},
+    {"lead": "Fracaso que fue culto", "text": "En cines de EE. UU. fue un batacazo y el estudio lo vivió como un desastre; el DVD la resucitó hasta convertirla en película de culto generacional.", "source_id": "https://en.wikipedia.org/wiki/Fight_Club"},
+    {"lead": "Humor a propósito", "text": "Fincher buscó que fuera 'divertida y sediciosa' en vez de siniestra. Ve preparado para una sátira con mucho humor negro, no para un drama solemne.", "source_id": "https://en.wikipedia.org/wiki/Fight_Club"}
+  ],
+  "fun_facts": [
+    {"lead": "Dientes de verdad", "text": "Brad Pitt pidió a un dentista que le astillara los dientes delanteros para el personaje; se los reconstruyeron al acabar el rodaje.", "source_id": "https://en.wikipedia.org/wiki/Fight_Club"},
+    {"lead": "Starbucks en cada plano", "text": "Fincher presumió de meter vasos de Starbucks por todas partes; la cadena leyó el guion, entendió la broma sobre el consumo y dio permiso igualmente.", "source_id": "https://www.cbr.com/fight-club-easter-egg-starbucks/"},
+    {"lead": "1.500 rollos de película", "text": "Fincher gastó unas tres veces la media de Hollywood en material de rodaje, obsesionado con repetir tomas hasta la extenuación.", "source_id": "https://en.wikipedia.org/wiki/Fight_Club"},
+    {"lead": "El póster era una pastilla de jabón", "text": "La agencia propuso como cartel una simple pastilla de jabón rosa; Fox lo vio 'un mal chiste' y montó una campaña de peleas que a Fincher le pareció el contexto equivocado.", "source_id": "https://en.wikipedia.org/wiki/Fight_Club"}
+  ],
   "author_voice": [
     {
       "text": "Fincher insiste en que todo el dispositivo formal está subordinado a una sola cabeza: «La película trata sobre el pensamiento, sobre cómo piensa este tipo. Y es desde su punto de vista, únicamente». De ahí que la defina como «el equivalente visual del flujo de consciencia».",
@@ -20,7 +31,7 @@
       "source_id": "https://en.wikipedia.org/wiki/Fight_Club"
     }
   ],
-  "emotional_temperature": "La euforia mareada de la tercera noche sin dormir: el fluorescente zumba, te duelen los ojos y de pronto todo te parece a la vez insoportable y graciosísimo.",
+  "emotional_temperature": "Sucia, vertiginosa y con un humor muy negro: arranca como una comedia de oficina y se acelera hasta el delirio. Ve con ganas de que te incomode y te provoque.",
   "why_now": "Veintiséis años después, el malestar que retrata se ha profesionalizado: burnout, identidad comprada por suscripción, y una industria entera de gurús que vende a hombres jóvenes exactamente la salida que la película satiriza. Fincher lleva años repitiendo que le alarma cómo se ha leído su obra, lo cual la vuelve un caso de estudio sobre qué pasa cuando una advertencia se convierte en merchandising. Verla hoy es menos una nostalgia noventera que una discusión sobre quién es dueño del significado de una película.",
   "metaphors": [
     {

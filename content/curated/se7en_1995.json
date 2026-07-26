@@ -6,13 +6,24 @@
     "Éxito enorme: unos 327 millones que reconstruyeron a Fincher.",
     "Espera una atmósfera opresiva, lluviosa y sin alivio cómico."
   ],
+  "before_watching": [
+    {"lead": "El casi rechazo de Fincher", "text": "Tras la pesadilla de Alien 3, Fincher no quería volver a dirigir; aceptó al leer un guion tan poco convencional, que además llegó a sus manos por error (le enviaron la versión original en vez de la reescrita).", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
+    {"lead": "La guerra por el final", "text": "New Line presionó por un desenlace más comercial, pero Fincher y Brad Pitt amenazaron con marcharse si se tocaba el clímax original del guion.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
+    {"lead": "Lluvia a propósito", "text": "Se rodó en Los Ángeles en mojado de forma sistemática para borrar el sol de la ciudad y construir una metrópolis anónima, sucia y sin esperanza.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"}
+  ],
+  "fun_facts": [
+    {"lead": "El cadáver estaba vivo", "text": "La víctima de la Pereza la interpretaba un actor real inmóvil unas 14 horas con prótesis; el susto de John C. McGinley al verlo moverse en pantalla es una reacción genuina.", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"},
+    {"lead": "Spacey, sin créditos", "text": "Kevin Spacey exigió no aparecer en la promoción ni en los títulos de apertura para proteger el efecto de la película; rodó su parte en solo 12 días.", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
+    {"lead": "Títulos a cuchilla", "text": "La mítica secuencia de créditos de Kyle Cooper se hizo rayando y marcando el negativo físicamente, no con CGI; el público llegó a aplaudirla en el estreno.", "source_id": "https://www.artofthetitle.com/title/se7en/"},
+    {"lead": "Cuadernos de verdad", "text": "La producción gastó unos 15.000 dólares y dos meses escribiendo a mano los cuadernos del asesino, con collages de recortes sobre texto real.", "source_id": "https://nofilmschool.com/tiny-details-in-se7en"}
+  ],
   "author_voice": [
     {"text": "Fincher aspiraba, en sus palabras, a que si lo hacían «smart and sharp and committed» la película tuviera la oportunidad de ser «a grungy horror movie masquerading as a thriller»: una película de terror sucia disfrazada de thriller policíaco.", "source_id": "https://www.avclub.com/david-fincher-se7en-interview"},
     {"text": "Cuando llamó por teléfono a Darius Khondji para plantearle la fotografía, el encargo cabía en una frase: «Darius, it has to be scary». Su primera nota sobre el proyecto fue simplemente «It's got to be frightening».", "source_id": "https://www.studiobinder.com/blog/darius-khondji-cinematography/"},
     {"text": "El brief para los títulos de crédito de Kyle Cooper fue igual de extremo: «all I want is for the audience to want to run screaming from the theater during the title section».", "source_id": "https://en.wikipedia.org/wiki/Seven_(1995_film)"},
     {"text": "El rodaje le pasó factura: «I found myself getting more and more trapped in this kind of evil», declaró a Empire en 1996. Fincher entiende la película menos como un thriller de detectives que como una meditación sobre el mal que hay dentro de todos.", "source_id": "https://www.theringer.com/2021/11/15/movies/seven-david-fincher-mind-games-adam-nayman-brad-pitt"}
   ],
-  "emotional_temperature": "Un abrigo mojado que no termina de secarse en toda la noche: pesa, huele a moqueta vieja y te enfría desde dentro mientras alguien, muy educadamente, te explica por qué te lo mereces.",
+  "emotional_temperature": "Un descenso lento, húmedo y sin salida: la película no acelera, se estrecha. Prepárate para el desasosiego y la incomodidad, no para el entretenimiento ligero.",
   "why_now": "Se7en inventó el lenguaje visual con el que hoy vemos el crimen: la textura desaturada de True Detective, el forense como espectáculo de CSI, el asesino-artista de Hannibal. Y su idea central envejeció de forma incómoda: un tipo que mata para obligar al mundo a mirar, convencido de que solo lo atroz consigue atención, es una descripción exacta de la economía de la indignación en la que vivimos. En 2025 volvió a IMAX y a 4K restaurada por el propio Fincher, y lo que asusta no es la sangre: es lo poco que ha caducado la tesis.",
   "metaphors": [
     {"text": "La estructura de siete crímenes replica el contrapasso de Dante: cada castigo está diseñado para que la forma del daño sea la forma del pecado. No es sadismo de guion, es teología medieval aplicada con manual de instrucciones.", "kind": "fact", "source_id": "https://uw.manifoldapp.org/read/dante-s-influence-on-se7en-by-harrison-bell"},

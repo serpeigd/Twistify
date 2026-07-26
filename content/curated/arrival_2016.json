@@ -6,6 +6,16 @@
     "Adaptación de Ted Chiang; 8 nominaciones al Óscar.",
     "Espera un tono contemplativo y melancólico, no acción."
   ],
+  "before_watching": [
+    {"lead": "Nace de un relato", "text": "Adapta 'Story of Your Life' de Ted Chiang; el propio autor dudaba de que fuera filmable porque 'casi toda la acción es gente sentada en una habitación, hablando'.", "source_id": "https://www.cbc.ca/radio/q/schedule-for-tuesday-december-20-2016-1.3902909/sci-fi-writer-ted-chiang-on-his-story-s-unconventional-adaptation-into-the-film-arrival-1.3902939"},
+    {"lead": "Cien borradores", "text": "El guionista Eric Heisserer escribió más de cien versiones buscando una estructura que reflejara el tema, y pasó años sin poder colocar el guion.", "source_id": "https://cinephiliabeyond.org/arrival/"},
+    {"lead": "Ciencia ficción que susurra", "text": "Villeneuve quería una superproducción sobre 'los límites del lenguaje' donde lo único fiable, más allá de las palabras, fuera la intuición. Ve esperando reflexión, no acción.", "source_id": "https://www.goldderby.com/film/2016/denis-villeneuve-interview-arrival-amy-adams/"}
+  ],
+  "fun_facts": [
+    {"lead": "Un idioma de cocina", "text": "Los logogramas alienígenas los diseñó la artista Martine Bertrand en la mesa de su cocina, con manchas de tinta que el equipo convirtió en un 'diccionario' con reglas.", "source_id": "https://globalnews.ca/news/3267612/arrival-film-production-designer-on-creating-circular-smoky-alien-language/"},
+    {"lead": "Consultores de lujo", "text": "Stephen y Christopher Wolfram fueron asesores científicos; Christopher escribió código real en Wolfram Language para analizar y generar el idioma de las pantallas.", "source_id": "https://blog.wolfram.com/2017/01/31/analyzing-and-translating-an-alien-language-arrival-logograms-and-the-wolfram-language/"},
+    {"lead": "La música le costó un Óscar", "text": "La pieza que abre y cierra la película, 'On the Nature of Daylight' de Max Richter, es preexistente (2004) y, al enmarcarla, dejó la partitura original fuera de la carrera al Óscar.", "source_id": "https://en.wikipedia.org/wiki/Arrival_(soundtrack)"}
+  ],
   "author_voice": [
     {
       "text": "Villeneuve: «La película no va necesariamente sobre el lenguaje, sino sobre los límites del lenguaje, la idea de que cuando estás más allá de las palabras lo único en lo que puedes confiar es la intuición». Le atrajo que la tensión principal del relato fuera la comunicación, algo que consideraba «muy relevante con lo que está pasando hoy».",
@@ -20,7 +30,7 @@
       "source_id": "https://cinephiliabeyond.org/arrival/"
     }
   ],
-  "emotional_temperature": "El frío húmedo de una niebla a las seis de la mañana, con un zumbido grave que notas en el esternón antes de oírlo con los oídos.",
+  "emotional_temperature": "Pausada, melancólica y de asombro contenido: es ciencia ficción que susurra en vez de gritar. Ve con paciencia; la recompensa es emocional, no espectacular.",
   "why_now": "Vivimos rodeados de traductores automáticos y aun así entendernos nunca ha parecido más difícil: la película apuesta a que el malentendido, no el monstruo, es la verdadera catástrofe. En un momento de ruido, polarización y decisiones tomadas a la velocidad del titular, 'Arrival' defiende la lentitud metódica de escuchar a alguien hasta comprenderlo. Y hace la pregunta que cualquiera reconoce: si supieras cómo termina algo, ¿lo empezarías igual?",
   "metaphors": [
     {

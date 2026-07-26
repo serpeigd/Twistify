@@ -6,6 +6,17 @@
     "Palma de Oro y primer Óscar a una película no anglófona.",
     "Espera un tono que muta de comedia a thriller, mordaz y elegante."
   ],
+  "before_watching": [
+    {"lead": "Una casa desde cero", "text": "La mansión de los Park no existe: se construyó como decorado al aire libre y los pisos superiores se añadieron con efectos. Bong dibujó él mismo todo el storyboard.", "source_id": "https://en.wikipedia.org/wiki/Parasite_(2019_film)"},
+    {"lead": "Doble hito histórico", "text": "Ganó la Palma de Oro por unanimidad y fue la primera película en lengua no inglesa en llevarse el Óscar a Mejor Película.", "source_id": "https://en.wikipedia.org/wiki/Parasite_(2019_film)"},
+    {"lead": "Cine de escaleras", "text": "Bong se declara 'un amante de las escaleras' y organiza la película en un eje arriba/abajo. Empieza como comedia y cambia de tono sin avisar: ve sin saber nada.", "source_id": "https://www.austinchronicle.com/daily/screens/2019-10-30/upstairs-downstairs-the-visual-metaphors-of-parasite/"}
+  ],
+  "fun_facts": [
+    {"lead": "Rodado en una piscina", "text": "El semisótano y su calle se construyeron dentro de un tanque de agua gigante para poder inundarlos; el último día echaron agua de alcantarilla de verdad.", "source_id": "https://www.cinemablend.com/news/2489927/the-surprising-way-parasite-flooded-those-basement-apartments"},
+    {"lead": "Una palabra inventada", "text": "El 'ram-don' no existe en ningún idioma: se lo inventó el traductor Darcy Paquet para subtitular el jjapaguri, fusionando 'ramen' y 'udon'.", "source_id": "https://www.scmp.com/magazines/style/news-trends/article/3051403/what-are-ram-don-noodles-oscar-winning-film-paradise"},
+    {"lead": "Versión en blanco y negro", "text": "Existe un montaje en blanco y negro regradado plano a plano junto al director de fotografía, no un simple filtro; se estrenó en el Festival de Róterdam.", "source_id": "https://www.dazeddigital.com/film-tv/article/47621/1/bong-joon-ho-black-and-white-version-parasite-us-cinemas-theaters-rotterdam"},
+    {"lead": "El jingle de 'Jessica'", "text": "La cancioncilla de 'Jessica, hija única' se canta sobre la melodía de 'Dokdo es nuestra tierra', un tema popular coreano que los estudiantes usan como truco para memorizar.", "source_id": "https://www.acmi.net.au/stories-and-ideas/parasite-illinois-chicago/"}
+  ],
   "author_voice": [
     {
       "text": "Bong define su película como «una comedia sin payasos, una tragedia sin villanos, que desemboca en un enredo violento y en una caída de cabeza escaleras abajo». Y matiza sobre los protagonistas: «No es que fueran parásitos desde el principio. Son nuestros vecinos, amigos y compañeros, a los que simplemente se ha empujado al borde del precipicio».",
@@ -20,7 +31,7 @@
       "source_id": "https://www.austinchronicle.com/daily/screens/2019-10-30/upstairs-downstairs-the-visual-metaphors-of-parasite/"
     }
   ],
-  "emotional_temperature": "El bochorno pegajoso de un sótano en agosto, cinco minutos antes de que reviente la tormenta que ya se oye pero todavía no se ve.",
+  "emotional_temperature": "Empieza como una comedia de estafadores y se te tuerce en las manos: cambia de tono sin avisar. Ve sin saber nada y déjate arrastrar cuesta abajo.",
   "why_now": "En agosto de 2022 murieron ahogadas varias personas en sus banjiha de Seúl durante unas inundaciones, y el Ayuntamiento anunció que dejaría de conceder permisos para viviendas semisótano; la prensa internacional las llamó, literalmente, «pisos estilo Parasite». Trece años de subida de precios de la vivienda y de riesgo climático repartido de forma desigual han convertido una metáfora vertical en un dato de urbanismo. En 2025, una encuesta de The New York Times a más de 500 profesionales del cine la colocó como la mejor película del siglo XXI: no envejeció, nos alcanzó.",
   "metaphors": [
     {
