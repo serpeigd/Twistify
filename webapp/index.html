@@ -184,16 +184,13 @@
     mask-image:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
   .chips::-webkit-scrollbar{display:none}
   .chip{cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:600;flex-shrink:0;
-    display:inline-flex;align-items:center;height:34px;padding:0 10px;border-radius:999px;
+    display:inline-flex;align-items:center;height:34px;padding:0 14px;border-radius:999px;
     color:var(--deep-soft);background:rgba(224,163,92,.07);border:1px solid transparent;
-    overflow:hidden;max-width:36px;white-space:nowrap;
-    transition:max-width .34s cubic-bezier(.2,.85,.25,1),background .18s,transform .18s,
-      color .18s,box-shadow .18s,border-color .18s}
+    white-space:nowrap;transition:background .18s,transform .18s,color .18s,
+      box-shadow .18s,border-color .18s}
   .chip-ico{font-size:15px;flex-shrink:0}
-  .chip-label{margin-left:7px;opacity:0;transition:opacity .18s .04s}
+  .chip-label{margin-left:7px}
   .chip:hover{background:rgba(224,163,92,.18);transform:translateY(-1px)}
-  .chip:hover,.chip.active{max-width:260px}
-  .chip:hover .chip-label,.chip.active .chip-label{opacity:1}
   .chip.active{background:linear-gradient(135deg,var(--deep-soft),var(--deep));color:#140d04;
     border-color:transparent;box-shadow:0 10px 22px -10px rgba(224,163,92,.75)}
 
@@ -410,8 +407,22 @@
   .cm .when{font-size:11px;color:var(--text-mute);font-variant-numeric:tabular-nums}
   .cm .sp{font-size:10px;background:rgba(224,112,95,.14);color:var(--deep-red);
     padding:2px 7px;border-radius:5px;font-weight:600}
+  .cm .edited{font-size:10px;color:var(--text-mute);font-style:italic}
   .cm .body{font-size:14px;color:var(--text-dim)}
+  .cm .body.spoiler-text{cursor:pointer}
   .cm .body.hidden{filter:blur(5px);cursor:pointer;user-select:none}
+  .cm-owner{margin-left:auto;display:flex;gap:4px}
+  .cm-act{cursor:pointer;background:none;border:1px solid var(--border);color:var(--text-mute);
+    border-radius:7px;padding:3px 7px;font-size:12px;font-family:inherit;transition:all .14s}
+  .cm-act:hover{color:var(--text);border-color:var(--deep-brd)}
+  .cm-delete:hover{color:var(--deep-red);border-color:rgba(224,112,95,.4)}
+  .cm-edit-box{width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:9px;
+    padding:9px 11px;color:var(--text);font-family:inherit;font-size:14px;resize:vertical}
+  .cm-edit-actions{display:flex;gap:8px;margin-top:8px}
+  .cm-edit-actions button{cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;
+    padding:7px 14px;border-radius:8px;border:none}
+  .cm-save{background:var(--safe);color:#06120d}
+  .cm-edit-actions .cm-cancel{background:none;border:1px solid var(--border);color:var(--text-dim)}
   .empty-note{color:var(--text-mute);font-size:13.5px;font-style:italic}
 
   .sources-card h3{font-size:13px!important;color:var(--text-mute)!important;
@@ -555,6 +566,13 @@ let LAST_ACTIVE_CHIP = null;
 const chipHtml = s => `<span class="chip" data-go="${s.id}">
   <span class="chip-ico">${s.ico}</span><span class="chip-label">${s.title}</span></span>`;
 
+function centerChipInRail(chipEl) {
+  const rail = document.getElementById('masterChips');
+  if (!rail || !chipEl) return;
+  const target = chipEl.offsetLeft - (rail.clientWidth - chipEl.clientWidth) / 2;
+  rail.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+}
+
 function wireChipClicks(container) {
   container.querySelectorAll('.chip').forEach(ch => {
     ch.onclick = async () => {
@@ -587,7 +605,7 @@ function onScroll() {
       LAST_ACTIVE_CHIP = active;
       document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.go === active));
       const activeChip = document.querySelector(`.chip[data-go="${active}"]`);
-      if (activeChip) activeChip.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      centerChipInRail(activeChip); // solo horizontal: nunca toca el scroll vertical de <main>
     }
   }
 }
@@ -748,8 +766,8 @@ function pollVote(card, side) {
     const w = q.split(' ');
     const short = w.length > 9 ? w.slice(0, 8).join(' ') + '…' : q;
     const starter = side === 'a'
-      ? `Estoy con esto: "${short}". Lo que más me convence es que `
-      : `No lo comparto: "${short}". Para mí el fallo está en `;
+      ? `No hay vuelta de hoja: "${short}". Lo que termina de convencerme es `
+      : `Aquí freno en seco: "${short}" no se sostiene en cuanto piensas en `;
     focusComment(true, starter);
   };
 }
@@ -806,18 +824,18 @@ async function unlockDeep() {
       const q = ct.debate_prompts[0];
       push('sec-deb', '🔥', '¿Y tú de qué lado estás?', `
         <div class="lede-inline">Un tema, dos bandos. Vota y defiende tu postura.</div>
-        <div class="poll" id="pollCard" data-q="${esc(q)}" data-a="50" data-b="50">
+        <div class="poll" id="pollCard" data-q="${esc(q)}" data-a="24" data-b="24">
           <div class="poll-txt">${esc(q)}</div>
           <div class="poll-options">
             <button class="poll-opt" data-side="a">
-              <span class="poll-label">🔥 Suscribo cada palabra</span>
+              <span class="poll-label">Totalmente de acuerdo</span>
               <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
-              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">50 votos</span></span>
+              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 votos</span></span>
             </button>
             <button class="poll-opt" data-side="b">
-              <span class="poll-label">💀 Aquí me bajo</span>
+              <span class="poll-label">Eso no es así</span>
               <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
-              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">50 votos</span></span>
+              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 votos</span></span>
             </button>
           </div>
           <div class="poll-hint">Puedes cambiar de bando cuando quieras.</div>
@@ -876,24 +894,71 @@ function relockDeep() {
   document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
+function ownerToken() {
+  let t = localStorage.getItem('psr_owner');
+  if (!t) {
+    t = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    localStorage.setItem('psr_owner', t);
+  }
+  return t;
+}
+
 async function loadComments() {
   const list = document.getElementById('cmList');
   if (!list) return;
-  const cs = await (await fetch(`/api/film/${CURRENT}/comments`)).json();
+  const cs = await (await fetch(`/api/film/${CURRENT}/comments?owner_token=${ownerToken()}`)).json();
   if (!cs.length) { list.innerHTML = '<div class="empty-note">Sé el primero en comentar.</div>'; return; }
   list.innerHTML = cs.slice().reverse().map(c => `
-    <div class="cm"><div class="head"><span class="who">${esc(c.author)}</span>
+    <div class="cm" data-id="${c.id}"><div class="head"><span class="who">${esc(c.author)}</span>
       <span class="when">${esc((c.at || '').replace('T', ' ').replace('+00:00', ''))}</span>
-      ${c.spoilers ? '<span class="sp">SPOILERS</span>' : ''}</div>
-    <div class="body ${c.spoilers ? 'hidden' : ''}" onclick="this.classList.remove('hidden')">${esc(c.text)}</div></div>`).join('');
+      ${c.spoilers ? '<span class="sp">SPOILERS</span>' : ''}
+      ${c.edited ? '<span class="edited">editado</span>' : ''}
+      ${c.mine ? `<span class="cm-owner"><button class="cm-act cm-edit" title="Editar">✎</button>
+        <button class="cm-act cm-delete" title="Eliminar">🗑</button></span>` : ''}</div>
+    <div class="body ${c.spoilers ? 'hidden spoiler-text' : ''}">${esc(c.text)}</div></div>`).join('');
+
+  list.querySelectorAll('.cm').forEach(cm => {
+    const body = cm.querySelector('.body');
+    if (body.classList.contains('spoiler-text')) body.onclick = () => body.classList.toggle('hidden');
+  });
+  list.querySelectorAll('.cm-delete').forEach(btn => btn.onclick = async () => {
+    if (!confirm('¿Eliminar este comentario?')) return;
+    const id = btn.closest('.cm').dataset.id;
+    await fetch(`/api/film/${CURRENT}/comments/${id}?owner_token=${ownerToken()}`, { method: 'DELETE' });
+    loadComments();
+  });
+  list.querySelectorAll('.cm-edit').forEach(btn => btn.onclick = () => startEditComment(btn.closest('.cm')));
 }
+
+function startEditComment(cmEl) {
+  const body = cmEl.querySelector('.body');
+  body.onclick = null;
+  const original = body.textContent;
+  body.classList.remove('hidden');
+  body.innerHTML = `<textarea class="cm-edit-box" rows="3">${esc(original)}</textarea>
+    <div class="cm-edit-actions">
+      <button class="cm-save">Guardar</button>
+      <button class="cm-cancel">Cancelar</button>
+    </div>`;
+  body.querySelector('textarea').focus();
+  body.querySelector('.cm-save').onclick = async () => {
+    const text = body.querySelector('textarea').value.trim();
+    if (!text) return;
+    await fetch(`/api/film/${CURRENT}/comments/${cmEl.dataset.id}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, owner_token: ownerToken() }) });
+    loadComments();
+  };
+  body.querySelector('.cm-cancel').onclick = () => loadComments();
+}
+
 async function postComment() {
   const text = document.getElementById('cmText').value.trim();
   if (!text) return;
   await fetch(`/api/film/${CURRENT}/comments`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text, author: document.getElementById('cmAuthor').value.trim() || 'anónimo',
-      spoilers: document.getElementById('cmSpoiler').checked }) });
+      spoilers: document.getElementById('cmSpoiler').checked, owner_token: ownerToken() }) });
   document.getElementById('cmText').value = '';
   document.getElementById('cmSpoiler').checked = false;
   loadComments();

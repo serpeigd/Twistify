@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import json
 import sys
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -180,15 +181,37 @@ def api_film(title_id: str, seen: bool = False):
     }
 
 
+def _public_comment(c: dict, owner_token: str) -> dict:
+    return {
+        "id": c["id"],
+        "author": c["author"],
+        "text": c["text"],
+        "at": c["at"],
+        "spoilers": c["spoilers"],
+        "edited": bool(c.get("edited")),
+        "mine": bool(owner_token) and c.get("owner_token") == owner_token,
+    }
+
+
 @app.get("/api/film/{title_id}/comments")
-def api_get_comments(title_id: str):
-    return read_comments().get(title_id, [])
+def api_get_comments(title_id: str, owner_token: str = ""):
+    data = read_comments()
+    lst = data.get(title_id, [])
+    changed = False
+    for c in lst:
+        if "id" not in c:
+            c["id"] = uuid.uuid4().hex[:12]
+            changed = True
+    if changed:
+        write_comments(data)
+    return [_public_comment(c, owner_token) for c in lst]
 
 
 @app.post("/api/film/{title_id}/comments")
 def api_post_comment(title_id: str, payload: dict = Body(...)):
     text = (payload.get("text") or "").strip()
     author = (payload.get("author") or "anónimo").strip()[:40]
+    owner_token = (payload.get("owner_token") or "").strip()[:64]
     if not text:
         raise HTTPException(400, "Comentario vacío")
     if title_id not in CASES:
@@ -196,14 +219,49 @@ def api_post_comment(title_id: str, payload: dict = Body(...)):
 
     data = read_comments()
     entry = {
+        "id": uuid.uuid4().hex[:12],
         "author": author,
         "text": text[:2000],
         "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "spoilers": bool(payload.get("spoilers")),
+        "owner_token": owner_token,
     }
     data.setdefault(title_id, []).append(entry)
     write_comments(data)
-    return entry
+    return _public_comment(entry, owner_token)
+
+
+@app.put("/api/film/{title_id}/comments/{comment_id}")
+def api_edit_comment(title_id: str, comment_id: str, payload: dict = Body(...)):
+    text = (payload.get("text") or "").strip()
+    owner_token = (payload.get("owner_token") or "").strip()
+    if not text:
+        raise HTTPException(400, "Comentario vacío")
+
+    data = read_comments()
+    for c in data.get(title_id, []):
+        if c.get("id") == comment_id:
+            if not owner_token or c.get("owner_token") != owner_token:
+                raise HTTPException(403, "No puedes editar este comentario")
+            c["text"] = text[:2000]
+            c["edited"] = True
+            write_comments(data)
+            return _public_comment(c, owner_token)
+    raise HTTPException(404, "Comentario no encontrado")
+
+
+@app.delete("/api/film/{title_id}/comments/{comment_id}")
+def api_delete_comment(title_id: str, comment_id: str, owner_token: str = ""):
+    data = read_comments()
+    lst = data.get(title_id, [])
+    for i, c in enumerate(lst):
+        if c.get("id") == comment_id:
+            if not owner_token or c.get("owner_token") != owner_token:
+                raise HTTPException(403, "No puedes eliminar este comentario")
+            lst.pop(i)
+            write_comments(data)
+            return {"ok": True}
+    raise HTTPException(404, "Comentario no encontrado")
 
 
 @app.get("/api/stats")
