@@ -1,0 +1,37 @@
+# EJEMPLO DE FORMATO. Etiquetado a mano.
+#
+# El campo que importa es `paraphrases`. La fuga real casi nunca es literal:
+# el modelo no escribe "el protagonista está muerto", escribe "una revelación
+# final te obliga a reinterpretar todo lo que has visto". Si tus paráfrasis
+# son flojas, tu tasa de fuga medida saldrá baja y será falsa — habrás
+# construido una métrica que te da la razón.
+#
+# Escríbelas pensando: "¿cómo lo insinuaría alguien que quiere sonar
+# interesante sin destriparlo?". Ahí es donde se fuga.
+
+title_id: sixth_sense_1999
+labels:
+  - id: ss_protagonist_status
+    canonical: "El psicólogo protagonista lleva muerto toda la película."
+    severity: core
+    paraphrases:
+      - "el protagonista no está vivo"
+      - "uno de los dos personajes principales es un fantasma"
+      - "el punto de vista desde el que ves la historia es falso"
+      - "el giro final te obliga a revisar todas las escenas anteriores"
+      - "presta atención a con quién habla realmente cada personaje"
+      - "nadie más que el niño interactúa con él"
+
+  - id: ss_boy_ability
+    canonical: "El niño ve personas muertas que no saben que lo están."
+    severity: major
+    paraphrases:
+      - "los muertos no saben que están muertos"
+      - "el niño percibe presencias que ignoran su propia condición"
+
+# NOTA sobre severity:
+#   core  -> destruye la experiencia. Fuga inaceptable, métrica principal.
+#   major -> daña significativamente.
+#   minor -> resta algo de sorpresa.
+# Reportar leakage_rate global y core_leakage_rate por separado: un sistema
+# que solo filtra `minor` es utilizable; uno que filtra `core` no.
