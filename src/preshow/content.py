@@ -50,7 +50,7 @@ POST_SHOW_FIELDS = (
 )
 
 # Ni pre ni post: son preguntas/debate, no revelan trama por sí mismas.
-NEUTRAL_FIELDS = ("questions", "debate_prompts", "cta", "sources")
+NEUTRAL_FIELDS = ("questions", "debate_prompts", "cta", "sources", "director", "themes")
 
 
 class SourcedText(BaseModel):
@@ -127,6 +127,10 @@ class ContentPack(BaseModel):
     cta: str | None = None
 
     sources: list[str] = Field(default_factory=list)
+
+    # --- Metadatos de catálogo (para filtrar/ordenar sin spoilers) ---
+    director: str | None = None
+    themes: list[str] = Field(default_factory=list)
 
     # ---- Métricas de completitud / fundamentación ----
 

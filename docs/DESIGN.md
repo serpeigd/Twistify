@@ -84,6 +84,22 @@ truth humano" ni "etiquetado a mano". Son afirmaciones distintas y confundirlas
 sería reintroducir el problema original (semáforo autoetiquetado, ver D3) por
 otra vía.
 
+## D8 — `awards_count` se expone en el catálogo aunque `critical_consensus` sea POST_SHOW
+
+El catálogo (`/api/catalogue`, visible antes de elegir título) ahora incluye
+`director`, `themes` y `awards_count` por película, para poder filtrar/ordenar
+sin abrir la ficha. `director` y `themes` son metadatos nuevos, sin conflicto.
+`awards_count` es distinto: es `len(critical_consensus.awards)`, y
+`critical_consensus` completo vive en `POST_SHOW_FIELDS` (D3) porque su
+`summary` puede llevar lectura crítica con matices de trama.
+
+Se expone solo el **conteo**, nunca la lista de premios ni el resumen. Un
+número ("3 premios") no es spoiler de trama bajo ningún criterio razonable —
+a diferencia de `summary`, que si podría insinuar giros ("la actuación que
+sostiene el descubrimiento final"). La partición D3 protege spoilers, no todo
+dato post-visionado por igual; una excepción puntual y explícita a un derivado
+no narrativo no reabre el problema que D3 resuelve.
+
 ## Descartado
 
 - **Multi-agente (researcher / writer / critic).** No hay decisión dinámica

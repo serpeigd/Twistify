@@ -139,6 +139,9 @@ def api_catalogue():
                 "curated": pack is not None,
                 "completeness": pack.completeness()["pct"] if pack else 0,
                 "n_spoilers": len(load_labels(tid)),
+                "director": pack.director if pack else None,
+                "themes": pack.themes if pack else [],
+                "awards_count": len(pack.critical_consensus.awards) if pack else 0,
             }
         )
     return sorted(out, key=lambda x: (-x["completeness"], x["title"]))

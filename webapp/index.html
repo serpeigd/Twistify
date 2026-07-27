@@ -71,6 +71,31 @@
   .filter-chip.on{background:linear-gradient(135deg,rgba(82,201,154,.2),rgba(82,201,154,.06));
     border-color:var(--safe);color:var(--safe-soft)}
   .filter-chip.on .f-count{background:rgba(82,201,154,.24);color:var(--safe-soft)}
+
+  /* más filtros: desplegable con temática / director / orden */
+  .more-filters-toggle{width:100%;margin-top:10px;padding:8px 10px;border-radius:9px;
+    background:none;border:1px dashed var(--border);color:var(--text-mute);
+    font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;justify-content:space-between;transition:all .15s}
+  .more-filters-toggle:hover{color:var(--text-dim);border-color:#333949}
+  .mf-arrow{transition:transform .25s;font-size:10px}
+  .more-filters-toggle.open .mf-arrow{transform:rotate(180deg)}
+  .more-filters{max-height:0;overflow:hidden;transition:max-height .32s ease}
+  .more-filters.open{max-height:420px}
+  .mf-block{padding-top:12px}
+  .mf-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+    color:var(--text-mute);margin-bottom:8px}
+  .tag-row{display:flex;flex-wrap:wrap;gap:6px}
+  .tag-chip{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;
+    background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-dim);
+    font-family:inherit;transition:all .15s}
+  .tag-chip:hover{border-color:#333949;color:var(--text)}
+  .tag-chip.theme-on{background:linear-gradient(135deg,rgba(183,155,240,.24),rgba(183,155,240,.08));
+    border-color:var(--violet);color:#e4dbfb}
+  .tag-chip.dir-on{background:linear-gradient(135deg,rgba(224,163,92,.24),rgba(224,163,92,.08));
+    border-color:var(--deep);color:var(--deep-soft)}
+  .tag-chip.sort-on{background:linear-gradient(135deg,rgba(82,201,154,.24),rgba(82,201,154,.08));
+    border-color:var(--safe);color:var(--safe-soft)}
   .catalogue{overflow-y:auto;padding:10px;flex:1;min-height:0}
   .group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
     color:var(--text-mute);margin:16px 10px 8px;font-weight:700}
@@ -243,17 +268,20 @@
   #toTop.show{opacity:1;pointer-events:auto;transform:none}
   #toTop:hover{border-color:var(--deep);color:var(--deep-soft)}
 
-  /* fab para cerrar el telón desde donde sea */
+  /* fab para abrir/cerrar el telón desde donde sea */
   #curtainFab{position:fixed;right:22px;bottom:78px;display:inline-flex;align-items:center;gap:9px;
     padding:12px 18px 12px 14px;border-radius:999px;cursor:pointer;font-family:inherit;
     font-size:13px;font-weight:680;color:#f3d9c8;
     background:linear-gradient(180deg,#63181f,#330c12);border:1px solid rgba(224,163,92,.4);
     box-shadow:0 14px 34px -14px rgba(0,0,0,.6);opacity:0;pointer-events:none;
     transform:translateY(12px) scale(.94);
-    transition:opacity .2s,transform .2s,border-color .14s;z-index:41}
+    transition:opacity .2s,transform .2s,border-color .14s,background .18s,color .18s;z-index:41}
   #curtainFab.show{opacity:1;pointer-events:auto;transform:none}
   #curtainFab:hover{border-color:var(--deep-soft)}
   #curtainFab .ico{font-size:17px}
+  #curtainFab.fab-invite{color:#140d04;border-color:transparent;
+    background:linear-gradient(180deg,var(--deep-soft),var(--deep));
+    box-shadow:0 14px 34px -14px rgba(224,163,92,.65)}
 
   /* unlock */
   .unlock{text-align:center;padding:42px 28px}
@@ -448,9 +476,7 @@
 
 <div id="progbar"></div>
 <button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
-<button id="curtainFab" title="Cerrar telón y volver a modo sin spoilers">
-  <span class="ico">🎭</span> cerrar telón
-</button>
+<button id="curtainFab" title="Abrir el telón"></button>
 
 <header>
   <div class="brand"><h1>
@@ -471,6 +497,23 @@
     <div class="search-wrap">
       <input id="search" type="text" placeholder="Buscar película…" autocomplete="off">
       <div class="filters" id="filters"></div>
+      <button class="more-filters-toggle" id="moreFiltersToggle">
+        <span>Más filtros</span><span class="mf-arrow">▾</span>
+      </button>
+      <div class="more-filters" id="moreFilters">
+        <div class="mf-block">
+          <div class="mf-label">🎭 Temática</div>
+          <div class="tag-row" id="themeTags"></div>
+        </div>
+        <div class="mf-block">
+          <div class="mf-label">🎬 Director</div>
+          <div class="tag-row" id="directorTags"></div>
+        </div>
+        <div class="mf-block">
+          <div class="mf-label">↕ Ordenar por</div>
+          <div class="tag-row" id="sortRow"></div>
+        </div>
+      </div>
     </div>
     <div class="catalogue" id="catalogue"></div>
   </aside>
@@ -485,12 +528,14 @@
 
 <script>
 let CATALOGUE = [], CURRENT = null, FILTER = 'all', QUERY = '';
+let THEME_FILTER = new Set(), DIRECTOR_FILTER = null, SORT_MODE = 'default';
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const host = u => { try { return new URL(u).hostname.replace('www.', ''); } catch { return u; } };
 
 async function loadCatalogue() {
   CATALOGUE = await (await fetch('/api/catalogue')).json();
   renderFilters();
+  renderMoreFilters();
   renderCatalogue();
 }
 
@@ -523,11 +568,56 @@ function renderFilters() {
   });
 }
 
+document.getElementById('moreFiltersToggle').onclick = () => {
+  document.getElementById('moreFiltersToggle').classList.toggle('open');
+  document.getElementById('moreFilters').classList.toggle('open');
+};
+
+function renderMoreFilters() {
+  const themes = [...new Set(CATALOGUE.flatMap(f => f.themes || []))].sort();
+  const directors = [...new Set(CATALOGUE.filter(f => f.director).map(f => f.director))].sort();
+
+  const themeBox = document.getElementById('themeTags');
+  themeBox.innerHTML = themes.length
+    ? themes.map(t => `<button class="tag-chip ${THEME_FILTER.has(t) ? 'theme-on' : ''}" data-theme="${esc(t)}">${esc(t)}</button>`).join('')
+    : '<span class="empty-note" style="font-size:11px">Aún sin temáticas curadas</span>';
+  themeBox.querySelectorAll('.tag-chip').forEach(b => b.onclick = () => {
+    const t = b.dataset.theme;
+    THEME_FILTER.has(t) ? THEME_FILTER.delete(t) : THEME_FILTER.add(t);
+    renderMoreFilters();
+    renderCatalogue();
+  });
+
+  const dirBox = document.getElementById('directorTags');
+  dirBox.innerHTML = directors.length
+    ? directors.map(d => `<button class="tag-chip ${DIRECTOR_FILTER === d ? 'dir-on' : ''}" data-director="${esc(d)}">${esc(d)}</button>`).join('')
+    : '<span class="empty-note" style="font-size:11px">Aún sin directores curados</span>';
+  dirBox.querySelectorAll('.tag-chip').forEach(b => b.onclick = () => {
+    const d = b.dataset.director;
+    DIRECTOR_FILTER = DIRECTOR_FILTER === d ? null : d;
+    renderMoreFilters();
+    renderCatalogue();
+  });
+
+  const sortBox = document.getElementById('sortRow');
+  sortBox.innerHTML = `
+    <button class="tag-chip ${SORT_MODE === 'default' ? 'sort-on' : ''}" data-sort="default">Relevancia</button>
+    <button class="tag-chip ${SORT_MODE === 'awards' ? 'sort-on' : ''}" data-sort="awards">🏆 Más premiadas</button>`;
+  sortBox.querySelectorAll('.tag-chip').forEach(b => b.onclick = () => {
+    SORT_MODE = b.dataset.sort;
+    renderMoreFilters();
+    renderCatalogue();
+  });
+}
+
 function renderCatalogue() {
   const q = QUERY.toLowerCase();
-  const items = CATALOGUE.filter(f =>
+  let items = CATALOGUE.filter(f =>
     matchesFilter(f) &&
+    (!THEME_FILTER.size || (f.themes || []).some(t => THEME_FILTER.has(t))) &&
+    (!DIRECTOR_FILTER || f.director === DIRECTOR_FILTER) &&
     (!q || f.title.toLowerCase().includes(q) || String(f.year).includes(q)));
+  if (SORT_MODE === 'awards') items = items.slice().sort((a, b) => (b.awards_count || 0) - (a.awards_count || 0));
   const groups = { mainstream: [], longtail: [] };
   items.forEach(f => groups[f.stratum].push(f));
   const names = { mainstream: 'Populares', longtail: 'Cola larga' };
@@ -539,6 +629,7 @@ function renderCatalogue() {
       html += `<button class="film-btn ${CURRENT === f.title_id ? 'active' : ''}" data-id="${f.title_id}">
         <div class="t">${esc(f.title)}</div>
         <div class="meta"><span class="yr">${f.year}</span>
+        ${SORT_MODE === 'awards' && f.awards_count ? `<span class="tag-uncurated">🏆 ${f.awards_count}</span>` : ''}
         ${f.curated ? `<span class="bar"><i style="width:${f.completeness}%"></i></span>`
                     : `<span class="tag-uncurated">sin curar</span>`}</div></button>`;
     });
@@ -764,17 +855,27 @@ function renderFilm(d) {
   document.getElementById('unlockBtn').onclick = unlockDeep;
   document.getElementById('cmSend').onclick = postComment;
   renderPhase4(ct);
+  updateCurtainFab('closed');
 }
 
 function renderPhase4(ct) {
   let h = '';
   if ((ct.questions || []).length)
-    h += `<div class="zone zone-safe" style="margin-top:26px"><div class="zone-frame">
+    h += `<div class="zone zone-safe" id="sec-pensar" style="margin-top:26px"><div class="zone-frame">
       <span class="zone-badge"><span class="pulse"></span> Para pensar</span>
       <span class="zone-sub">Sin spoilers · deja la conversación abierta</span></div>
       <div class="zone-body"><div class="card"><h3><span class="ico">❓</span> Preguntas que deja abiertas</h3>
       <ul class="clean q-list">${ct.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div></div></div>`;
   document.getElementById('phase4').innerHTML = h;
+
+  if ((ct.questions || []).length) {
+    const s = { id: 'sec-pensar', ico: '❓', title: 'Para pensar' };
+    PRE_SECTIONS = [...PRE_SECTIONS, s];
+    NAV_SECTIONS = PRE_SECTIONS;
+    const masterChips = document.getElementById('masterChips');
+    masterChips.insertAdjacentHTML('beforeend', chipHtml(s));
+    wireChipClicks(masterChips);
+  }
 }
 
 /* telón: la primera vez que se abre, carga; las siguientes solo abre/cierra */
@@ -831,7 +932,25 @@ async function unlockDeep() {
   NAV_SECTIONS = PRE_SECTIONS.concat(CACHED_SECTIONS);
   zone.classList.remove('curtain-closed');
   curtain.classList.add('open');
-  document.getElementById('curtainFab').classList.add('show');
+  updateCurtainFab('open');
+}
+
+function updateCurtainFab(state) {
+  const fab = document.getElementById('curtainFab');
+  fab.classList.add('show');
+  fab.classList.toggle('fab-invite', state === 'closed');
+  if (state === 'open') {
+    fab.innerHTML = '<span class="ico">🎭</span> cerrar telón';
+    fab.title = 'Cerrar telón y volver a modo sin spoilers';
+    fab.onclick = relockDeep;
+  } else {
+    fab.innerHTML = '<span class="ico">🎭</span> Abrir el telón · SPOILER MODE ON';
+    fab.title = 'Abrir el telón';
+    fab.onclick = async () => {
+      await unlockDeep();
+      document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+  }
 }
 
 async function loadDeepDive(dc, masterChips) {
@@ -938,7 +1057,8 @@ function relockDeep() {
   NAV_SECTIONS = PRE_SECTIONS;
   document.getElementById('curtain').classList.remove('open');
   document.getElementById('deepZone').classList.add('curtain-closed');
-  document.getElementById('curtainFab').classList.remove('show');
+  document.querySelectorAll('.acc-item.open').forEach(el => el.classList.remove('open'));
+  updateCurtainFab('closed');
   document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
@@ -1015,7 +1135,6 @@ async function postComment() {
 document.querySelector('main').addEventListener('scroll', onScroll);
 document.getElementById('toTop').onclick = () =>
   document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
-document.getElementById('curtainFab').onclick = relockDeep;
 
 loadCatalogue();
 </script>
