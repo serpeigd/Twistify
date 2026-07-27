@@ -1,6 +1,6 @@
 # 🎬 Twistify
 
-**Antes de verla, sin spoilers. Después, con todos los giros.**
+**Spoiler-free before. Every twist after.**
 
 [![tests](https://github.com/serpeigd/Twistify/actions/workflows/tests.yml/badge.svg)](https://github.com/serpeigd/Twistify/actions/workflows/tests.yml)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -9,116 +9,118 @@
 ![pytest](https://img.shields.io/badge/pytest-0A9EDC?logo=pytest&logoColor=white)
 ![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)
 
-Twistify es una app de películas con una regla que se cumple de verdad, no
-solo se promete: la trama nunca sale del servidor hasta que tú dices que ya
-la has visto. Debajo, un harness de evaluación mide si esa promesa se
-cumple — con números, no con un sello verde autoconcedido.
+Twistify is a movie app with a rule that's actually enforced, not just
+promised: the plot never leaves the server until you say you've already
+seen it. Underneath, an evaluation harness measures whether that promise
+holds — with numbers, not a self-awarded green badge.
 
 <p align="center">
-  <img src="docs/screenshots/twistify-safe-mode.png" width="49%" alt="Modo sin spoilers">
-  <img src="docs/screenshots/twistify-spoiler-mode.png" width="49%" alt="Modo spoiler abierto">
+  <img src="docs/screenshots/twistify-safe-mode.png" width="49%" alt="Spoiler-free mode">
+  <img src="docs/screenshots/twistify-spoiler-mode.png" width="49%" alt="Spoiler mode unlocked">
 </p>
 
 ---
 
-## Pruébalo en 2 minutos
+## Try it in 2 minutes
 
 ```bash
 git clone https://github.com/serpeigd/Twistify.git
 cd Twistify
 pip install fastapi "uvicorn[standard]" pydantic pyyaml
 python webapp/app.py
-# abre http://127.0.0.1:8000
+# open http://127.0.0.1:8000
 ```
 
-Elige una película curada (Sixth Sense, Fight Club, Get Out, Parasite,
-The Prestige, Se7en o Arrival), lee la ficha sin spoilers, y cuando quieras,
-abre el telón.
+Pick a curated movie (Sixth Sense, Fight Club, Get Out, Parasite, The
+Prestige, Se7en, or Arrival), read the spoiler-free entry, and when you're
+ready, open the curtain.
 
-## Qué hace distinto a esto de "otro CRUD con películas"
+## What makes this different from "another movie CRUD"
 
-- **La partición de spoilers es una propiedad del servidor, no una promesa
-  de la UI.** El contenido post-visionado no se manda al navegador hasta que
-  el cliente declara `seen=true` — abrir devtools no revela nada. No es CSS
-  escondiendo un `<div>`.
-- **Cada afirmación factual dice si tiene fuente o no.** Sin inventar
-  `source_id` falsos cuando no hay retrieval real. El hueco se muestra, no
-  se disimula.
-- **El propio detector de fugas de spoilers está medido, no asumido.** Hay
-  un harness de evals (`evals/`) que calibra el juez contra fugas plantadas
-  y reporta su recall real — incluyendo el caso incómodo en que el juez
-  barato falla (ver [Resultados](#bajo-el-capó-el-harness-de-evaluación)).
-- **Filtros con sentido.** Temáticas (identidad, obsesión, clase y poder…)
-  que agrupan varias películas de verdad, no una etiqueta única por título.
+- **The spoiler partition is a server-side property, not a UI promise.**
+  Post-viewing content isn't sent to the browser until the client declares
+  `seen=true` — opening devtools reveals nothing. It's not CSS hiding a
+  `<div>`.
+- **Every factual claim says whether it has a source or not.** No faking
+  `source_id`s when there's no real retrieval behind it. The gap is shown,
+  not disguised.
+- **The spoiler-leak detector itself is measured, not assumed.** There's an
+  evals harness (`evals/`) that calibrates the judge against planted leaks
+  and reports its real recall — including the uncomfortable case where the
+  cheap judge fails (see [Results](#under-the-hood-the-evaluation-harness)).
+- **Filters that actually mean something.** Themes (identity, obsession,
+  class and power…) that group several movies for real, not a one-off tag
+  per title.
 
 ## Stack
 
-**Backend:** Python 3.12 · FastAPI · Pydantic v2 (contratos de datos tipados,
-no dicts sueltos) · pytest (harness de evals, corre sin red ni API key)
+**Backend:** Python 3.12 · FastAPI · Pydantic v2 (typed data contracts, not
+loose dicts) · pytest (evals harness, runs with no network, no API key)
 
-**Frontend:** HTML/CSS/JS vanilla — sin framework, a propósito: la app es lo
-bastante pequeña como para que un framework fuera coste sin beneficio, no un
-"no sé usar uno".
+**Frontend:** vanilla HTML/CSS/JS — no framework, on purpose: the app is
+small enough that a framework would be cost without benefit, not "doesn't
+know how to use one."
 
-**IA / evaluación:** Anthropic Claude (tool use / structured output para el
-generador baseline, sin parseo de markdown) · diseño de harness de evals
-propio (leakage / grounding / richness) con juez calibrado y verificado
-contra fugas plantadas.
+**AI / evaluation:** Anthropic Claude (tool use / structured output for the
+baseline generator, no markdown parsing) · a custom evals harness design
+(leakage / grounding / richness) with a calibrated judge, verified against
+planted leaks.
 
-**CI:** GitHub Actions corre los 8 tests en cada push (ver badge arriba).
+**CI:** GitHub Actions runs the 8 tests on every push (see badge above).
 
-## Cómo está hecho
+## How it's built
 
-| Pieza | Qué es |
+| Piece | What it is |
 |---|---|
-| `webapp/` | FastAPI + vanilla JS. Sirve el catálogo, gestiona el gate de spoilers, comentarios (editar/borrar sin cuentas, con token anónimo por navegador). |
-| `content/curated/*.json` | 7 fichas investigadas a mano (con fuentes citadas: Wikipedia, Hollywood Reporter, No Film School…), no generadas por un LLM sin verificar. |
-| `src/preshow/` | Contratos de datos (Pydantic) tanto del contenido curado como del harness de medición. |
-| `evals/` | El experimento real: métricas de fuga/fundamentación/riqueza, juez calibrado, dataset de 20 títulos estratificado. |
+| `webapp/` | FastAPI + vanilla JS. Serves the catalogue, runs the spoiler gate, comments (edit/delete with no accounts, anonymous per-browser token). |
+| `content/curated/*.json` | 7 hand-researched entries (with cited sources: Wikipedia, Hollywood Reporter, No Film School…), not generated by an unverified LLM. |
+| `src/preshow/` | Data contracts (Pydantic) for both the curated content and the measurement harness. |
+| `evals/` | The real experiment: leakage/grounding/richness metrics, calibrated judge, 20-title stratified dataset. |
 
-## Estado
+## Status
 
-| Qué | Estado |
+| What | Status |
 |---|---|
-| App Twistify (catálogo, gate de spoilers, filtros, comentarios) | ✅ 7/20 fichas curadas |
-| Harness de evals offline | ✅ 8 tests en verde |
-| Ground truth de spoilers (20 títulos) | ✅ 20/20, investigado con fuentes citadas |
-| Generador baseline (sin retrieval) | ✅ código listo |
-| Calibración del juez (offline) | ✅ recall=0.0 confirmado — justifica por qué hace falta un juez mejor |
-| Medir el baseline sobre los 20 títulos | 🔴 pendiente de correr |
-| Retrieval (TMDB/OMDb/Wikipedia) + verificador | ⬜ próximo hito |
+| Twistify app (catalogue, spoiler gate, filters, comments) | ✅ 7/20 entries curated |
+| Offline evals harness | ✅ 8 tests passing |
+| Spoiler ground truth (20 titles) | ✅ 20/20, researched with cited sources |
+| Baseline generator (no retrieval) | ✅ code ready |
+| Judge calibration (offline) | ✅ recall=0.0 confirmed — the reason a better judge is needed |
+| Measure the baseline over the 20 titles | 🔴 pending a run |
+| Retrieval (TMDB/OMDb/Wikipedia) + verifier | ⬜ next milestone |
 
-## Bajo el capó: el harness de evaluación
+## Under the hood: the evaluation harness
 
-La parte que no se ve en las capturas es la que sostiene la promesa de la
-app: un sistema que **mide**, en vez de prometer, tres cosas por cada ficha:
+The part you don't see in the screenshots is what backs the app's promise:
+a system that **measures**, instead of promising, three things per entry:
 
-1. **`leakage_rate`** — ¿se coló algún spoiler en el contenido pre-visionado?
-2. **`grounded_fact_rate`** — ¿cuántas afirmaciones llevan fuente real?
-3. **`richness`** — ¿cuánto dice realmente? (un output vacío puntúa perfecto
-   en las dos primeras — por eso nunca se reporta sin esta)
+1. **`leakage_rate`** — did any spoiler slip into the pre-viewing content?
+2. **`grounded_fact_rate`** — how many claims carry a real source?
+3. **`richness`** — how much does it actually say? (an empty output scores
+   perfectly on the first two — that's why it's never reported without
+   this one)
 
 ```bash
-python -m pytest tests/ -q                      # 8/8, sin red, sin API key
-python evals/run_eval.py --generator baseline   # bloquea con <15 títulos etiquetados
+python -m pytest tests/ -q                      # 8/8, no network, no API key
+python evals/run_eval.py --generator baseline   # blocks below 15 labeled titles
 ```
 
-Las decisiones detrás de este diseño (por qué no hay LangGraph, por qué el
-esquema permite estados inválidos a propósito, por qué el ground truth no lo
-puede generar el mismo modelo que se está midiendo) están documentadas en
+The decisions behind this design (why there's no LangGraph, why the schema
+allows invalid states on purpose, why the same model being measured can't
+generate its own ground truth) are documented in
 [`docs/DESIGN.md`](docs/DESIGN.md).
 
-## Fuentes y restricciones legales
+## Sources and legal restrictions
 
-- **TMDB** — gratis para uso no comercial, exige atribución. Sus términos
-  restringen usar el contenido para *entrenar* sistemas de IA; inferencia con
-  atribución es la lectura habitual, pero revísalo antes de escalar esto.
-- **OMDb** — vía a puntuaciones de Rotten Tomatoes/Metascore, tier gratis
-  limitado.
-- **Wikipedia** — CC BY-SA, ya en uso para las fichas curadas.
-- **Scraping de IMDb** — prohibido por ToS, no se hace bajo ninguna excusa.
+- **TMDB** — free for non-commercial use, requires attribution. Its terms
+  restrict using the content to *train* AI systems; inference with
+  attribution is the usual reading, but review it before scaling this up.
+- **OMDb** — a path to Rotten Tomatoes/Metascore scores, free tier is
+  limited.
+- **Wikipedia** — CC BY-SA, already in use for curated entries.
+- **Scraping IMDb** — forbidden by ToS, not done under any excuse.
 
-## Licencia
+## License
 
-Sin licencia definida todavía — repo de portfolio personal. Si quieres
-reutilizar algo, pregunta antes.
+No license defined yet — personal portfolio repo. If you want to reuse
+something, ask first.

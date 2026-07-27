@@ -1,9 +1,10 @@
 """Runner. `python evals/run_eval.py --generator fake`
 
-El generador se inyecta. El runner no sabe si detrás hay un LLM, un stub o
-una versión futura del pipeline: por eso puedes comparar Hito 0 vs Hito 1 vs
-Hito 2 con el MISMO código de medición. Si cambias el harness entre hitos,
-tus comparaciones no valen nada.
+The generator gets injected. The runner doesn't know whether there's an
+LLM, a stub, or a future version of the pipeline behind it: that's why you
+can compare Milestone 0 vs Milestone 1 vs Milestone 2 with the SAME
+measurement code. If you change the harness between milestones, your
+comparisons are worthless.
 """
 
 from __future__ import annotations
@@ -55,24 +56,24 @@ def main() -> int:
     cases = load_cases()
     labelled = [c for c in cases if load_labels(c.title_id)]
 
-    # Puerta de calidad del dataset. Sin ground truth suficiente, la métrica
-    # es ruido con dos decimales. Mejor fallar ruidosamente que reportar 0.0.
+    # Dataset quality gate. Without enough ground truth, the metric is noise
+    # with two decimal places. Better to fail loudly than report 0.0.
     if len(labelled) < 15:
         print(
-            f"BLOQUEADO: solo {len(labelled)}/{len(cases)} títulos etiquetados.\n"
-            f"Etiqueta al menos 15 antes de correr evals. Un leakage_rate\n"
-            f"calculado sobre {len(labelled)} títulos no significa nada.",
+            f"BLOCKED: only {len(labelled)}/{len(cases)} titles labeled.\n"
+            f"Label at least 15 before running evals. A leakage_rate\n"
+            f"computed over {len(labelled)} titles means nothing.",
             file=sys.stderr,
         )
         return 1
 
     if args.generator == "fake":
-        print("El generador 'fake' solo sirve para tests. Usa --generator baseline.")
+        print("The 'fake' generator is for tests only. Use --generator baseline.")
         return 1
 
     generator = _load_generator(args.generator)
     if generator is None:
-        print(f"Generador desconocido: {args.generator}", file=sys.stderr)
+        print(f"Unknown generator: {args.generator}", file=sys.stderr)
         return 1
 
     judge = SubstringJudge()

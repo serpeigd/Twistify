@@ -1,18 +1,18 @@
-"""Pre-Show Reels — app local. Gratis, sin red, sin ANTHROPIC_API_KEY.
+"""Twistify — local app. Free, no network, no ANTHROPIC_API_KEY.
 
-QUÉ HACE VISIBLE (esto es una pieza de portfolio, no un blog de cine):
+WHAT THIS MAKES VISIBLE (this is a portfolio piece, not a movie blog):
 
-1. Partición de contexto real (D3). Los campos post-visionado no se ocultan
-   con CSS: no salen del servidor hasta que el cliente declara haber visto la
-   obra. Abrir devtools no revela nada.
-2. Fundamentación por afirmación. Cada dato factual muestra si tiene fuente
-   o no. Los huecos son visibles a propósito.
-3. Verificación de fuga en vivo, con su barra de error. El contenido
-   pre-visionado se pasa por el mismo detector que usa `evals/run_eval.py`,
-   y se reporta junto al recall MEDIDO del juez -- porque "0 fugas" con un
-   juez de recall 0.0 no significa "no hay fugas".
+1. Real context partition (D3). Post-viewing fields aren't hidden with
+   CSS: they never leave the server until the client declares it has seen
+   the work. Opening devtools reveals nothing.
+2. Per-claim grounding. Every factual claim shows whether it has a source
+   or not. The gaps are visible on purpose.
+3. Live leak verification, with its error bar. Pre-viewing content runs
+   through the same detector `evals/run_eval.py` uses, and is reported
+   alongside the judge's MEASURED recall -- because "0 leaks" from a judge
+   with 0.0 recall doesn't mean "there are no leaks."
 
-Correr:
+Run:
     pip install fastapi "uvicorn[standard]"
     python webapp/app.py
     # http://127.0.0.1:8000
@@ -43,7 +43,7 @@ CONTENT_DIR = ROOT / "content" / "curated"
 COMMENTS_FILE = ROOT / "content" / "comments.json"
 CALIBRATION_FILE = ROOT / "evals" / "results" / "substring_calibration.json"
 
-app = FastAPI(title="Pre-Show Reels")
+app = FastAPI(title="Twistify")
 judge = SubstringJudge()
 
 
@@ -72,14 +72,15 @@ CALIBRATION = load_calibration()
 
 
 def verify_pre_show(pack: ContentPack, labels: list[SpoilerLabel]) -> dict:
-    """Pasa la superficie pre-visionado por el detector de fugas.
+    """Runs the pre-viewing surface through the leak detector.
 
-    NOTA (rediseño): la UI ya NO muestra este veredicto al usuario. Un badge
-    "sin fugas" comunica una garantía que la medición no respalda: el juez
-    tiene recall 0.0 (no ve paráfrasis). Presentarlo en verde era engañoso.
-    El endpoint se mantiene para auditar el pipeline (evals/, /api/stats),
-    no para venderlo en la ficha. El campo `judge_recall` acompaña siempre al
-    veredicto para que nadie lo lea sin su barra de error.
+    NOTE (redesign): the UI no longer shows this verdict to the user. A
+    "no leaks" badge communicates a guarantee the measurement doesn't back
+    up: the judge has 0.0 recall (it can't see paraphrases). Showing it in
+    green was misleading. The endpoint stays to audit the pipeline
+    (evals/, /api/stats), not to sell it on the entry page. The
+    `judge_recall` field always rides along with the verdict so no one
+    reads it without its error bar.
     """
     hits = []
     for loc, text in pack.pre_show_text():
@@ -105,7 +106,7 @@ def verify_pre_show(pack: ContentPack, labels: list[SpoilerLabel]) -> dict:
     }
 
 
-# ---------------------------------------------------------------- comentarios
+# ------------------------------------------------------------------ comments
 
 
 def read_comments() -> dict[str, list[dict]]:
@@ -151,7 +152,7 @@ def api_catalogue():
 def api_film(title_id: str, seen: bool = False):
     case = CASES.get(title_id)
     if case is None:
-        raise HTTPException(404, f"Título desconocido: {title_id}")
+        raise HTTPException(404, f"Unknown title: {title_id}")
 
     pack = PACKS.get(title_id)
     labels = load_labels(title_id)
@@ -213,12 +214,12 @@ def api_get_comments(title_id: str, owner_token: str = ""):
 @app.post("/api/film/{title_id}/comments")
 def api_post_comment(title_id: str, payload: dict = Body(...)):
     text = (payload.get("text") or "").strip()
-    author = (payload.get("author") or "anónimo").strip()[:40]
+    author = (payload.get("author") or "anonymous").strip()[:40]
     owner_token = (payload.get("owner_token") or "").strip()[:64]
     if not text:
-        raise HTTPException(400, "Comentario vacío")
+        raise HTTPException(400, "Empty comment")
     if title_id not in CASES:
-        raise HTTPException(404, "Título desconocido")
+        raise HTTPException(404, "Unknown title")
 
     data = read_comments()
     entry = {
@@ -239,18 +240,18 @@ def api_edit_comment(title_id: str, comment_id: str, payload: dict = Body(...)):
     text = (payload.get("text") or "").strip()
     owner_token = (payload.get("owner_token") or "").strip()
     if not text:
-        raise HTTPException(400, "Comentario vacío")
+        raise HTTPException(400, "Empty comment")
 
     data = read_comments()
     for c in data.get(title_id, []):
         if c.get("id") == comment_id:
             if not owner_token or c.get("owner_token") != owner_token:
-                raise HTTPException(403, "No puedes editar este comentario")
+                raise HTTPException(403, "You can't edit this comment")
             c["text"] = text[:2000]
             c["edited"] = True
             write_comments(data)
             return _public_comment(c, owner_token)
-    raise HTTPException(404, "Comentario no encontrado")
+    raise HTTPException(404, "Comment not found")
 
 
 @app.delete("/api/film/{title_id}/comments/{comment_id}")
@@ -260,17 +261,17 @@ def api_delete_comment(title_id: str, comment_id: str, owner_token: str = ""):
     for i, c in enumerate(lst):
         if c.get("id") == comment_id:
             if not owner_token or c.get("owner_token") != owner_token:
-                raise HTTPException(403, "No puedes eliminar este comentario")
+                raise HTTPException(403, "You can't delete this comment")
             lst.pop(i)
             write_comments(data)
             return {"ok": True}
-    raise HTTPException(404, "Comentario no encontrado")
+    raise HTTPException(404, "Comment not found")
 
 
 @app.get("/api/stats")
 def api_stats():
-    """Panel global. La métrica que importa no es cuántas fichas hay, sino
-    qué proporción del contenido factual está fundamentado."""
+    """Global panel. The metric that matters isn't how many entries exist,
+    but what fraction of the factual content is grounded."""
     curated = list(PACKS.values())
     total_needs = total_grounded = 0
     for p in curated:

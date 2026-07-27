@@ -1,15 +1,16 @@
-"""Generador de DEMO. No llama a ningún LLM, no cuesta nada, no es el baseline
-real (ese es `baseline.py`, que sí necesita ANTHROPIC_API_KEY y gasta crédito).
+"""DEMO generator. Doesn't call any LLM, costs nothing, isn't the real
+baseline (that's `baseline.py`, which does need ANTHROPIC_API_KEY and
+spends credit).
 
-Construye un PreShowBrief a partir de plantillas fijas y solo de los campos
-seguros que ya tenemos gratis en el propio dataset (título, año, estrato,
-notas de `titles.yaml`). Nunca toca `evals/dataset/spoilers/*.yaml`: ese
-fichero es precisamente lo que un brief pre-visionado no debe filtrar.
+Builds a PreShowBrief from fixed templates and only the safe fields we
+already have for free in the dataset itself (title, year, stratum, notes
+from `titles.yaml`). Never touches `evals/dataset/spoilers/*.yaml`: that
+file is exactly what a pre-viewing brief must not leak.
 
-Sirve para tener algo que ver y verificar en una UI sin gastar crédito real.
-No confundir con una medición del sistema -- el `leakage_rate` de esto es
-0.0 por construcción (no hay retrieval real detrás), no porque el sistema
-"funcione".
+Exists so there's something to see and verify in a UI without spending
+real credit. Don't confuse this with a measurement of the system -- the
+`leakage_rate` here is 0.0 by construction (there's no real retrieval
+behind it), not because the system "works."
 """
 
 from __future__ import annotations
@@ -17,22 +18,22 @@ from __future__ import annotations
 from .schemas import Claim, DeepDive, PreShowBrief, ScriptBlock, SourceDoc, TitleCase
 
 _STRATUM_VOICE = {
-    "mainstream": "una de esas películas de las que todo el mundo tiene una opinión, aunque no la haya visto",
-    "longtail": "una de esas películas que casi nadie ha visto pero todo el que la ha visto no la olvida",
+    "mainstream": "one of those movies everyone has an opinion on, even if they haven't seen it",
+    "longtail": "one of those movies almost nobody has seen, but everyone who has never forgets it",
 }
 
 
 class DemoGenerator:
-    """Generator (Protocol) de demo. Determinista: mismo título -> mismo brief."""
+    """Demo Generator (Protocol). Deterministic: same title -> same brief."""
 
     name = "demo"
 
     def pre_show(self, case: TitleCase, corpus: list[SourceDoc]) -> PreShowBrief:
-        voice = _STRATUM_VOICE.get(case.stratum, "una película que merece verse sin saber nada de antemano")
+        voice = _STRATUM_VOICE.get(case.stratum, "a movie worth watching without knowing anything beforehand")
 
         context_bullets = [
             Claim(
-                text=f"{case.title} se estrenó en {case.year}.",
+                text=f"{case.title} was released in {case.year}.",
                 kind="fact",
                 source_id=None,
             ),
@@ -48,18 +49,18 @@ class DemoGenerator:
             author_voice=[
                 Claim(text=voice, kind="interpretation", source_id=None),
             ],
-            emotional_temperature="como abrir una puerta sin saber qué hay detrás",
-            why_now=f"{case.title} ({case.year}) — de las que conviene ver sin haber leído nada antes.",
+            emotional_temperature="like opening a door without knowing what's behind it",
+            why_now=f"{case.title} ({case.year}) — one of those you should watch without reading anything first.",
             script=[
                 ScriptBlock(
                     start_s=0,
                     end_s=15,
                     on_screen_text=case.title,
                     voiceover=voice,
-                    visual_direction="plano fijo, sin música hasta el segundo 10",
+                    visual_direction="static shot, no music until second 10",
                 )
             ],
         )
 
     def deep_dive(self, case: TitleCase, corpus: list[SourceDoc]) -> DeepDive:
-        raise NotImplementedError("La demo solo cubre pre_show; deep_dive no existe todavía")
+        raise NotImplementedError("The demo only covers pre_show; deep_dive doesn't exist yet")

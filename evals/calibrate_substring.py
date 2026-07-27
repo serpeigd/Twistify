@@ -1,22 +1,23 @@
-"""Calibración del SubstringJudge contra un set derivado del propio ground
-truth (evals/dataset/spoilers/*.yaml), no contra un benchmark externo.
+"""Calibration of SubstringJudge against a set derived from the project's
+own ground truth (evals/dataset/spoilers/*.yaml), not against an external
+benchmark.
 
-Por qué no un benchmark externo: TV Tropes Movies (Boyd-Graber et al. 2013)
-no tiene descarga directa sin contactar a los autores; el IMDB Spoiler
-Dataset (Misra) vive en Kaggle y exige cuenta/API key -- una credencial del
-usuario que este script no debe pedir ni gestionar. Ver README, sección
-"Benchmarks para calibrar el juez".
+Why not an external benchmark: TV Tropes Movies (Boyd-Graber et al. 2013)
+has no direct download without contacting the authors; the IMDB Spoiler
+Dataset (Misra) lives on Kaggle and requires an account/API key -- a user
+credential this script must not request or manage. See the README, section
+"Benchmarks to calibrate the judge."
 
-Qué mide esto en su lugar: por cada SpoilerLabel, sus paráfrasis y su
-canonical son positivos (SÍ revelan ese spoiler); paráfrasis de OTROS
-labels/títulos son negativos (no deberían activarlo), más un puñado de
-frases neutras de marketing genérico como negativos adicionales.
+What this measures instead: for each SpoilerLabel, its paraphrases and its
+canonical are positives (they DO reveal that spoiler); paraphrases from
+OTHER labels/titles are negatives (they shouldn't trigger it), plus a
+handful of neutral, generic marketing sentences as additional negatives.
 
-Limitación explícita: es autoevaluación parcial -- las paráfrasis las
-escribió el mismo tipo de sistema (LLM) que generó el ground truth (ver D7
-en docs/DESIGN.md). Sirve para tener un número real y reproducible con lo
-que hay disponible gratis, no sustituye la calibración contra un benchmark
-independiente. No reportar esto como equivalente a esa calibración.
+Explicit limitation: this is partial self-evaluation -- the paraphrases
+were written by the same kind of system (an LLM) that generated the ground
+truth (see D7 in docs/DESIGN.md). It gives you a real, reproducible number
+with what's freely available, it does not replace calibration against an
+independent benchmark. Don't report this as equivalent to that calibration.
 """
 
 from __future__ import annotations
@@ -37,12 +38,12 @@ from preshow.schemas import SpoilerLabel  # noqa: E402
 DATA = ROOT / "evals" / "dataset" / "spoilers"
 
 NEUTRAL_SENTENCES = [
-    "Una historia ambientada en una ciudad que nunca duerme.",
-    "El reparto incluye a varios actores reconocidos por su trabajo previo.",
-    "La fotografía y la banda sonora han recibido elogios de la crítica.",
-    "Se rodó en varias localizaciones durante el año de producción.",
-    "Es una película que mezcla drama y momentos de tensión.",
-    "El director ya había trabajado antes en el mismo género.",
+    "A story set in a city that never sleeps.",
+    "The cast includes several actors known for their previous work.",
+    "The cinematography and score have received praise from critics.",
+    "It was filmed in several locations during the year of production.",
+    "It's a movie that mixes drama with moments of tension.",
+    "The director had already worked in the same genre before.",
 ]
 
 
@@ -56,14 +57,15 @@ def load_all_labels() -> list[tuple[str, SpoilerLabel]]:
 
 
 def build_dataset() -> list[tuple[str, SpoilerLabel, bool]]:
-    """Split train/held-out por label: la mitad de las paráfrasis se usan como
-    'needles' del juez (lo que ya conoce), la otra mitad como texto de prueba
-    que el juez NUNCA vio. Sin este split, evaluar el juez contra sus propias
-    needles da precision=recall=1.0 por construcción -- no mide nada, solo
-    confirma que una cadena se contiene a sí misma. Con el split, medimos si
-    detectar una needle conocida generaliza a una paráfrasis nueva del MISMO
-    spoiler, que es la pregunta real (y donde se espera que falle: por eso
-    existe test_substring_judge_misses_paraphrase)."""
+    """Train/held-out split per label: half of the paraphrases are used as
+    the judge's 'needles' (what it already knows), the other half as test
+    text the judge NEVER saw. Without this split, evaluating the judge
+    against its own needles gives precision=recall=1.0 by construction --
+    it measures nothing, it just confirms a string contains itself. With
+    the split, we measure whether detecting a known needle generalizes to
+    a new paraphrase of the SAME spoiler, which is the real question (and
+    where it's expected to fail: that's why
+    test_substring_judge_misses_paraphrase exists)."""
     all_labels = load_all_labels()
     data: list[tuple[str, SpoilerLabel, bool]] = []
 
@@ -78,16 +80,16 @@ def build_dataset() -> list[tuple[str, SpoilerLabel, bool]]:
             severity=label.severity,
         )
 
-        # Positivos reales: paráfrasis que el juez NO tiene como needle.
+        # Real positives: paraphrases the judge does NOT have as a needle.
         for h in heldout:
             data.append((h, stripped, True))
 
-        # Negativos: paráfrasis de un label distinto (no debería activarse).
+        # Negatives: paraphrases from a different label (shouldn't trigger).
         other = all_labels[(i + 7) % len(all_labels)]
         if other[1].paraphrases:
             data.append((other[1].paraphrases[0], stripped, False))
 
-    # Negativos adicionales: frases neutras de marketing genérico.
+    # Additional negatives: neutral, generic marketing sentences.
     for i, sentence in enumerate(NEUTRAL_SENTENCES):
         _, label = all_labels[i * 3 % len(all_labels)]
         stripped = SpoilerLabel(
@@ -106,11 +108,11 @@ def main() -> int:
     cal = calibrate(SubstringJudge(), dataset)
     result = cal.summary()
     result["tp"], result["fp"], result["tn"], result["fn"] = cal.tp, cal.fp, cal.tn, cal.fn
-    result["nota"] = (
-        "Calibrado contra el propio ground truth del proyecto (paráfrasis "
-        "LLM vs LLM), no contra TV Tropes Movies ni IMDB Spoiler Dataset "
-        "(ambos requieren descarga autenticada). No es una calibración "
-        "independiente."
+    result["note"] = (
+        "Calibrated against the project's own ground truth (LLM "
+        "paraphrases vs. LLM), not against TV Tropes Movies or the IMDB "
+        "Spoiler Dataset (both require authenticated download). Not an "
+        "independent calibration."
     )
     print(json.dumps(result, indent=2, ensure_ascii=False))
 

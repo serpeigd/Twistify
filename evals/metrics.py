@@ -1,15 +1,14 @@
-"""Métricas.
+"""Metrics.
 
-Tres, y las tres son necesarias a la vez:
+Three, and all three are needed at once:
 
-  leakage_rate      -> ¿cuántos spoilers se escapan?          (seguridad)
-  grounded_rate     -> ¿cuántos hechos tienen fuente?         (veracidad)
-  richness          -> ¿cuánto dice realmente?                (utilidad)
+  leakage_rate      -> how many spoilers escape?              (safety)
+  grounded_rate     -> how many facts have a source?           (truthfulness)
+  richness          -> how much does it actually say?          (usefulness)
 
-Las dos primeras sin la tercera son una trampa: un sistema que devuelve un
-brief vacío tiene 0% de fuga y 100% de grounding. El trade-off entre
-seguridad y riqueza ES el proyecto. Un README que solo reporta leakage está
-ocultando la mitad del resultado.
+The first two without the third are a trap: a system that returns an empty
+brief has 0% leakage and 100% grounding. The safety/richness trade-off IS
+the project. A README that only reports leakage is hiding half the result.
 """
 
 from __future__ import annotations
@@ -46,10 +45,10 @@ class CaseResult:
 
 
 def brief_surface(brief: PreShowBrief) -> list[tuple[str, str]]:
-    """Todo el texto que un espectador llegaría a ver/oír, con su ubicación.
+    """All the text a viewer would get to see/hear, with its location.
 
-    Ojo: incluye el guion. Es fácil olvidarse de que el voiceover también es
-    superficie de fuga y medir solo los bullets.
+    Watch out: this includes the script. It's easy to forget that the
+    voiceover is also leak surface and only measure the bullets.
     """
     out: list[tuple[str, str]] = []
     for i, c in enumerate(brief.context_bullets):
@@ -69,13 +68,13 @@ def detect_leaks(
     labels: list[SpoilerLabel],
     judge,
 ) -> list[LeakageHit]:
-    """`judge` es cualquier objeto con .entails(text, label) -> bool.
+    """`judge` is any object with .entails(text, label) -> bool.
 
-    Se inyecta para poder intercambiar el juez barato (subcadena) por el caro
-    (LLM) SIN tocar la métrica, y para poder comparar ambos sobre el mismo
-    conjunto. Si la métrica y el juez estuvieran acoplados no podrías medir
-    cuánto mejora el juez caro respecto al barato — que es justo el dato que
-    justifica pagarlo.
+    Injected so you can swap the cheap judge (substring) for the expensive
+    one (LLM) WITHOUT touching the metric, and so you can compare both on
+    the same set. If the metric and the judge were coupled you couldn't
+    measure how much better the expensive judge is than the cheap one —
+    which is exactly the data that justifies paying for it.
     """
     hits: list[LeakageHit] = []
     for loc, text in brief_surface(brief):
@@ -93,8 +92,8 @@ def detect_leaks(
 
 
 def grounding(claims: list[Claim]) -> tuple[int, int]:
-    """(hechos totales, hechos con fuente). Las interpretaciones no cuentan:
-    exigirle fuente a una lectura personal de la obra no tiene sentido."""
+    """(total facts, facts with a source). Interpretations don't count:
+    demanding a source for a personal reading of the work makes no sense."""
     facts = [c for c in claims if c.kind == "fact"]
     return len(facts), sum(1 for c in facts if c.source_id is not None)
 
@@ -117,11 +116,11 @@ def evaluate_case(
 
 
 def aggregate(results: list[CaseResult]) -> dict:
-    """Agregado global + desglose por estrato.
+    """Overall aggregate + breakdown by stratum.
 
-    El desglose NO es opcional. La hipótesis del proyecto es que el baseline
-    parece funcionar en mainstream y se hunde en cola larga. Si solo reportas
-    la media, esa señal desaparece.
+    The breakdown is NOT optional. The project's hypothesis is that the
+    baseline looks fine on mainstream titles and falls apart on long-tail
+    ones. If you only report the average, that signal disappears.
     """
 
     def _block(rs: list[CaseResult]) -> dict:

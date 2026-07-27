@@ -1,18 +1,18 @@
-"""Contrato de datos del sistema.
+"""System data contract.
 
-DECISIÓN DE DISEÑO CENTRAL
---------------------------
-Un `Claim` puede existir sin fuente. Esto parece un bug: ¿por qué no forzar
-`source_id: str` y que Pydantic rechace lo no fundamentado?
+CENTRAL DESIGN DECISION
+-----------------------
+A `Claim` can exist without a source. This looks like a bug: why not force
+`source_id: str` and have Pydantic reject unsupported claims?
 
-Porque no podrías medirlo. Si el parser rechaza el estado inválido, el fallo
-se convierte en una excepción en vez de en una métrica, y lo único que
-aprendes es "petó". Necesitas que el modelo PUEDA producir una afirmación sin
-fuente para poder contar con qué frecuencia lo hace, en qué tipo de títulos y
-si tu intervención lo reduce.
+Because you couldn't measure it. If the parser rejects the invalid state,
+the failure becomes an exception instead of a metric, and all you learn is
+"it blew up." You need the model to be ABLE to produce a claim with no
+source so you can count how often it happens, on which kind of titles, and
+whether your intervention reduces it.
 
-La validación no vive en el esquema. Vive en el verificador, que es una etapa
-explícita del pipeline con su propia métrica.
+Validation doesn't live in the schema. It lives in the verifier, which is
+an explicit pipeline stage with its own metric.
 """
 
 from __future__ import annotations
@@ -24,25 +24,26 @@ from pydantic import BaseModel, Field
 
 
 class SpoilerTier(str, Enum):
-    """Semáforo, pero asignado al CORPUS, no al output.
+    """Traffic light, but assigned to the CORPUS, not the output.
 
-    En el prompt original el modelo se autoetiquetaba. Aquí el tier se decide
-    sobre los documentos recuperados, antes de generar. El generador
-    pre-experiencia solo recibe GREEN. La seguridad es una propiedad del
-    contexto, no una instrucción que el modelo puede ignorar.
+    In the original prompt the model self-labeled. Here the tier is decided
+    on the retrieved documents, before generation. The pre-experience
+    generator only receives GREEN. Security is a property of context, not
+    an instruction the model can ignore.
     """
 
-    GREEN = "green"  # seguro pre-experiencia
-    AMBER = "amber"  # ambiguo -> se trata como RED por defecto
-    RED = "red"      # solo post-experiencia
+    GREEN = "green"  # safe pre-experience
+    AMBER = "amber"  # ambiguous -> treated as RED by default
+    RED = "red"      # post-experience only
 
 
 Origin = Literal["tmdb", "omdb", "wikipedia", "openlibrary", "model_memory"]
 
 
 class SourceDoc(BaseModel):
-    """Un chunk recuperado. `model_memory` existe para el baseline (Hito 0):
-    permite representar el caso 'esto salió de los pesos, no de una fuente'."""
+    """A retrieved chunk. `model_memory` exists for the baseline (Milestone
+    0): it lets you represent the case 'this came from the weights, not a
+    source'."""
 
     source_id: str
     origin: Origin
@@ -53,12 +54,13 @@ class SourceDoc(BaseModel):
 
 
 class Claim(BaseModel):
-    """Unidad atómica de contenido.
+    """Atomic unit of content.
 
-    `kind` separa lo verificable de lo opinable. Una interpretación sin fuente
-    es legítima (es tu lectura de la obra). Un hecho sin fuente es basura.
-    Mezclarlos en el mismo campo, como hacía el prompt original, hace imposible
-    aplicar reglas distintas.
+    `kind` separates the verifiable from the opinionated. An interpretation
+    with no source is legitimate (it's your reading of the work). A fact
+    with no source is garbage. Mixing them in the same field, like the
+    original prompt did, makes it impossible to apply different rules to
+    each.
     """
 
     text: str
@@ -66,7 +68,7 @@ class Claim(BaseModel):
     source_id: str | None = None
     quote: str | None = Field(
         default=None,
-        description="Fragmento literal de la fuente que soporta el claim.",
+        description="Literal excerpt from the source that backs the claim.",
     )
 
     @property
@@ -75,10 +77,10 @@ class Claim(BaseModel):
 
 
 class ScriptBlock(BaseModel):
-    """Bloque temporal del guion.
+    """A timed block of the script.
 
-    Datos, no markdown. Si algún día encadenas TTS + montaje automático,
-    necesitas `start_s`/`end_s` como números, no una celda de tabla.
+    Data, not markdown. If you ever chain this into TTS + automated
+    editing, you need `start_s`/`end_s` as numbers, not a table cell.
     """
 
     start_s: int
@@ -89,12 +91,12 @@ class ScriptBlock(BaseModel):
 
 
 class PreShowBrief(BaseModel):
-    """FASE 1. Se genera con contexto GREEN exclusivamente."""
+    """PHASE 1. Generated with GREEN context only."""
 
     title_id: str
     context_bullets: list[Claim] = Field(max_length=3)
     author_voice: list[Claim] = Field(max_length=3)
-    emotional_temperature: str  # metáfora sensorial: siempre interpretación
+    emotional_temperature: str  # sensory metaphor: always an interpretation
     why_now: str
     script: list[ScriptBlock]
 
@@ -104,7 +106,7 @@ class PreShowBrief(BaseModel):
 
 
 class DeepDive(BaseModel):
-    """FASE 2+3. Contexto completo. Aquí los spoilers son el producto."""
+    """PHASES 2+3. Full context. Spoilers are the product here."""
 
     title_id: str
     metaphors: list[Claim]
@@ -128,13 +130,14 @@ class DeepDive(BaseModel):
 
 
 class SpoilerLabel(BaseModel):
-    """Ground truth etiquetado a mano. Un hecho que NUNCA debe aparecer
-    en un PreShowBrief.
+    """Hand-labeled ground truth. A fact that must NEVER show up in a
+    PreShowBrief.
 
-    `paraphrases` existe porque la fuga real casi nunca es literal. El modelo
-    no escribe "el protagonista está muerto"; escribe "una revelación final
-    reconfigura todo lo que has visto". Si tu detector solo busca subcadenas,
-    tu tasa de fuga medida será cero y será mentira.
+    `paraphrases` exists because a real leak is almost never literal. The
+    model doesn't write "the protagonist is dead"; it writes "a final
+    revelation reframes everything you've seen." If your detector only
+    looks for substrings, your measured leak rate will be zero, and it will
+    be a lie.
     """
 
     id: str
@@ -144,7 +147,7 @@ class SpoilerLabel(BaseModel):
 
 
 class TitleCase(BaseModel):
-    """Un caso del set de evaluación."""
+    """A case from the evaluation set."""
 
     title_id: str
     title: str

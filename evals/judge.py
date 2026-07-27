@@ -1,27 +1,28 @@
-"""Jueces de fuga de spoilers.
+"""Spoiler-leak judges.
 
-EL PUNTO QUE SEPARA ESTE PROYECTO DE UNA DEMO
----------------------------------------------
-Vas a usar un LLM para decidir si tu LLM ha filtrado un spoiler. Eso mueve el
-problema de confianza, no lo resuelve: ahora tu métrica depende de un
-componente no determinista y no validado.
+THE POINT THAT SEPARATES THIS PROJECT FROM A DEMO
+--------------------------------------------------
+You're about to use an LLM to decide whether your LLM leaked a spoiler.
+That moves the trust problem, it doesn't solve it: now your metric depends
+on a non-deterministic, unvalidated component.
 
-La respuesta no es "usar un modelo mejor". Es CALIBRAR EL JUEZ contra ground
-truth etiquetado por humanos, reportar su precision/recall, y presentar tus
-números de fuga con esa barra de error encima.
+The answer isn't "use a better model." It's CALIBRATE THE JUDGE against
+human-labeled ground truth, report its precision/recall, and present your
+leak numbers with that error bar attached.
 
-Ground truth disponible sin etiquetar tú nada:
-  - TV Tropes Movies (Boyd-Graber et al., 2013): ~16k frases, ~50% spoiler.
-    Balanceado, corto, orientado a cine. El mejor punto de partida.
-  - IMDB Spoiler Dataset (Misra, arXiv:2212.06034): reseñas de películas.
-  - Goodreads / UCSD Book Graph (Wan et al., 2019): 1.3M reseñas, etiquetas a
-    nivel de frase, ~3% positivas. Para cuando añadas libros.
+Ground truth available without labeling anything yourself:
+  - TV Tropes Movies (Boyd-Graber et al., 2013): ~16k sentences, ~50%
+    spoiler. Balanced, short, film-oriented. The best starting point.
+  - IMDB Spoiler Dataset (Misra, arXiv:2212.06034): movie reviews.
+  - Goodreads / UCSD Book Graph (Wan et al., 2019): 1.3M reviews,
+    sentence-level labels, ~3% positive. For when you add books.
 
-Cuidado con la diferencia de tarea: esos datasets clasifican "¿esta frase ES
-un spoiler?". Tú necesitas "¿esta frase REVELA este spoiler concreto?", que es
-entailment, no clasificación. La calibración te da una cota superior de
-fiabilidad, no una validación exacta. Dilo en el writeup; que sepas
-distinguirlo es parte de lo que demuestra el proyecto.
+Watch out for the task mismatch: those datasets classify "IS this sentence
+a spoiler?" You need "does this sentence REVEAL this specific spoiler?",
+which is entailment, not classification. Calibration gives you an upper
+bound on reliability, not an exact validation. Say so in the writeup —
+knowing how to make that distinction is part of what the project
+demonstrates.
 """
 
 from __future__ import annotations
@@ -33,14 +34,15 @@ from preshow.schemas import SpoilerLabel
 
 
 class SubstringJudge:
-    """Baseline deliberadamente malo. Offline, determinista, gratis.
+    """Deliberately bad baseline. Offline, deterministic, free.
 
-    Existe por dos razones:
-      1. Los tests del harness corren sin red ni API key.
-      2. Es el suelo contra el que mides el juez LLM. Si el LLM no supera
-         claramente esto, no estás pagando por nada útil.
+    Exists for two reasons:
+      1. The harness tests run with no network, no API key.
+      2. It's the floor you measure the LLM judge against. If the LLM
+         doesn't clearly beat this, you're not paying for anything useful.
 
-    Fallo esperado: no detecta paráfrasis, que es como se fuga de verdad.
+    Expected failure: it doesn't detect paraphrases, which is how a real
+    leak happens.
     """
 
     name = "substring"
@@ -56,29 +58,32 @@ class SubstringJudge:
 
 
 JUDGE_PROMPT = """\
-Eres un verificador de fugas de spoilers. Responde SOLO con SI o NO.
+You are a spoiler-leak verifier. Answer ONLY with YES or NO.
 
-SPOILER PROTEGIDO (no debe poder deducirse):
+PROTECTED SPOILER (must not be inferable):
 {spoiler}
 
-TEXTO A EVALUAR (material promocional pre-visionado):
+TEXT TO EVALUATE (pre-viewing promotional material):
 {text}
 
-Pregunta: ¿un espectador que NO conoce la obra podría deducir el spoiler
-protegido leyendo este texto?
+Question: could a viewer who does NOT know the work infer the protected
+spoiler by reading this text?
 
-Criterio estricto: "SI" también si el texto lo insinúa de forma que anticipa
-la revelación. Criterio de exclusión: "NO" si el texto solo genera intriga
-genérica sin apuntar al contenido concreto del spoiler.
+Strict criterion: also answer "YES" if the text hints at it in a way that
+anticipates the reveal. Exclusion criterion: "NO" if the text only
+generates generic intrigue without pointing at the spoiler's specific
+content.
 """
 
 
 class LLMJudge:
-    """Juez real. `client_fn(prompt) -> str` se inyecta para poder mockearlo.
+    """Real judge. `client_fn(prompt) -> str` is injected so it can be
+    mocked.
 
-    Usa un modelo pequeño: la tarea es entailment binario corto y no justifica
-    el modelo grande. El coste importa: es len(surface) x len(labels) llamadas
-    por caso, o sea el componente más caro de todo el pipeline si no vigilas.
+    Uses a small model: the task is a short binary entailment call and
+    doesn't justify a large one. Cost matters: it's len(surface) x
+    len(labels) calls per case, i.e. the most expensive component of the
+    whole pipeline if left unchecked.
     """
 
     name = "llm"
@@ -91,7 +96,7 @@ class LLMJudge:
         key = (text, label.id)
         if key not in self._cache:
             raw = self._client(JUDGE_PROMPT.format(spoiler=label.canonical, text=text))
-            self._cache[key] = raw.strip().upper().startswith("SI")
+            self._cache[key] = raw.strip().upper().startswith("YES")
         return self._cache[key]
 
 
@@ -124,11 +129,11 @@ class Calibration:
 
 
 def calibrate(judge, labeled: list[tuple[str, SpoilerLabel, bool]]) -> Calibration:
-    """`labeled`: (texto, spoiler, ¿lo revela de verdad?) etiquetado a mano.
+    """`labeled`: (text, spoiler, does it really reveal it?), hand-labeled.
 
-    En seguridad de spoilers, el RECALL manda. Un falso positivo te hace
-    reescribir un bullet inocente; un falso negativo publica el spoiler.
-    Optimiza el umbral hacia recall y reporta el precision que pagas por ello.
+    In spoiler safety, RECALL rules. A false positive makes you rewrite an
+    innocent bullet; a false negative publishes the spoiler. Optimize the
+    threshold toward recall and report the precision you pay for it.
     """
     tp = fp = tn = fn = 0
     for text, label, truth in labeled:

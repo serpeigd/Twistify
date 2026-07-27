@@ -1,117 +1,124 @@
-# Decisiones de diseño
+# Design decisions
 
-Vivo. Se escribe según se decide, no al final. Un writeup reconstruido a
-posteriori se nota: pierde los caminos descartados, que es lo interesante.
+Living document. Written as decisions get made, not after the fact. A
+writeup reconstructed in hindsight always shows — it loses the paths not
+taken, which is the interesting part.
 
-## D1 — Sin framework de orquestación
+## D1 — No orchestration framework
 
-Ni LangChain, ni CrewAI, ni LangGraph. El pipeline son N pasos secuenciales
-con una puerta de verificación. Una función lo expresa mejor y es depurable
-con pdb.
+No LangChain, no CrewAI, no LangGraph. The pipeline is N sequential steps
+with a verification gate. A function expresses that better and is
+debuggable with pdb.
 
-LangGraph se justifica con estado cíclico y ramificación condicional. El único
-punto de este sistema que lo tendrá es el retrieval de títulos oscuros
-("no encuentro suficiente, reformulo y busco otra vez"). Cuando llegue ahí,
-se reevalúa — y si se introduce, será solo en ese nodo.
+LangGraph earns its keep with cyclic state and conditional branching. The
+only part of this system that will have that is retrieval for obscure
+titles ("not enough results, reformulate and search again"). When we get
+there, it gets re-evaluated — and if it's introduced, it'll be scoped to
+just that node.
 
-Coste de la decisión: si el proyecto crece a bifurcaciones reales habrá que
-reescribir orquestación. Asumido: es más barato que arrastrar la abstracción
-desde el principio.
+Cost of this decision: if the project grows into real branching, we'll have
+to rewrite orchestration. Accepted trade-off: cheaper than carrying the
+abstraction from day one.
 
-## D2 — El esquema permite estados inválidos
+## D2 — The schema allows invalid states
 
-`Claim.source_id` es opcional aunque un hecho sin fuente sea inaceptable.
+`Claim.source_id` is optional even though a fact without a source is
+unacceptable.
 
-Si Pydantic lo rechazara al parsear, el fallo sería una excepción en vez de
-una métrica. Y lo que se necesita saber no es "¿ha fallado?" sino "¿en qué
-porcentaje de casos, en qué estrato, y cuánto lo reduce la intervención?".
+If Pydantic rejected it at parse time, the failure would be an exception
+instead of a metric. And what we need to know isn't "did it fail?" but
+"what percentage of cases, in which stratum, and how much does the
+intervention reduce it?"
 
-La validación vive en el verificador, que es una etapa con nombre y número.
+Validation lives in the verifier, which is a named, numbered stage.
 
-## D3 — El semáforo etiqueta el corpus, no el output
+## D3 — The traffic light tags the corpus, not the output
 
-En el prompt original el modelo se autoetiquetaba 🟢/🟡/🔴. Autoevaluación:
-el mismo componente que puede filtrar certifica que no ha filtrado.
+In the original prompt the model self-labeled 🟢/🟡/🔴. Self-evaluation: the
+same component that can leak a spoiler certifies that it hasn't.
 
-Aquí el tier se asigna a los documentos recuperados, antes de generar. El
-generador pre-visionado recibe solo GREEN. AMBER se trata como RED por
-defecto (asimetría de coste: un bullet de menos vs. un spoiler publicado).
+Here the tier is assigned to the retrieved documents, before generation.
+The pre-show generator only receives GREEN. AMBER is treated as RED by
+default (cost asymmetry: one fewer bullet vs. a published spoiler).
 
-Esto convierte la seguridad en una propiedad del contexto en vez de en una
-instrucción. Instrucción = el modelo puede desobedecer. Contexto = no puede
-revelar lo que no tiene.
+This turns security into a property of context instead of an instruction.
+Instruction = the model can disobey it. Context = it can't reveal what it
+doesn't have.
 
-## D4 — Tres métricas o ninguna
+## D4 — Three metrics or none
 
-`leakage` y `grounding` sin `richness` premian el silencio: un brief vacío
-puntúa perfecto en ambas. Está cubierto por un test
-(`test_empty_brief_scores_perfectly_on_safety`) para que no se pueda olvidar.
+`leakage` and `grounding` without `richness` reward silence: an empty brief
+scores perfectly on both. Covered by a test
+(`test_empty_brief_scores_perfectly_on_safety`) so it can't be forgotten.
 
-El trade-off seguridad/riqueza es el resultado del proyecto, no un detalle.
+The safety/richness trade-off is the project's result, not a detail.
 
-## D5 — El harness se prueba contra un generador falso
+## D5 — The harness is tested against a fake generator
 
-Con fugas plantadas y respuesta conocida. Si la métrica no reproduce el número
-esperado, la métrica está rota. Se descubre antes de gastar en API.
+With planted leaks and a known answer. If the metric doesn't reproduce the
+expected number, the metric is broken. Caught before spending on the API.
 
-Efecto lateral: los tests corren en CI sin secretos.
+Side effect: tests run in CI with no secrets.
 
-## D6 — El ground truth no se genera con un LLM
+## D6 — Ground truth is not generated by an LLM
 
-Sería medir la coherencia del modelo consigo mismo. El fallo exacto que el
-proyecto existe para detectar. 15 min/título, a mano.
+That would measure the model's coherence with itself. The exact failure
+this project exists to catch. 15 min/title, by hand.
 
-## D7 — El ground truth se genera con investigación web citada, no a mano
+## D7 — Ground truth is generated through cited web research, not by hand
 
-Regla original: ningún LLM (ni Claude ni el usuario delegándolo) genera el
-ground truth de spoilers, porque eso mediría la coherencia del modelo consigo
-mismo — el mismo fallo que el proyecto existe para detectar.
+Original rule: no LLM (neither Claude nor the user delegating to one)
+generates spoiler ground truth, because that would measure the model's
+coherence with itself — the same failure this project exists to catch.
 
-El usuario revirtió esto el 2026-07-25 para poder escalar el etiquetado de 20
-títulos sin gastar ~15 min/título a mano. Decisión suya, tomada con el
-trade-off explícito sobre la mesa.
+The user reverted this on 2026-07-25 to be able to scale labeling across 20
+titles without spending ~15 min/title by hand. His call, made with the
+trade-off explicitly on the table.
 
-Mitigación parcial (no elimina el riesgo, lo acota): cada `canonical` se
-construye a partir de fuentes reales citadas (Wikipedia, reseñas, vlogs) en
-vez de memoria paramétrica del modelo — no es lo mismo que "alucinar" un
-spoiler plausible. Pero sigue siendo un LLM decidiendo qué cuenta como spoiler
-y qué severidad tiene, evaluado más tarde por otro LLM (el generador) y
-juzgado por un tercero (el juez). Tres etapas del mismo tipo de sesgo.
+Partial mitigation (doesn't eliminate the risk, bounds it): every
+`canonical` is built from real cited sources (Wikipedia, reviews, vlogs)
+instead of the model's parametric memory — not the same as "hallucinating"
+a plausible spoiler. But it's still an LLM deciding what counts as a
+spoiler and how severe it is, evaluated later by another LLM (the
+generator) and judged by a third (the judge). Three stages of the same kind
+of bias.
 
-Consecuencia obligatoria: el README y cualquier resultado publicado deben
-decir "ground truth investigado por LLM con fuentes citadas", nunca "ground
-truth humano" ni "etiquetado a mano". Son afirmaciones distintas y confundirlas
-sería reintroducir el problema original (semáforo autoetiquetado, ver D3) por
-otra vía.
+Mandatory consequence: the README and any published result must say
+"ground truth researched by an LLM with cited sources," never "human
+ground truth" or "hand-labeled." Those are different claims, and
+conflating them would reintroduce the original problem (self-labeled
+traffic light, see D3) through another door.
 
-## D8 — `awards_count` se expone en el catálogo aunque `critical_consensus` sea POST_SHOW
+## D8 — `awards_count` is exposed in the catalogue even though `critical_consensus` is POST_SHOW
 
-El catálogo (`/api/catalogue`, visible antes de elegir título) ahora incluye
-`director`, `themes` y `awards_count` por película, para poder filtrar/ordenar
-sin abrir la ficha. `director` y `themes` son metadatos nuevos, sin conflicto.
-`awards_count` es distinto: es `len(critical_consensus.awards)`, y
-`critical_consensus` completo vive en `POST_SHOW_FIELDS` (D3) porque su
-`summary` puede llevar lectura crítica con matices de trama.
+The catalogue (`/api/catalogue`, visible before picking a title) now
+includes `director`, `themes`, and `awards_count` per movie, so you can
+filter/sort without opening the entry. `director` and `themes` are new
+metadata, no conflict there. `awards_count` is different: it's
+`len(critical_consensus.awards)`, and the full `critical_consensus` lives
+in `POST_SHOW_FIELDS` (D3) because its `summary` can carry critical
+commentary with plot nuance.
 
-Se expone solo el **conteo**, nunca la lista de premios ni el resumen. Un
-número ("3 premios") no es spoiler de trama bajo ningún criterio razonable —
-a diferencia de `summary`, que si podría insinuar giros ("la actuación que
-sostiene el descubrimiento final"). La partición D3 protege spoilers, no todo
-dato post-visionado por igual; una excepción puntual y explícita a un derivado
-no narrativo no reabre el problema que D3 resuelve.
+Only the **count** is exposed, never the awards list or the summary. A
+number ("3 awards") isn't a plot spoiler under any reasonable reading —
+unlike `summary`, which could hint at twists ("the performance that
+carries the final reveal"). The D3 partition protects spoilers, not every
+post-viewing data point equally; a narrow, explicit exception for a
+non-narrative derivative doesn't reopen the problem D3 solves.
 
-## Descartado
+## Rejected
 
-- **Multi-agente (researcher / writer / critic).** No hay decisión dinámica
-  que delegar. Añade no-determinismo y coste a cambio de estética.
-- **Markdown como salida del generador.** Es capa de render. El dato es JSON
-  tipado, o el paso a TTS + montaje nunca llega.
-- **Libros en la v1.** Retrieval distinto, sin equivalente a RT/Metacritic ni
-  a datos de rodaje. Se implementa `SourceAdapter` para dos dominios, se
-  implementa uno.
+- **Multi-agent (researcher / writer / critic).** No dynamic decision to
+  delegate. Adds non-determinism and cost in exchange for aesthetics.
+- **Markdown as the generator's output.** It's a render layer. The data is
+  typed JSON, or the path to TTS + editing never lands.
+- **Books in v1.** Different retrieval, no equivalent to RT/Metacritic or
+  production data. `SourceAdapter` is designed for two domains, only one
+  gets implemented.
 
-## Abierto
+## Open questions
 
-- ¿Umbral de AMBER? Depende de la calibración del juez.
-- ¿Cuánto cuesta el juez por caso? len(superficie) x len(labels) llamadas.
-  Es el componente más caro del pipeline. Medir antes de optimizar.
+- What's the AMBER threshold? Depends on judge calibration.
+- What does the judge cost per case? len(surface) x len(labels) calls.
+  Probably the most expensive component of the pipeline. Measure before
+  optimizing.

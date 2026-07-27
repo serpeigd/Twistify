@@ -1,20 +1,21 @@
-"""Contrato de datos del CONTENIDO curado (lo que la app muestra).
+"""Data contract for CURATED CONTENT (what the app shows).
 
-Distinto de `schemas.py`: aquel modela lo que un generador PRODUCE y el
-harness MIDE. Esto modela lo que un humano/investigación ha curado y la app
-SIRVE. Se mantienen separados a propósito -- mezclarlos haría imposible
-distinguir "esto lo escribió un modelo" de "esto vino de una fuente".
+Distinct from `schemas.py`: that one models what a generator PRODUCES and
+the harness MEASURES. This one models what a human/research effort has
+curated and the app SERVES. Kept separate on purpose -- mixing them would
+make it impossible to tell "a model wrote this" apart from "this came from
+a source."
 
-Principio heredado de D2 (ver docs/DESIGN.md): el esquema PERMITE estados
-incompletos. Un `SourcedText` sin `source_id` es válido y se renderiza como
-"sin fuente" en la UI. Si el esquema lo rechazara, la carencia sería una
-excepción en vez de un dato visible -- y el hueco visible ES el producto:
-demuestra dónde el contenido está fundamentado y dónde no.
+Principle inherited from D2 (see docs/DESIGN.md): the schema ALLOWS
+incomplete states. A `SourcedText` with no `source_id` is valid and renders
+as "no source" in the UI. If the schema rejected it, the gap would be an
+exception instead of a visible data point -- and the visible gap IS the
+product: it shows where the content is grounded and where it isn't.
 
-PARTICIÓN POR FASE (D3): `PRE_SHOW_FIELDS` y `POST_SHOW_FIELDS` no son
-documentación, son la frontera que la API usa para decidir qué envía al
-navegador antes de que el usuario declare haber visto la obra. Un campo
-post-visionado no se filtra con CSS: no sale del servidor.
+PHASE PARTITION (D3): `PRE_SHOW_FIELDS` and `POST_SHOW_FIELDS` aren't
+documentation, they're the boundary the API uses to decide what gets sent
+to the browser before the user declares they've seen the work. A
+post-viewing field isn't filtered with CSS: it never leaves the server.
 """
 
 from __future__ import annotations
@@ -25,8 +26,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-# La frontera de spoilers. La API nunca envía POST_SHOW_FIELDS salvo que el
-# cliente declare explícitamente haber visto la obra.
+# The spoiler boundary. The API never sends POST_SHOW_FIELDS unless the
+# client explicitly declares having seen the work.
 PRE_SHOW_FIELDS = (
     "story",
     "context_bullets",
@@ -49,13 +50,13 @@ POST_SHOW_FIELDS = (
     "fun_facts",
 )
 
-# Ni pre ni post: son preguntas/debate, no revelan trama por sí mismas.
+# Neither pre nor post: questions/debate, they don't reveal plot by themselves.
 NEUTRAL_FIELDS = ("questions", "debate_prompts", "cta", "sources", "director", "themes")
 
 
 class SourcedText(BaseModel):
-    """Texto con procedencia opcional. `source_id` ausente => sin fundamentar,
-    y la UI lo marca como tal en vez de ocultarlo."""
+    """Text with an optional source. Missing `source_id` => unsupported,
+    and the UI marks it as such instead of hiding it."""
 
     text: str
     source_id: str | None = None
@@ -73,8 +74,8 @@ class SceneNote(BaseModel):
 
 
 class FactBullet(BaseModel):
-    """Dato con titular en negrita + explicación. Usado en 'antes de verla'
-    (spoiler-free) y en 'datos curiosos' (post-visionado)."""
+    """A fact with a bold headline + explanation. Used in 'before
+    watching' (spoiler-free) and 'fun facts' (post-viewing)."""
 
     lead: str
     text: str
@@ -94,12 +95,13 @@ class CriticalConsensus(BaseModel):
 
 
 class ContentPack(BaseModel):
-    """Paquete completo de una obra. Todo opcional salvo el id: una ficha a
-    medio curar es un estado legítimo y la UI debe poder mostrarla."""
+    """Full package for a work. Everything is optional except the id: a
+    half-curated entry is a legitimate state and the UI must be able to
+    show it."""
 
     title_id: str
 
-    # --- Fase 1: pre-visionado (spoiler-free) ---
+    # --- Phase 1: pre-viewing (spoiler-free) ---
     story: str | None = None
     context_bullets: list[str] = Field(default_factory=list)
     before_watching: list[FactBullet] = Field(default_factory=list)
@@ -107,13 +109,13 @@ class ContentPack(BaseModel):
     emotional_temperature: str | None = None
     why_now: str | None = None
 
-    # --- Fase 2: post-visionado (aquí los spoilers son el producto) ---
+    # --- Phase 2: post-viewing (spoilers are the product here) ---
     metaphors: list[SourcedText] = Field(default_factory=list)
     intertextual_refs: list[SourcedText] = Field(default_factory=list)
     production_trivia: list[SourcedText] = Field(default_factory=list)
     scene_analysis: list[SceneNote] = Field(default_factory=list)
 
-    # --- Fase 3: crítica ---
+    # --- Phase 3: critical reception ---
     critical_consensus: CriticalConsensus = Field(default_factory=CriticalConsensus)
     strengths: list[str] = Field(default_factory=list)
     weaknesses: list[str] = Field(default_factory=list)
@@ -121,18 +123,18 @@ class ContentPack(BaseModel):
     useless_fact: str | None = None
     fun_facts: list[FactBullet] = Field(default_factory=list)
 
-    # --- Fase 4: engagement ---
+    # --- Phase 4: engagement ---
     questions: list[str] = Field(default_factory=list)
     debate_prompts: list[str] = Field(default_factory=list)
     cta: str | None = None
 
     sources: list[str] = Field(default_factory=list)
 
-    # --- Metadatos de catálogo (para filtrar/ordenar sin spoilers) ---
+    # --- Catalogue metadata (for filtering/sorting with no spoilers) ---
     director: str | None = None
     themes: list[str] = Field(default_factory=list)
 
-    # ---- Métricas de completitud / fundamentación ----
+    # ---- Completeness / grounding metrics ----
 
     def all_sourced(self) -> list[SourcedText]:
         as_st = lambda b: SourcedText(text=b.text, source_id=b.source_id, kind="fact")
@@ -146,18 +148,18 @@ class ContentPack(BaseModel):
         ]
 
     def grounding(self) -> tuple[int, int]:
-        """(afirmaciones que requieren fuente, cuántas la tienen).
+        """(claims that need a source, how many have one).
 
-        Las interpretaciones no cuentan: exigirle fuente a una lectura
-        personal de la obra no tiene sentido (misma regla que evals/metrics.py).
+        Interpretations don't count: demanding a source for a personal
+        reading of the work makes no sense (same rule as evals/metrics.py).
         """
         needs = [s for s in self.all_sourced() if s.kind != "interpretation"]
         return len(needs), sum(1 for s in needs if s.source_id)
 
     def completeness(self) -> dict:
-        """Qué secciones tienen contenido. Los huecos se muestran, no se
-        disimulan: un campo vacío significa 'no encontramos fuente', que es
-        información útil, no un fallo a esconder."""
+        """Which sections have content. Gaps are shown, not disguised: an
+        empty field means 'we found no source', which is useful
+        information, not a failure to hide."""
         sections = {
             "story": bool(self.story),
             "before_watching": bool(self.before_watching),
@@ -181,9 +183,9 @@ class ContentPack(BaseModel):
         }
 
     def pre_show_text(self) -> list[tuple[str, str]]:
-        """Superficie pre-visionado como (ubicación, texto), para pasarla por
-        el detector de fugas. Mismo criterio que evals/metrics.brief_surface:
-        si el usuario lo puede leer antes de ver la obra, es superficie."""
+        """Pre-viewing surface as (location, text), to run through the leak
+        detector. Same criterion as evals/metrics.brief_surface: if the
+        user can read it before seeing the work, it's surface."""
         out: list[tuple[str, str]] = []
         if self.story:
             out.append(("story", self.story))
@@ -201,10 +203,10 @@ class ContentPack(BaseModel):
         return [(loc, t) for loc, t in out if t.strip()]
 
     def public_dump(self, seen: bool) -> dict:
-        """Serializa para el cliente. Si `seen` es False, los campos
-        post-visionado NO se incluyen -- se omiten en el servidor, no se
-        ocultan en el navegador. Es la diferencia entre una garantía y una
-        sugerencia (ver D3 en docs/DESIGN.md)."""
+        """Serialize for the client. If `seen` is False, post-viewing
+        fields are NOT included -- they're omitted server-side, not hidden
+        in the browser. That's the difference between a guarantee and a
+        suggestion (see D3 in docs/DESIGN.md)."""
         data = self.model_dump()
         if not seen:
             for field in POST_SHOW_FIELDS:

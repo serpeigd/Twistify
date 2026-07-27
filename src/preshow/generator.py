@@ -1,13 +1,14 @@
-"""Interfaz de generación.
+"""Generation interface.
 
-PRINCIPIO: el harness de evaluación se construye y se prueba contra un
-generador FALSO antes de tocar ninguna API.
+PRINCIPLE: the evaluation harness is built and tested against a FAKE
+generator before touching any API.
 
-Motivo: si escribes el harness y el generador real a la vez, cuando la métrica
-salga rara no sabrás si el generador es malo o la métrica está mal. Un fake
-determinista con fugas *plantadas* te da un test con respuesta conocida:
-sabes que hay exactamente 2 fugas, así que si tu métrica no dice 2, la métrica
-está rota. Esto es lo que hace que puedas confiar en el número del README.
+Why: if you write the harness and the real generator at the same time, when
+a metric looks wrong you won't know whether the generator is bad or the
+metric is broken. A deterministic fake with *planted* leaks gives you a
+test with a known answer: you know there are exactly 2 leaks, so if your
+metric doesn't say 2, the metric is broken. This is what lets you trust the
+number in the README.
 """
 
 from __future__ import annotations
@@ -18,7 +19,8 @@ from .schemas import Claim, DeepDive, PreShowBrief, ScriptBlock, SourceDoc, Titl
 
 
 class Generator(Protocol):
-    """Inyectable. El runner de evals no sabe si detrás hay un LLM o un dict."""
+    """Injectable. The evals runner doesn't know whether there's an LLM or
+    a dict behind it."""
 
     name: str
 
@@ -28,10 +30,11 @@ class Generator(Protocol):
 
 
 class ScriptedFakeGenerator:
-    """Devuelve salidas fijadas por título. Cero red, cero coste, determinista.
+    """Returns fixed outputs per title. Zero network, zero cost,
+    deterministic.
 
-    Se usa en tests/test_metrics.py para verificar que las métricas cuentan lo
-    que dicen contar.
+    Used in tests/test_metrics.py to verify that the metrics count what
+    they claim to count.
     """
 
     name = "fake"
@@ -51,9 +54,9 @@ def make_brief(
     facts: list[tuple[str, str | None]],
     voiceover: str = "",
 ) -> PreShowBrief:
-    """Helper para construir briefs sintéticos en tests.
+    """Helper to build synthetic briefs in tests.
 
-    `facts` son tuplas (texto, source_id). source_id=None => hecho sin fundamentar.
+    `facts` are (text, source_id) tuples. source_id=None => unsupported fact.
     """
     return PreShowBrief(
         title_id=title_id,
@@ -61,7 +64,7 @@ def make_brief(
             Claim(text=t, kind="fact", source_id=s) for t, s in facts[:3]
         ],
         author_voice=[],
-        emotional_temperature="como abrir una nevera a oscuras",
+        emotional_temperature="like opening a fridge in the dark",
         why_now="",
         script=[
             ScriptBlock(
