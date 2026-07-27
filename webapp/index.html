@@ -491,6 +491,48 @@
   .cm-edit-actions .cm-cancel{background:none;border:1px solid var(--border);color:var(--text-dim)}
   .empty-note{color:var(--text-mute);font-size:13.5px;font-style:italic}
 
+  /* + Suggest a movie -- lives in the filter grid, opens a small modal that
+     only captures the request (title/app.py stores it); the actual research
+     and curation stay a manual step, not an automated pipeline. See D-notes
+     in docs/DESIGN.md for why this is intentionally not wired to an LLM yet. */
+  .add-movie-btn{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:9px 10px;border-radius:11px;cursor:pointer;background:none;
+    border:1px dashed var(--border);color:var(--text-mute);font-family:inherit;
+    font-size:12px;font-weight:600;transition:all .16s}
+  .add-movie-btn:hover{border-color:var(--safe);color:var(--safe-soft);border-style:solid}
+  .add-movie-btn .am-plus{font-size:15px;line-height:1;font-weight:700}
+  .modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(6,7,10,.72);
+    backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay[hidden]{display:none}
+  .modal-panel{position:relative;width:100%;max-width:420px;background:var(--panel);
+    border:1px solid var(--border);border-radius:var(--radius);padding:26px 24px 22px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .modal-close{position:absolute;top:12px;right:12px;background:none;border:none;
+    color:var(--text-mute);font-size:16px;cursor:pointer;padding:6px;line-height:1}
+  .modal-close:hover{color:var(--text)}
+  .am-icon{font-size:26px;margin-bottom:8px}
+  .modal-panel h3{margin:0 0 8px;font-size:17px;font-weight:700}
+  .am-body{margin:0 0 18px;font-size:13.5px;color:var(--text-dim);line-height:1.55}
+  .am-form{display:flex;flex-direction:column;gap:10px}
+  .am-form input{background:var(--panel-2);border:1px solid var(--border);
+    border-radius:10px;padding:11px 14px;color:var(--text);font-family:inherit;font-size:14px;
+    transition:border-color .15s}
+  .am-form input:focus{outline:none;border-color:var(--safe)}
+  .am-form-actions{display:flex;gap:10px;align-items:center;margin-top:4px}
+  .am-form-actions button{cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:650;
+    padding:10px 20px;border-radius:10px;border:none;transition:transform .12s,filter .12s}
+  .am-form-actions button:disabled{opacity:.6;cursor:default}
+  #amSubmitBtn{background:var(--safe);color:#06120d}
+  #amSubmitBtn:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.08)}
+  #amCancelBtn{background:none;border:1px solid var(--border)!important;color:var(--text-dim)}
+  .am-status{font-size:12.5px;min-height:16px}
+  .am-status.ok{color:var(--safe-soft)}
+  .am-status.err{color:var(--deep-red)}
+
+  .auto-translated-tag{display:inline-flex;align-items:center;gap:5px;margin-top:10px;
+    font-size:11px;font-weight:600;color:var(--text-mute);background:rgba(255,255,255,.05);
+    border:1px solid var(--border);border-radius:999px;padding:4px 11px;width:fit-content}
+
   .sources-card h3{font-size:13px!important;color:var(--text-mute)!important;
     text-transform:uppercase;letter-spacing:.06em}
   .src-list{display:flex;flex-wrap:wrap;gap:7px;margin-top:14px}
@@ -549,12 +591,33 @@
   </main>
 </div>
 
+<div class="modal-overlay" id="addMovieOverlay" hidden>
+  <div class="modal-panel">
+    <button class="modal-close" id="addMovieClose" aria-label="Close">✕</button>
+    <div class="am-icon">🎬</div>
+    <h3 id="addMovieModalTitle"></h3>
+    <p class="am-body" id="addMovieModalBody"></p>
+    <form class="am-form" id="addMovieForm">
+      <input type="text" id="amTitleInput" required maxlength="200" autocomplete="off">
+      <input type="text" id="amNoteInput" maxlength="300" autocomplete="off">
+      <div class="am-form-actions">
+        <button type="submit" id="amSubmitBtn"></button>
+        <button type="button" id="amCancelBtn"></button>
+      </div>
+      <div class="am-status" id="amStatus"></div>
+    </form>
+  </div>
+</div>
+
 <script>
 /* ---------------------------------------------------------------------
-   i18n: this toggle translates the app CHROME (labels, buttons, section
+   i18n: this dictionary is the app CHROME (labels, buttons, section
    titles). The curated film content itself (story, trivia, criticism...)
-   is authored once, in English, in content/curated/*.json -- it is not
-   re-translated live when the toggle is flipped.
+   is authored once, in English, in content/curated/*.json -- when LANG is
+   "es" the backend serves a machine-translated version instead (cached
+   per title in content/_translations/, see src/preshow/translate.py),
+   marked with the "auto_translated" flag so the UI can show it's not the
+   same hand-researched, cited text as the English original.
 --------------------------------------------------------------------- */
 const STRINGS = {
   en: {
@@ -605,6 +668,16 @@ const STRINGS = {
     fabCloseTitle: 'Close curtain and return to spoiler-free mode',
     toTopTitle: 'Back to top',
     docTitleSuffix: 'Twistify',
+    addMovieBtn: 'Suggest a movie',
+    addMovieModalTitle: 'Suggest a movie',
+    addMovieModalBody: "Can't find a movie? Tell us which one — we'll research it and, if it fits, curate it like the rest.",
+    addMovieTitlePh: 'Movie title (and year, if you know it)',
+    addMovieNotePh: 'Why this one? (optional)',
+    addMovieSubmit: 'Send suggestion',
+    addMovieCancel: 'Cancel',
+    addMovieSuccess: "Thanks — we've noted it down for the next curation round.",
+    addMovieError: "Couldn't send it — try again in a moment.",
+    autoTranslatedTag: 'Machine-translated — quality may vary',
   },
   es: {
     tagline: 'Sin spoilers antes. Con todos los giros después.',
@@ -654,6 +727,16 @@ const STRINGS = {
     fabCloseTitle: 'Cerrar telón y volver a modo sin spoilers',
     toTopTitle: 'Volver arriba',
     docTitleSuffix: 'Twistify',
+    addMovieBtn: 'Sugerir una película',
+    addMovieModalTitle: 'Sugerir una película',
+    addMovieModalBody: '¿No encuentras una película? Dinos cuál — la investigaremos y, si encaja, la incorporaremos al repertorio como al resto.',
+    addMovieTitlePh: 'Título de la película (y año, si lo sabes)',
+    addMovieNotePh: '¿Por qué esta? (opcional)',
+    addMovieSubmit: 'Enviar sugerencia',
+    addMovieCancel: 'Cancelar',
+    addMovieSuccess: 'Gracias — la hemos anotado para la próxima ronda de curación.',
+    addMovieError: 'No se pudo enviar — inténtalo de nuevo en un momento.',
+    autoTranslatedTag: 'Traducción automática — la calidad puede variar',
   },
 };
 
@@ -691,7 +774,61 @@ function applyStaticStrings() {
   document.getElementById('toTop').setAttribute('aria-label', t('toTopTitle'));
   document.querySelectorAll('#langToggle .lang-btn').forEach(b =>
     b.classList.toggle('on', b.dataset.lang === LANG));
+  document.getElementById('addMovieModalTitle').textContent = t('addMovieModalTitle');
+  document.getElementById('addMovieModalBody').textContent = t('addMovieModalBody');
+  document.getElementById('amTitleInput').placeholder = t('addMovieTitlePh');
+  document.getElementById('amNoteInput').placeholder = t('addMovieNotePh');
+  document.getElementById('amSubmitBtn').textContent = t('addMovieSubmit');
+  document.getElementById('amCancelBtn').textContent = t('addMovieCancel');
 }
+
+function openAddMovieModal() {
+  const status = document.getElementById('amStatus');
+  status.textContent = '';
+  status.className = 'am-status';
+  document.getElementById('addMovieOverlay').hidden = false;
+  document.getElementById('amTitleInput').focus();
+}
+
+function closeAddMovieModal() {
+  document.getElementById('addMovieOverlay').hidden = true;
+  document.getElementById('addMovieForm').reset();
+}
+
+document.getElementById('addMovieClose').onclick = closeAddMovieModal;
+document.getElementById('amCancelBtn').onclick = closeAddMovieModal;
+document.getElementById('addMovieOverlay').onclick = e => {
+  if (e.target.id === 'addMovieOverlay') closeAddMovieModal();
+};
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && !document.getElementById('addMovieOverlay').hidden) closeAddMovieModal();
+});
+
+document.getElementById('addMovieForm').onsubmit = async e => {
+  e.preventDefault();
+  const title = document.getElementById('amTitleInput').value.trim();
+  const note = document.getElementById('amNoteInput').value.trim();
+  if (!title) return;
+  const status = document.getElementById('amStatus');
+  const btn = document.getElementById('amSubmitBtn');
+  btn.disabled = true;
+  try {
+    const res = await fetch('/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, note }),
+    });
+    if (!res.ok) throw new Error('request failed');
+    status.textContent = t('addMovieSuccess');
+    status.className = 'am-status ok';
+    setTimeout(closeAddMovieModal, 1800);
+  } catch {
+    status.textContent = t('addMovieError');
+    status.className = 'am-status err';
+  } finally {
+    btn.disabled = false;
+  }
+};
 
 function setLang(lang) {
   if (lang === LANG) return;
@@ -733,12 +870,14 @@ function renderFilters() {
     return `<button class="filter-chip ${FILTER === f.key ? 'on' : ''}" data-f="${f.key}" title="${esc(f.label)}">
       <span class="f-ico">${f.ico}</span><span class="f-label">${esc(f.label)}</span>
       <span class="f-count">${count}</span></button>`;
-  }).join('');
+  }).join('') + `<button class="add-movie-btn" id="addMovieBtn" title="${esc(t('addMovieBtn'))}">
+      <span class="am-plus">+</span><span>${esc(t('addMovieBtn'))}</span></button>`;
   box.querySelectorAll('.filter-chip').forEach(b => b.onclick = () => {
     FILTER = b.dataset.f;
     renderFilters();
     renderCatalogue();
   });
+  document.getElementById('addMovieBtn').onclick = openAddMovieModal;
 }
 
 function renderMoreFilters() {
@@ -808,7 +947,7 @@ async function loadFilm() {
   updateNavMode('safe');
   const main = document.getElementById('main');
   main.className = ''; main.innerHTML = `<div class="wrap"><p class="empty-note">${esc(t('loading'))}</p></div>`;
-  const d = await (await fetch(`/api/film/${CURRENT}?seen=false`)).json();
+  const d = await (await fetch(`/api/film/${CURRENT}?seen=false&lang=${LANG}`)).json();
   renderFilm(d);
   loadComments();
 }
@@ -832,14 +971,28 @@ const accordionList = items => `<div class="acc">${items.map(o => {
 
 /* per-film ambience (palette + atmospheric tagline, spoiler-free) */
 const THEMES = {
-  se7en_1995:       { accent: '#96a48f', bg1: '#181f1a', bg2: '#080b09', mood: 'Rain that never lets up over a city with no name.' },
-  sixth_sense_1999: { accent: '#c9454e', bg1: '#141b27', bg2: '#080b12', mood: "Long silences and a cold that doesn't come from the weather." },
-  fight_club_1999:  { accent: '#83bd98', bg1: '#151b17', bg2: '#090d0a', mood: 'Insomnia, fluorescent light, and an uncomfortable laugh.' },
-  prestige_2006:    { accent: '#d0a860', bg1: '#1c150c', bg2: '#0c0805', mood: 'Gaslight, velvet, and obsession.' },
-  arrival_2016:     { accent: '#8bb0b9', bg1: '#141c20', bg2: '#080d0f', mood: 'Fog, calm, and a low hum in the background.' },
-  get_out_2017:     { accent: '#d47559', bg1: '#1b120d', bg2: '#0c0806', mood: "Perfect smiles and something that doesn't add up." },
-  parasite_2019:    { accent: '#c39457', bg1: '#18130c', bg2: '#0a0806', mood: 'A staircase that only seems to lead up.' },
-  _default:         { accent: '#7aa2f7', bg1: '#161a22', bg2: '#0a0c11', mood: '' },
+  se7en_1995:       { accent: '#96a48f', bg1: '#181f1a', bg2: '#080b09',
+    moodEn: 'Rain that never lets up over a city with no name.',
+    moodEs: 'Una lluvia que no cesa sobre una ciudad sin nombre.' },
+  sixth_sense_1999: { accent: '#c9454e', bg1: '#141b27', bg2: '#080b12',
+    moodEn: "Long silences and a cold that doesn't come from the weather.",
+    moodEs: 'Largos silencios y un frío que no viene del clima.' },
+  fight_club_1999:  { accent: '#83bd98', bg1: '#151b17', bg2: '#090d0a',
+    moodEn: 'Insomnia, fluorescent light, and an uncomfortable laugh.',
+    moodEs: 'Insomnio, luz fluorescente y una risa incómoda.' },
+  prestige_2006:    { accent: '#d0a860', bg1: '#1c150c', bg2: '#0c0805',
+    moodEn: 'Gaslight, velvet, and obsession.',
+    moodEs: 'Luz de gas, terciopelo y obsesión.' },
+  arrival_2016:     { accent: '#8bb0b9', bg1: '#141c20', bg2: '#080d0f',
+    moodEn: 'Fog, calm, and a low hum in the background.',
+    moodEs: 'Niebla, calma y un zumbido grave de fondo.' },
+  get_out_2017:     { accent: '#d47559', bg1: '#1b120d', bg2: '#0c0806',
+    moodEn: "Perfect smiles and something that doesn't add up.",
+    moodEs: 'Sonrisas perfectas y algo que no encaja.' },
+  parasite_2019:    { accent: '#c39457', bg1: '#18130c', bg2: '#0a0806',
+    moodEn: 'A staircase that only seems to lead up.',
+    moodEs: 'Una escalera que solo parece subir.' },
+  _default:         { accent: '#7aa2f7', bg1: '#161a22', bg2: '#0a0c11', moodEn: '', moodEs: '' },
 };
 
 function focusComment(spoiler, prefill) {
@@ -950,8 +1103,10 @@ function renderFilm(d) {
     <div class="poster" style="--film-accent:${theme.accent};background:linear-gradient(160deg, ${theme.bg1}, ${theme.bg2})">
       <div class="kicker">${c.stratum === 'longtail' ? esc(t('groupLongtail')) : esc(t('groupMainstream'))}</div>
       <h2>${esc(c.title)} <span class="pyear">${c.year}</span></h2>
-      ${theme.mood ? `<div class="mood-line">${esc(theme.mood)}</div>` : ''}
+      ${(() => { const mood = LANG === 'es' ? theme.moodEs : theme.moodEn;
+        return mood ? `<div class="mood-line">${esc(mood)}</div>` : ''; })()}
       ${c.notes ? `<div class="note">${esc(c.notes)}</div>` : ''}
+      ${d.auto_translated ? `<div class="auto-translated-tag">🌐 ${esc(t('autoTranslatedTag'))}</div>` : ''}
     </div>
 
     <div class="nav-bar" id="navBar">
@@ -1136,7 +1291,7 @@ function updateCurtainFab(state) {
 async function loadDeepDive(dc) {
   const btn = document.getElementById('unlockBtn');
   btn.disabled = true; btn.innerHTML = t('unlockBtnOpening');
-  const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
+  const d = await (await fetch(`/api/film/${CURRENT}?seen=true&lang=${LANG}`)).json();
   const ct = d.content;
 
     const sections = [];

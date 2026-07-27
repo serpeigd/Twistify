@@ -27,8 +27,11 @@ an eval harness that proves it. Two tracks — don't conflate them:
 - **Demo track** (`webapp/`, `content/curated/*.json`, `src/preshow/content.py`) —
   FastAPI + vanilla JS app, 7 hand-researched films with a spoiler curtain, comments,
   filters, ES/EN UI toggle. Editorial content; doesn't use the baseline generator or judge.
+  In Spanish, curated content is machine-translated on the fly (free MyMemory API,
+  `src/preshow/translate.py`), cached per title in `content/_translations/` (gitignored),
+  and marked `auto_translated` — see D9.
 
-Full design rationale (D1–D8) lives in `docs/DESIGN.md` — update it on any non-trivial
+Full design rationale (D1–D9) lives in `docs/DESIGN.md` — update it on any non-trivial
 design decision.
 
 ## Status
@@ -61,9 +64,16 @@ design decision.
 
 ## Next task
 
-Get `ANTHROPIC_API_KEY`, run the baseline over the 20 labeled titles, paste real
-numbers into the README, then calibrate the judge externally before trusting them.
-Don't start Milestone 1 (retrieval) before Milestone 0 has real numbers.
+Get an API key for the baseline generator (a free-tier provider like Gemini/Groq
+means writing a new `Generator` against the same interface — see docs/DESIGN.md
+"Pending" — `ANTHROPIC_API_KEY` works too but isn't free), run the baseline over
+the 20 labeled titles, paste real numbers into the README, then calibrate the
+judge externally before trusting them. Don't start Milestone 1 (retrieval)
+before Milestone 0 has real numbers.
+
+Also pending, not started (see docs/DESIGN.md "Pending"): a free-tier baseline
+generator, a TMDB-backed catalogue for scale, and automating the "+ Suggest a
+movie" pipeline the webapp already captures requests for.
 
 ## Environment
 
@@ -71,6 +81,9 @@ Don't start Milestone 1 (retrieval) before Milestone 0 has real numbers.
 pip install pydantic pytest pyyaml fastapi "uvicorn[standard]"
 python -m pytest tests/ -v                       # offline, must pass
 python webapp/app.py                             # http://127.0.0.1:8000
+python webapp/prewarm_translations.py            # pre-cache ES content, no API key needed
 python evals/run_eval.py --generator baseline    # needs ANTHROPIC_API_KEY
 ```
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
+TMDB key/read token live in `.env` (gitignored) — not used by any code yet, see
+docs/DESIGN.md "Pending".

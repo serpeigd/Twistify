@@ -106,6 +106,38 @@ carries the final reveal"). The D3 partition protects spoilers, not every
 post-viewing data point equally; a narrow, explicit exception for a
 non-narrative derivative doesn't reopen the problem D3 solves.
 
+## D9 — Curated content is machine-translated, cached, and honestly labeled
+
+The ES/EN toggle originally translated only the app chrome (labels, section
+titles) — the curated prose (`content/curated/*.json`) stayed English,
+since hand-writing a Spanish mirror of all 7 titles wasn't worth it for a
+portfolio demo. Once that gap was visible in the running app, the fix
+chosen was automatic translation (MyMemory's free API, no key, stdlib
+only — `src/preshow/translate.py`) rather than hand-translating every
+title, on the explicit tradeoff of lower quality for zero cost and no new
+paid dependency.
+
+Two things this pushed into the design, both learned by hitting them
+while building it, not decided up front:
+
+- **Cache honestly or don't cache.** MyMemory's free tier throttles hard
+  (a burst of concurrent calls returns 429 almost immediately), and the
+  first version of this cached whatever came back — including an
+  all-English result when the API was fully rate-limited, indistinguishable
+  from a real translation and cached *forever*. `translate_pack_dump` now
+  returns `(dump, translated_anything)`; a run that translated nothing
+  is never cached, so the next request retries instead of being stuck
+  showing English while claiming otherwise.
+- **Say so in the UI.** A curated entry viewed in Spanish shows a small
+  "machine-translated" tag (`auto_translated` in the API response). Same
+  principle as D3/D6/D7: don't let the UI imply a guarantee (native-quality,
+  cited translation) the pipeline doesn't back up.
+
+`themes` (canonical filter vocabulary matched against the frontend's
+`THEME_META`), `director`, `sources` (URLs), and every `source_id`/`kind`
+are deliberately never translated — translating them would break matching
+or misattribute a source, not just read oddly.
+
 ## Rejected
 
 - **Multi-agent (researcher / writer / critic).** No dynamic decision to
@@ -115,6 +147,37 @@ non-narrative derivative doesn't reopen the problem D3 solves.
 - **Books in v1.** Different retrieval, no equivalent to RT/Metacritic or
   production data. `SourceAdapter` is designed for two domains, only one
   gets implemented.
+
+## Pending — free-tier constraint and scaling the catalogue
+
+The project is meant to run without a paid API key. Three follow-ups, not yet
+implemented:
+
+- **Free-tier baseline generator.** `AnthropicBaselineGenerator`
+  (`src/preshow/baseline.py`) is hardcoded to the `anthropic` SDK with a
+  forced tool call — that's a real cost to unblock Milestone 0. A
+  `Generator` implementation against a provider with a genuine free tier
+  (Google Gemini via AI Studio, or Groq) would remove that requirement
+  without changing the harness: same `pre_show`/`deep_dive` interface, same
+  fixture-first testing rule (see Rules in `CLAUDE.md`). Needs a decision on
+  which provider before writing it — not started.
+- **TMDB-backed catalogue for scale.** TMDB's API is free for non-commercial
+  use with attribution (already an approved source per D6/D7's provenance
+  rule) and covers hundreds of thousands of titles. It could power a
+  browsable catalogue tier (poster, synopsis, year, genres) far larger than
+  the 20-title measurement set or the 7 hand-curated entries, while the
+  hand-researched, cited-source tier stays the "verified" layer on top —
+  not the same content, don't conflate them. A TMDB API key/read token is
+  already available locally (`.env`, gitignored — never commit it); the
+  integration itself is still not started.
+- **Automating the "+ Suggest a movie" pipeline.** The webapp captures
+  suggestions (`POST /api/requests`, appended to
+  `content/movie_requests.json`, gitignored) but does **not** research or
+  curate them automatically. Turning a suggestion into a
+  `content/curated/*.json` entry has to meet the same bar as the existing
+  7 — cited sources, no invented facts (D6/D7) — which is a real curation
+  pipeline with a review step, not a one-request LLM call. Deliberately left
+  as a manual step until that pipeline is designed.
 
 ## Open questions
 

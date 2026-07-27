@@ -35,12 +35,15 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
 from judge import SubstringJudge  # noqa: E402
-from preshow.content import ContentPack, load_all  # noqa: E402
+from preshow.content import ContentPack, load_all, strip_post_show  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
+from preshow.translate import translate_pack_dump  # noqa: E402
 
 DATA = ROOT / "evals" / "dataset"
 CONTENT_DIR = ROOT / "content" / "curated"
 COMMENTS_FILE = ROOT / "content" / "comments.json"
+MOVIE_REQUESTS_FILE = ROOT / "content" / "movie_requests.json"
+TRANSLATIONS_DIR = ROOT / "content" / "_translations"
 CALIBRATION_FILE = ROOT / "evals" / "results" / "substring_calibration.json"
 
 app = FastAPI(title="Twistify")
@@ -69,6 +72,28 @@ def load_calibration() -> dict | None:
 CASES = load_cases()
 PACKS: dict[str, ContentPack] = load_all(CONTENT_DIR) if CONTENT_DIR.exists() else {}
 CALIBRATION = load_calibration()
+
+
+def load_translated_dump(title_id: str, pack: ContentPack) -> tuple[dict, bool]:
+    """Spanish version of a curated pack, translated once and cached to
+    disk so the free MyMemory API is only ever hit the first time a title
+    is viewed in Spanish. Returns (dump, fully_translated). Anything short
+    of every field translating -- including a partial run where some
+    fields succeeded and others got rate-limited back to English -- is NOT
+    cached, so the next request retries the whole title from scratch
+    instead of leaving a half-Spanish, half-English file marked as done
+    forever. See src/preshow/translate.py for the all-or-nothing rationale
+    and what's excluded from translation."""
+    cache_path = TRANSLATIONS_DIR / f"{title_id}.json"
+    if cache_path.exists():
+        return json.loads(cache_path.read_text(encoding="utf-8")), True
+    translated, ok = translate_pack_dump(pack.public_dump(seen=True))
+    if ok:
+        TRANSLATIONS_DIR.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(
+            json.dumps(translated, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+    return translated, ok
 
 
 def verify_pre_show(pack: ContentPack, labels: list[SpoilerLabel]) -> dict:
@@ -149,7 +174,7 @@ def api_catalogue():
 
 
 @app.get("/api/film/{title_id}")
-def api_film(title_id: str, seen: bool = False):
+def api_film(title_id: str, seen: bool = False, lang: str = "en"):
     case = CASES.get(title_id)
     if case is None:
         raise HTTPException(404, f"Unknown title: {title_id}")
@@ -166,13 +191,20 @@ def api_film(title_id: str, seen: bool = False):
             "grounding": None,
             "completeness": None,
             "seen": seen,
+            "auto_translated": False,
         }
 
     needs, grounded = pack.grounding()
+    auto_translated = False
+    if lang == "es":
+        translated_dump, auto_translated = load_translated_dump(title_id, pack)
+        content = strip_post_show(translated_dump, seen)
+    else:
+        content = pack.public_dump(seen=seen)
     return {
         "case": case.model_dump(),
         "curated": True,
-        "content": pack.public_dump(seen=seen),
+        "content": content,
         "verification": verify_pre_show(pack, labels),
         "grounding": {
             "needs_source": needs,
@@ -182,6 +214,7 @@ def api_film(title_id: str, seen: bool = False):
         "completeness": pack.completeness(),
         "seen": seen,
         "n_comments": len(read_comments().get(title_id, [])),
+        "auto_translated": auto_translated,
     }
 
 
@@ -266,6 +299,37 @@ def api_delete_comment(title_id: str, comment_id: str, owner_token: str = ""):
             write_comments(data)
             return {"ok": True}
     raise HTTPException(404, "Comment not found")
+
+
+@app.post("/api/requests")
+def api_post_movie_request(payload: dict = Body(...)):
+    """Captures a title someone couldn't find in the catalogue.
+
+    Intentionally NOT wired to an LLM: turning this into "analyze and add to
+    content/curated/ automatically" is a real feature with a quality bar to
+    match the rest of the catalogue (cited sources, no hallucinated facts) --
+    it's a pending milestone, not a one-request-handler job. See docs/DESIGN.md.
+    """
+    title = (payload.get("title") or "").strip()[:200]
+    note = (payload.get("note") or "").strip()[:300]
+    if not title:
+        raise HTTPException(400, "Empty title")
+
+    requests_list = []
+    if MOVIE_REQUESTS_FILE.exists():
+        requests_list = json.loads(MOVIE_REQUESTS_FILE.read_text(encoding="utf-8"))
+    requests_list.append(
+        {
+            "title": title,
+            "note": note,
+            "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        }
+    )
+    MOVIE_REQUESTS_FILE.parent.mkdir(parents=True, exist_ok=True)
+    MOVIE_REQUESTS_FILE.write_text(
+        json.dumps(requests_list, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
+    return {"ok": True}
 
 
 @app.get("/api/stats")

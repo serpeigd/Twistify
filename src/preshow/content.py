@@ -207,11 +207,19 @@ class ContentPack(BaseModel):
         fields are NOT included -- they're omitted server-side, not hidden
         in the browser. That's the difference between a guarantee and a
         suggestion (see D3 in docs/DESIGN.md)."""
-        data = self.model_dump()
-        if not seen:
-            for field in POST_SHOW_FIELDS:
-                data.pop(field, None)
+        return strip_post_show(self.model_dump(), seen)
+
+
+def strip_post_show(data: dict, seen: bool) -> dict:
+    """Same partition `ContentPack.public_dump` applies, but usable on a
+    plain dict -- so the machine-translated dump (webapp/app.py) enforces
+    the identical spoiler boundary instead of re-deriving it."""
+    if seen:
         return data
+    data = dict(data)
+    for field in POST_SHOW_FIELDS:
+        data.pop(field, None)
+    return data
 
 
 def load_pack(path: Path) -> ContentPack:
