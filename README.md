@@ -2,6 +2,13 @@
 
 **Antes de verla, sin spoilers. Después, con todos los giros.**
 
+[![tests](https://github.com/serpeigd/Twistify/actions/workflows/tests.yml/badge.svg)](https://github.com/serpeigd/Twistify/actions/workflows/tests.yml)
+![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![Pydantic](https://img.shields.io/badge/Pydantic-E92063?logo=pydantic&logoColor=white)
+![pytest](https://img.shields.io/badge/pytest-0A9EDC?logo=pytest&logoColor=white)
+![Claude](https://img.shields.io/badge/Claude-D97757?logo=claude&logoColor=white)
+
 Twistify es una app de películas con una regla que se cumple de verdad, no
 solo se promete: la trama nunca sale del servidor hasta que tú dices que ya
 la has visto. Debajo, un harness de evaluación mide si esa promesa se
@@ -43,6 +50,22 @@ abre el telón.
   barato falla (ver [Resultados](#bajo-el-capó-el-harness-de-evaluación)).
 - **Filtros con sentido.** Temáticas (identidad, obsesión, clase y poder…)
   que agrupan varias películas de verdad, no una etiqueta única por título.
+
+## Stack
+
+**Backend:** Python 3.12 · FastAPI · Pydantic v2 (contratos de datos tipados,
+no dicts sueltos) · pytest (harness de evals, corre sin red ni API key)
+
+**Frontend:** HTML/CSS/JS vanilla — sin framework, a propósito: la app es lo
+bastante pequeña como para que un framework fuera coste sin beneficio, no un
+"no sé usar uno".
+
+**IA / evaluación:** Anthropic Claude (tool use / structured output para el
+generador baseline, sin parseo de markdown) · diseño de harness de evals
+propio (leakage / grounding / richness) con juez calibrado y verificado
+contra fugas plantadas.
+
+**CI:** GitHub Actions corre los 8 tests en cada push (ver badge arriba).
 
 ## Cómo está hecho
 
