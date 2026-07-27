@@ -1,27 +1,28 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Twistify</title>
 <!--
-  NOTA DE DISEÑO (por qué esta versión NO muestra un veredicto de verificación):
-  se eliminaron a propósito la tarjeta "● sin fugas detectadas" y el panel de
-  métricas. Ese "sin fugas" era engañoso presentado como sello verde: el juez
-  que lo produce (SubstringJudge) tiene recall medido 0.0 -> no detecta
-  paráfrasis, que es como se fuga de verdad. Un badge verde comunica una
-  garantía que la medición no respalda. La verificación sigue viva en el
-  backend (evals/, /api/stats) para auditarla; no se vende en la ficha.
+  DESIGN NOTE (why this version does NOT show a verification verdict):
+  the "● no leaks detected" card and the metrics panel were deliberately
+  removed. That "no leaks" was misleading presented as a green seal: the
+  judge that produces it (SubstringJudge) has a measured recall of 0.0 ->
+  it can't detect paraphrases, which is how real leaks happen. A green
+  badge communicates a guarantee the measurement doesn't back up.
+  Verification still runs in the backend (evals/, /api/stats) so it can be
+  audited; it just isn't sold on the page.
 -->
 <style>
   :root {
     --bg:#0a0b0f; --bg-soft:#0f1116; --panel:#14161d; --panel-2:#191c25;
     --border:#242833; --text:#eceef4; --text-dim:#a2aab9; --text-mute:#6a7284;
 
-    /* ZONA SEGURA (pre-show, spoiler-free) — verde/teal */
+    /* SAFE ZONE (pre-show, spoiler-free) — green/teal */
     --safe:#52c99a; --safe-soft:#84e0bd; --safe-bg:#0c1512; --safe-panel:#0f1b17;
     --safe-brd:#1f4438; --safe-glow:rgba(82,201,154,.14);
-    /* ZONA PROFUNDA (deep dive, spoilers) — ámbar/óxido */
+    /* DEEP ZONE (deep dive, spoilers) — amber/rust */
     --deep:#e0a35c; --deep-soft:#f0c58e; --deep-bg:#16100a; --deep-panel:#1d150c;
     --deep-brd:#4a3418; --deep-red:#e0705f; --deep-glow:rgba(224,163,92,.13);
     --violet:#b79bf0;
@@ -48,6 +49,13 @@
   .logo-mark{flex-shrink:0}
   .tag{margin-left:4px;font-size:12.5px;color:var(--text-mute);
     border-left:1px solid var(--border);padding-left:14px}
+  .lang-toggle{margin-left:auto;display:flex;align-items:center;gap:4px;padding:4px;
+    background:var(--panel);border:1px solid var(--border);border-radius:999px}
+  .lang-btn{cursor:pointer;font-family:inherit;font-size:11.5px;font-weight:700;
+    letter-spacing:.03em;padding:6px 12px;border-radius:999px;border:none;background:none;
+    color:var(--text-mute);transition:all .15s}
+  .lang-btn:hover{color:var(--text)}
+  .lang-btn.on{background:linear-gradient(135deg,var(--safe-soft),var(--safe));color:#06120d}
 
   /* layout */
   .layout{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 59px)}
@@ -72,8 +80,8 @@
     border-color:var(--safe);color:var(--safe-soft)}
   .filter-chip.on .f-count{background:rgba(82,201,154,.24);color:var(--safe-soft)}
 
-  /* temática (colores propios por tema, con solape real entre películas)
-     + orden. Sin desplegable: con 6 temas + 2 modos de orden ya cabe bien. */
+  /* theme filter (own color per theme, with real overlap between films)
+     + sort. No dropdown needed: 6 themes + 2 sort modes already fit well. */
   .mf-block{margin-top:14px}
   .mf-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
     color:var(--text-mute);margin-bottom:8px}
@@ -129,7 +137,7 @@
   .hero .note{margin-top:12px;font-size:13.5px;color:var(--text-dim);font-style:italic;
     border-left:2px solid var(--border);padding-left:12px}
 
-  /* ZONA (marco de fase) */
+  /* ZONE (phase frame) */
   .zone{border-radius:22px;padding:4px;margin:26px 0;position:relative}
   .zone-safe{background:linear-gradient(180deg,var(--safe-glow),rgba(82,201,154,0) 260px),var(--safe-bg);
     border:1px solid var(--safe-brd);box-shadow:0 0 0 1px rgba(82,201,154,.04),0 30px 70px -46px rgba(82,201,154,.55)}
@@ -165,7 +173,7 @@
   .story p:first-child::first-letter{float:left;font-family:var(--serif);font-size:3.6em;
     line-height:.76;padding:6px 12px 0 0;color:var(--safe);font-weight:600}
 
-  /* fact bullets (antes de verla / datos curiosos) */
+  /* fact bullets (before watching / fun facts) */
   .facts{margin:16px 0 0;padding:0;list-style:none}
   .facts li{padding:15px 0;border-bottom:1px solid rgba(255,255,255,.06)}
   .facts li:last-child{border-bottom:none;padding-bottom:0}
@@ -175,7 +183,7 @@
   .zone-deep .fact-lead{color:var(--deep-soft)}
   .fact-txt{display:block;font-size:14.5px;color:var(--text-dim);line-height:1.6}
 
-  /* tono */
+  /* tone */
   .tone-lead{margin:16px 0 0;font-size:16.5px;line-height:1.6;color:#e9ecf3;font-weight:450}
   .tone-lead b{color:var(--safe-soft);font-weight:650}
 
@@ -207,7 +215,7 @@
   .nosrc{color:var(--deep);background:rgba(224,163,92,.09)}
   .interp{color:var(--violet);background:rgba(183,155,240,.1)}
 
-  /* barra de navegación: indicador de modo (fijo) + riel de chips (scroll) */
+  /* nav bar: mode indicator (fixed) + chip rail (scrolling) */
   .nav-bar{display:flex;align-items:center;gap:8px;padding:8px;margin:2px 8px 8px;
     position:sticky;top:6px;z-index:6;border-radius:16px;
     background:rgba(20,15,9,.92);backdrop-filter:blur(14px);border:1px solid var(--deep-brd)}
@@ -237,7 +245,7 @@
     color:#140d04;border-color:transparent;box-shadow:0 10px 22px -10px rgba(224,163,92,.75)}
   .chip.active .chip-label{opacity:1;transition:opacity .2s .12s}
 
-  /* póster / hero ambientado por película */
+  /* poster / per-film ambient hero */
   .poster{position:relative;border-radius:20px;overflow:hidden;padding:44px 40px 38px;
     border:1px solid var(--border);--film-accent:var(--safe)}
   .poster::after{content:"";position:absolute;inset:0;pointer-events:none;
@@ -253,7 +261,7 @@
     border-left:3px solid var(--film-accent);padding-left:14px}
   .note{margin:14px 4px 0;font-size:13px;color:var(--text-dim);font-style:italic}
 
-  /* acordeón (rodaje por dentro, breve y dinámico) */
+  /* accordion (production trivia, short and dynamic) */
   .acc-item{border-bottom:1px solid rgba(255,255,255,.06)}
   .acc-item:last-child{border-bottom:none}
   .acc-head{width:100%;text-align:left;background:none;border:none;color:var(--text);
@@ -267,7 +275,7 @@
   .acc-body p{margin:0 0 8px;color:var(--text-dim);font-size:14px;line-height:1.62}
   .acc-item.open .acc-body{max-height:460px;padding-bottom:14px}
 
-  /* barra de progreso + volver arriba */
+  /* progress bar + back to top */
   #progbar{position:fixed;top:0;left:0;height:3px;width:100%;transform:scaleX(0);transform-origin:0 50%;
     background:linear-gradient(90deg,var(--safe),var(--deep));z-index:50;transition:transform .08s linear}
   #toTop{position:fixed;right:22px;bottom:22px;width:46px;height:46px;border-radius:50%;
@@ -276,7 +284,7 @@
   #toTop.show{opacity:1;pointer-events:auto;transform:none}
   #toTop:hover{border-color:var(--deep);color:var(--deep-soft)}
 
-  /* fab para abrir/cerrar el telón desde donde sea */
+  /* fab to open/close the curtain from anywhere */
   #curtainFab{position:fixed;right:22px;bottom:78px;display:inline-flex;align-items:center;gap:9px;
     padding:12px 18px 12px 14px;border-radius:999px;cursor:pointer;font-family:inherit;
     font-size:13px;font-weight:680;color:#f3d9c8;
@@ -360,7 +368,7 @@
   .q-list li{font-size:16px;padding:15px 0;color:var(--text);line-height:1.5}
   .lede-inline{font-size:12.5px;color:var(--text-mute);margin:16px 0 4px}
 
-  /* poll: una pregunta, dos bandos, votos en vivo */
+  /* poll: one question, two sides, live votes */
   .poll{margin-top:12px;padding:22px 24px 24px;background:rgba(255,255,255,.03);
     border:1px solid rgba(74,52,24,.5);border-radius:15px}
   .poll-txt{font-family:var(--serif);font-size:18px;font-style:italic;color:#eef0f7;line-height:1.5}
@@ -386,7 +394,7 @@
   .defend-btn.show{display:inline-flex}
   .poll-hint{margin-top:10px;font-size:11px;color:var(--text-mute);font-style:italic}
 
-  /* rewatch: cierre que empuja a volver a verla, con más presencia visual */
+  /* rewatch: closing beat that nudges you to watch it again, more visual presence */
   .rewatch-shell{margin-top:14px;position:relative;overflow:hidden;border-radius:20px;
     padding:38px 40px 36px;isolation:isolate;
     background:radial-gradient(120% 140% at 10% -10%,rgba(224,163,92,.16),transparent 55%),
@@ -406,7 +414,7 @@
     color:#f8f6fd;margin-bottom:8px;letter-spacing:-.01em}
   .rewatch-lead::before{content:"↺ ";color:var(--violet)}
 
-  /* para pensar: mismo acento violeta que el rewatch, marcado como lectura pausada */
+  /* think about it: same violet accent as rewatch, marked as a slower read */
   .think-zone{border:1px solid rgba(183,155,240,.35)!important;
     background:linear-gradient(180deg,rgba(183,155,240,.1),rgba(183,155,240,0) 220px),var(--safe-bg)!important;
     box-shadow:0 0 0 1px rgba(183,155,240,.06),0 30px 70px -46px rgba(183,155,240,.45)!important}
@@ -418,7 +426,7 @@
     color:var(--violet)}
   .think-zone .q-list li{font-size:17px;font-family:var(--serif);line-height:1.55}
 
-  /* telón: bloqueo/desbloqueo del deep-dive */
+  /* curtain: locks/unlocks the deep dive */
   #deepZone{position:relative;overflow:hidden;transition:min-height .4s}
   #deepZone.curtain-closed{min-height:360px}
   .deep-content{position:relative;z-index:1}
@@ -495,8 +503,8 @@
 <body>
 
 <div id="progbar"></div>
-<button id="toTop" title="Volver arriba" aria-label="Volver arriba">↑</button>
-<button id="curtainFab" title="Abrir el telón"></button>
+<button id="toTop" title="Back to top" aria-label="Back to top">↑</button>
+<button id="curtainFab" title="Open the curtain"></button>
 
 <header>
   <div class="brand"><h1>
@@ -509,20 +517,24 @@
       <circle cx="22" cy="10" r="7.5" fill="none" stroke="url(#psrLogoB)" stroke-width="3"/>
     </svg>
     Twistify</h1></div>
-  <span class="tag">Sin spoilers antes. Con todos los giros después.</span>
+  <span class="tag" id="headerTag"></span>
+  <div class="lang-toggle" id="langToggle">
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="es">ES</button>
+  </div>
 </header>
 
 <div class="layout">
   <aside>
     <div class="search-wrap">
-      <input id="search" type="text" placeholder="Buscar película…" autocomplete="off">
+      <input id="search" type="text" placeholder="Search for a movie…" autocomplete="off">
       <div class="filters" id="filters"></div>
       <div class="mf-block">
-        <div class="mf-label">Temática</div>
+        <div class="mf-label" id="themeLabel"></div>
         <div class="tag-row" id="themeTags"></div>
       </div>
       <div class="mf-block">
-        <div class="mf-label">Ordenar por</div>
+        <div class="mf-label" id="sortLabel"></div>
         <div class="tag-row" id="sortRow"></div>
       </div>
     </div>
@@ -532,28 +544,166 @@
   <main>
     <div class="placeholder" id="main">
       <div class="big">🎞</div>
-      <div>Elige una película para empezar.</div>
+      <div id="placeholderText"></div>
     </div>
   </main>
 </div>
 
 <script>
+/* ---------------------------------------------------------------------
+   i18n: this toggle translates the app CHROME (labels, buttons, section
+   titles). The curated film content itself (story, trivia, criticism...)
+   is authored once, in English, in content/curated/*.json -- it is not
+   re-translated live when the toggle is flipped.
+--------------------------------------------------------------------- */
+const STRINGS = {
+  en: {
+    tagline: 'No spoilers before. All the twists after.',
+    searchPlaceholder: 'Search for a movie…',
+    filterAll: 'All', filterMainstream: 'Popular', filterLongtail: 'Long tail', filterCurated: 'Curated',
+    themeLabel: 'Themes', sortLabel: 'Sort by', sortDefault: 'Relevance', sortAwards: '🏆 Most awarded',
+    noThemesYet: 'No curated themes yet',
+    groupMainstream: 'Popular', groupLongtail: 'Long tail',
+    noResults: 'No results', uncurated: 'uncurated',
+    choosePlaceholder: 'Choose a movie to start.',
+    loading: 'Loading…',
+    notCuratedTitle: 'Not curated yet',
+    notCuratedBody: "It's in the catalogue but doesn't have researched content yet. The catalogue is filled in with cited research, not by generating text from a model's memory.",
+    navNoSpoilers: 'No spoilers', navSpoilerMode: 'SPOILER MODE',
+    zoneSafeBadge: 'Spoiler-free zone', zoneSafeSub: 'Read before watching · reveals nothing about the plot',
+    secStoryTitle: 'How it feels, as a story', secStoryLede: 'The trailer, but told. No spoilers.',
+    secBeforeTitle: 'Before watching', secBeforeLede: "What's worth knowing going in. Nothing about the plot.",
+    secVoiceTitle: 'What they were going for', secVoiceLede: "Their intent, in the director's own words.",
+    secToneTitle: 'The tone that awaits you', whyNowHead: 'Why watch it now',
+    curtainIcon: '🎭', curtainTitle: 'The easter egg map',
+    curtainBody: 'Metaphors, easter eggs, production trivia, scene analysis, and criticism.',
+    curtainWarn: 'ALL OF THIS CONTAINS SPOILERS.',
+    unlockBtn: "I've already seen it — open the curtain",
+    unlockBtnOpening: 'Opening the curtain…',
+    commentsTitle: 'Comments', cmAuthorPh: 'Your name (optional)', cmSpoilerCheck: 'contains spoilers',
+    cmTextPh: 'What did you think?', cmSend: 'Post comment', cmEmpty: 'Be the first to comment.',
+    cmSpoilersTag: 'SPOILERS', cmEdited: 'edited', cmEditTitle: 'Edit', cmDeleteTitle: 'Delete',
+    cmConfirmDelete: 'Delete this comment?', cmSave: 'Save', cmCancel: 'Cancel',
+    anonymous: 'anonymous',
+    thinkBadge: 'Think about it', thinkSub: 'No spoilers · leaves the conversation open',
+    thinkTitle: 'Questions it leaves open', thinkHint: "No rush. This is what keeps turning over after it ends.",
+    secMeta: 'What it’s really telling you', secRef: 'References and nods',
+    secRod: 'The making of, from the inside', secEsc: 'Key scenes, explained',
+    secCri: 'What critics said', noScores: '⚠ no verified scores — not made up',
+    secBal: 'The best and the worst', swGood: '▲ What it nails', swBad: '▼ What’s debatable',
+    secDato: 'Fun facts about the movie', secDeb: 'Which side are you on?',
+    pollLede: 'One topic, two sides. Vote and defend your stance.',
+    pollAgree: 'Totally agree', pollDisagree: 'That’s not right', pollVotes: 'votes',
+    pollHint: 'You can switch sides anytime.', pollDefend: '✍️ Defend your vote',
+    pollStarterA: 'No question about it: "{q}". What seals it for me is ',
+    pollStarterB: 'This is where I draw the line: "{q}" doesn’t hold up once you think about ',
+    spoilerModeOn: 'SPOILER MODE ON', fullAnalysis: 'Full analysis', closeCurtainBtn: '🎭 close curtain',
+    rewatchBadge: 'You’ll see it differently the second time',
+    sourcesTitle: 'Sources consulted',
+    fabOpenClosedLabel: 'Open the curtain · SPOILER MODE ON',
+    fabOpenTitle: 'Open the curtain',
+    fabCloseTitle: 'Close curtain and return to spoiler-free mode',
+    toTopTitle: 'Back to top',
+    docTitleSuffix: 'Twistify',
+  },
+  es: {
+    tagline: 'Sin spoilers antes. Con todos los giros después.',
+    searchPlaceholder: 'Buscar película…',
+    filterAll: 'Todas', filterMainstream: 'Populares', filterLongtail: 'Cola larga', filterCurated: 'Con contenido',
+    themeLabel: 'Temática', sortLabel: 'Ordenar por', sortDefault: 'Relevancia', sortAwards: '🏆 Más premiadas',
+    noThemesYet: 'Aún sin temáticas curadas',
+    groupMainstream: 'Populares', groupLongtail: 'Cola larga',
+    noResults: 'Sin resultados', uncurated: 'sin curar',
+    choosePlaceholder: 'Elige una película para empezar.',
+    loading: 'Cargando…',
+    notCuratedTitle: 'Ficha sin curar todavía',
+    notCuratedBody: 'Está en el catálogo pero aún no tiene contenido investigado. El repertorio se rellena con investigación citada, no generando texto desde la memoria de un modelo.',
+    navNoSpoilers: 'Sin spoilers', navSpoilerMode: 'SPOILER MODE',
+    zoneSafeBadge: 'Zona sin spoilers', zoneSafeSub: 'Léelo antes de verla · no revela nada de la trama',
+    secStoryTitle: 'Cómo se vive, en una historia', secStoryLede: 'El tráiler, pero contado. Nada de spoilers.',
+    secBeforeTitle: 'Antes de verla', secBeforeLede: 'Lo que conviene saber para entrar. Nada de la trama.',
+    secVoiceTitle: 'Qué buscaba quien la hizo', secVoiceLede: 'Su intención, en palabras del propio director.',
+    secToneTitle: 'El tono que te espera', whyNowHead: 'Por qué verla ahora',
+    curtainIcon: '🎭', curtainTitle: 'El mapa de easter eggs',
+    curtainBody: 'Metáforas, easter eggs, datos de rodaje, análisis de escenas y crítica.',
+    curtainWarn: 'TODO ESTO CONTIENE SPOILERS.',
+    unlockBtn: 'Ya la he visto — abrir el telón',
+    unlockBtnOpening: 'Abriendo el telón…',
+    commentsTitle: 'Comentarios', cmAuthorPh: 'Tu nombre (opcional)', cmSpoilerCheck: 'contiene spoilers',
+    cmTextPh: '¿Qué te ha parecido?', cmSend: 'Publicar comentario', cmEmpty: 'Sé el primero en comentar.',
+    cmSpoilersTag: 'SPOILERS', cmEdited: 'editado', cmEditTitle: 'Editar', cmDeleteTitle: 'Eliminar',
+    cmConfirmDelete: '¿Eliminar este comentario?', cmSave: 'Guardar', cmCancel: 'Cancelar',
+    anonymous: 'anónimo',
+    thinkBadge: 'Para pensar', thinkSub: 'Sin spoilers · deja la conversación abierta',
+    thinkTitle: 'Preguntas que deja abiertas', thinkHint: 'Sin prisa. Esto es lo que se queda dando vueltas cuando acaba.',
+    secMeta: 'Lo que en realidad te cuenta', secRef: 'Referencias y guiños',
+    secRod: 'El rodaje por dentro', secEsc: 'Escenas clave, explicadas',
+    secCri: 'Qué dijo la crítica', noScores: '⚠ sin puntuaciones verificadas — no se inventan',
+    secBal: 'Lo mejor y lo peor', swGood: '▲ Lo que borda', swBad: '▼ Lo discutible',
+    secDato: 'Datos curiosos de la película', secDeb: '¿Y tú de qué lado estás?',
+    pollLede: 'Un tema, dos bandos. Vota y defiende tu postura.',
+    pollAgree: 'Totalmente de acuerdo', pollDisagree: 'Eso no es así', pollVotes: 'votos',
+    pollHint: 'Puedes cambiar de bando cuando quieras.', pollDefend: '✍️ Defiende tu voto',
+    pollStarterA: 'No hay vuelta de hoja: "{q}". Lo que termina de convencerme es ',
+    pollStarterB: 'Aquí freno en seco: "{q}" no se sostiene en cuanto piensas en ',
+    spoilerModeOn: 'SPOILER MODE ON', fullAnalysis: 'Análisis completo', closeCurtainBtn: '🎭 cerrar telón',
+    rewatchBadge: 'La segunda vez la ves distinta',
+    sourcesTitle: 'Fuentes consultadas',
+    fabOpenClosedLabel: 'Abrir el telón · SPOILER MODE ON',
+    fabOpenTitle: 'Abrir el telón',
+    fabCloseTitle: 'Cerrar telón y volver a modo sin spoilers',
+    toTopTitle: 'Volver arriba',
+    docTitleSuffix: 'Twistify',
+  },
+};
+
+let LANG = localStorage.getItem('psr_lang') || 'en';
+const t = key => (STRINGS[LANG] && STRINGS[LANG][key]) || STRINGS.en[key] || key;
+
 let CATALOGUE = [], CURRENT = null, FILTER = 'all', QUERY = '';
 let THEME_FILTER = new Set(), SORT_MODE = 'default';
 
-/* vocabulario fijo de temáticas: icono + color por tema, para que el filtro
-   sea visual y para que cada tema agrupe más de una película (antes eran
-   ~19 etiquetas casi únicas, una por película -- no servían para filtrar) */
+/* fixed theme vocabulary: icon + color per theme, so the filter is visual
+   and so each theme groups more than one film (it used to be ~19 nearly
+   unique tags, one per film -- useless for filtering) */
 const THEME_META = {
-  'Identidad':              { ico: '🎭', color: '#b79bf0' },
-  'Duelo y pérdida':        { ico: '🕊️', color: '#8bb0b9' },
-  'Obsesión':               { ico: '🔥', color: '#e0705f' },
-  'Clase y poder':          { ico: '👑', color: '#e0a35c' },
-  'Moralidad y justicia':   { ico: '⚖️', color: '#52c99a' },
-  'Percepción':             { ico: '👁️', color: '#d47559' },
+  'Identity':          { ico: '🎭', color: '#b79bf0' },
+  'Grief and Loss':    { ico: '🕊️', color: '#8bb0b9' },
+  'Obsession':         { ico: '🔥', color: '#e0705f' },
+  'Class and Power':   { ico: '👑', color: '#e0a35c' },
+  'Morality and Justice': { ico: '⚖️', color: '#52c99a' },
+  'Perception':        { ico: '👁️', color: '#d47559' },
 };
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const host = u => { try { return new URL(u).hostname.replace('www.', ''); } catch { return u; } };
+
+function applyStaticStrings() {
+  document.documentElement.lang = LANG;
+  document.getElementById('headerTag').textContent = t('tagline');
+  document.getElementById('search').placeholder = t('searchPlaceholder');
+  document.getElementById('themeLabel').textContent = t('themeLabel');
+  document.getElementById('sortLabel').textContent = t('sortLabel');
+  // #placeholderText only exists before a film is selected -- it's replaced
+  // once #main is filled with film content, so it must be optional here.
+  const ph = document.getElementById('placeholderText');
+  if (ph) ph.textContent = t('choosePlaceholder');
+  document.getElementById('toTop').title = t('toTopTitle');
+  document.getElementById('toTop').setAttribute('aria-label', t('toTopTitle'));
+  document.querySelectorAll('#langToggle .lang-btn').forEach(b =>
+    b.classList.toggle('on', b.dataset.lang === LANG));
+}
+
+function setLang(lang) {
+  if (lang === LANG) return;
+  LANG = lang;
+  localStorage.setItem('psr_lang', lang);
+  applyStaticStrings();
+  renderFilters();
+  renderMoreFilters();
+  renderCatalogue();
+  if (CURRENT) loadFilm();
+}
+document.querySelectorAll('#langToggle .lang-btn').forEach(b => b.onclick = () => setLang(b.dataset.lang));
 
 async function loadCatalogue() {
   CATALOGUE = await (await fetch('/api/catalogue')).json();
@@ -562,11 +712,11 @@ async function loadCatalogue() {
   renderCatalogue();
 }
 
-const FILTERS = [
-  { key: 'all', ico: '🎬', label: 'Todas' },
-  { key: 'mainstream', ico: '⭐', label: 'Populares' },
-  { key: 'longtail', ico: '🌀', label: 'Cola larga' },
-  { key: 'curated', ico: '✅', label: 'Con contenido' },
+const FILTERS = () => [
+  { key: 'all', ico: '🎬', label: t('filterAll') },
+  { key: 'mainstream', ico: '⭐', label: t('filterMainstream') },
+  { key: 'longtail', ico: '🌀', label: t('filterLongtail') },
+  { key: 'curated', ico: '✅', label: t('filterCurated') },
 ];
 
 function matchesFilter(f) {
@@ -577,7 +727,7 @@ function matchesFilter(f) {
 
 function renderFilters() {
   const box = document.getElementById('filters');
-  box.innerHTML = FILTERS.map(f => {
+  box.innerHTML = FILTERS().map(f => {
     const count = f.key === 'all' ? CATALOGUE.length : CATALOGUE.filter(c =>
       f.key === 'curated' ? c.curated : c.stratum === f.key).length;
     return `<button class="filter-chip ${FILTER === f.key ? 'on' : ''}" data-f="${f.key}" title="${esc(f.label)}">
@@ -597,23 +747,23 @@ function renderMoreFilters() {
 
   const themeBox = document.getElementById('themeTags');
   themeBox.innerHTML = themes.length
-    ? themes.map(t => {
-        const meta = THEME_META[t] || { ico: '🏷️', color: '#6a7284' };
-        return `<button class="theme-chip ${THEME_FILTER.has(t) ? 'on' : ''}" data-theme="${esc(t)}"
-          style="--t-color:${meta.color}"><span class="t-ico">${meta.ico}</span>${esc(t)}</button>`;
+    ? themes.map(t2 => {
+        const meta = THEME_META[t2] || { ico: '🏷️', color: '#6a7284' };
+        return `<button class="theme-chip ${THEME_FILTER.has(t2) ? 'on' : ''}" data-theme="${esc(t2)}"
+          style="--t-color:${meta.color}"><span class="t-ico">${meta.ico}</span>${esc(t2)}</button>`;
       }).join('')
-    : '<span class="empty-note" style="font-size:11px">Aún sin temáticas curadas</span>';
+    : `<span class="empty-note" style="font-size:11px">${esc(t('noThemesYet'))}</span>`;
   themeBox.querySelectorAll('.theme-chip').forEach(b => b.onclick = () => {
-    const t = b.dataset.theme;
-    THEME_FILTER.has(t) ? THEME_FILTER.delete(t) : THEME_FILTER.add(t);
+    const th = b.dataset.theme;
+    THEME_FILTER.has(th) ? THEME_FILTER.delete(th) : THEME_FILTER.add(th);
     renderMoreFilters();
     renderCatalogue();
   });
 
   const sortBox = document.getElementById('sortRow');
   sortBox.innerHTML = `
-    <button class="sort-chip ${SORT_MODE === 'default' ? 'on' : ''}" data-sort="default">Relevancia</button>
-    <button class="sort-chip ${SORT_MODE === 'awards' ? 'on' : ''}" data-sort="awards">🏆 Más premiadas</button>`;
+    <button class="sort-chip ${SORT_MODE === 'default' ? 'on' : ''}" data-sort="default">${esc(t('sortDefault'))}</button>
+    <button class="sort-chip ${SORT_MODE === 'awards' ? 'on' : ''}" data-sort="awards">${esc(t('sortAwards'))}</button>`;
   sortBox.querySelectorAll('.sort-chip').forEach(b => b.onclick = () => {
     SORT_MODE = b.dataset.sort;
     renderMoreFilters();
@@ -625,16 +775,16 @@ function renderCatalogue() {
   const q = QUERY.toLowerCase();
   let items = CATALOGUE.filter(f =>
     matchesFilter(f) &&
-    (!THEME_FILTER.size || (f.themes || []).some(t => THEME_FILTER.has(t))) &&
+    (!THEME_FILTER.size || (f.themes || []).some(th => THEME_FILTER.has(th))) &&
     (!q || f.title.toLowerCase().includes(q) || String(f.year).includes(q)));
   if (SORT_MODE === 'awards') items = items.slice().sort((a, b) => (b.awards_count || 0) - (a.awards_count || 0));
   const groups = { mainstream: [], longtail: [] };
   items.forEach(f => groups[f.stratum].push(f));
-  const names = { mainstream: 'Populares', longtail: 'Cola larga' };
+  const names = { mainstream: t('groupMainstream'), longtail: t('groupLongtail') };
   let html = '';
   for (const [k, list] of Object.entries(groups)) {
     if (!list.length) continue;
-    html += `<div class="group-label">${names[k]} · ${list.length}</div>`;
+    html += `<div class="group-label">${esc(names[k])} · ${list.length}</div>`;
     list.forEach(f => {
       html += `<button class="film-btn ${CURRENT === f.title_id ? 'active' : ''}" data-id="${f.title_id}">
         <div class="t">${esc(f.title)}</div>
@@ -642,11 +792,11 @@ function renderCatalogue() {
         <div class="meta"><span class="yr">${f.year}</span>
         ${SORT_MODE === 'awards' && f.awards_count ? `<span class="tag-uncurated">🏆 ${f.awards_count}</span>` : ''}
         ${f.curated ? `<span class="bar"><i style="width:${f.completeness}%"></i></span>`
-                    : `<span class="tag-uncurated">sin curar</span>`}</div></button>`;
+                    : `<span class="tag-uncurated">${esc(t('uncurated'))}</span>`}</div></button>`;
     });
   }
   const el = document.getElementById('catalogue');
-  el.innerHTML = html || '<div class="group-label">Sin resultados</div>';
+  el.innerHTML = html || `<div class="group-label">${esc(t('noResults'))}</div>`;
   el.querySelectorAll('.film-btn').forEach(b =>
     b.onclick = () => { CURRENT = b.dataset.id; renderCatalogue();
       document.querySelector('main').scrollTop = 0; loadFilm(); });
@@ -657,22 +807,22 @@ async function loadFilm() {
   const fab = document.getElementById('curtainFab'); if (fab) fab.classList.remove('show');
   updateNavMode('safe');
   const main = document.getElementById('main');
-  main.className = ''; main.innerHTML = '<div class="wrap"><p class="empty-note">Cargando…</p></div>';
+  main.className = ''; main.innerHTML = `<div class="wrap"><p class="empty-note">${esc(t('loading'))}</p></div>`;
   const d = await (await fetch(`/api/film/${CURRENT}?seen=false`)).json();
   renderFilm(d);
   loadComments();
 }
 
 function sourceTag(o) {
-  if (o.kind === 'interpretation') return `<span class="interp">◇ interpretación</span>`;
+  if (o.kind === 'interpretation') return `<span class="interp">◇ ${LANG === 'es' ? 'interpretación' : 'interpretation'}</span>`;
   if (o.source_id) return `<a class="src" href="${esc(o.source_id)}" target="_blank" rel="noopener">↗ ${esc(host(o.source_id))}</a>`;
-  return `<span class="nosrc">⚠ sin fuente</span>`;
+  return `<span class="nosrc">⚠ ${LANG === 'es' ? 'sin fuente' : 'no source'}</span>`;
 }
 const sourcedList = items => `<ul class="clean">${items.map(o => `<li>${esc(o.text)}${sourceTag(o)}</li>`).join('')}</ul>`;
 const factList = items => `<ul class="facts">${items.map(o =>
   `<li><span class="fact-lead">${esc(o.lead)}</span><span class="fact-txt">${esc(o.text)}</span>${sourceTag(o)}</li>`).join('')}</ul>`;
 
-/* rodaje: acordeón breve (teaser) que se expande */
+/* production trivia: short accordion teaser that expands */
 const accordionList = items => `<div class="acc">${items.map(o => {
   const w = o.text.split(' ');
   const lead = w.length > 11 ? w.slice(0, 10).join(' ') + '…' : o.text;
@@ -680,15 +830,15 @@ const accordionList = items => `<div class="acc">${items.map(o => {
     <div class="acc-body"><p>${esc(o.text)}</p>${sourceTag(o)}</div></div>`;
 }).join('')}</div>`;
 
-/* ambientación por película (paleta + tagline atmosférica, spoiler-free) */
+/* per-film ambience (palette + atmospheric tagline, spoiler-free) */
 const THEMES = {
-  se7en_1995:       { accent: '#96a48f', bg1: '#181f1a', bg2: '#080b09', mood: 'Lluvia que no escampa sobre una ciudad sin nombre.' },
-  sixth_sense_1999: { accent: '#c9454e', bg1: '#141b27', bg2: '#080b12', mood: 'Silencios largos y un frío que no viene del clima.' },
-  fight_club_1999:  { accent: '#83bd98', bg1: '#151b17', bg2: '#090d0a', mood: 'Insomnio, fluorescentes y una risa incómoda.' },
-  prestige_2006:    { accent: '#d0a860', bg1: '#1c150c', bg2: '#0c0805', mood: 'Luz de gas, terciopelo y obsesión.' },
-  arrival_2016:     { accent: '#8bb0b9', bg1: '#141c20', bg2: '#080d0f', mood: 'Niebla, calma y un zumbido grave de fondo.' },
-  get_out_2017:     { accent: '#d47559', bg1: '#1b120d', bg2: '#0c0806', mood: 'Sonrisas perfectas y algo que no encaja.' },
-  parasite_2019:    { accent: '#c39457', bg1: '#18130c', bg2: '#0a0806', mood: 'Una escalera que solo parece llevar hacia arriba.' },
+  se7en_1995:       { accent: '#96a48f', bg1: '#181f1a', bg2: '#080b09', mood: 'Rain that never lets up over a city with no name.' },
+  sixth_sense_1999: { accent: '#c9454e', bg1: '#141b27', bg2: '#080b12', mood: "Long silences and a cold that doesn't come from the weather." },
+  fight_club_1999:  { accent: '#83bd98', bg1: '#151b17', bg2: '#090d0a', mood: 'Insomnia, fluorescent light, and an uncomfortable laugh.' },
+  prestige_2006:    { accent: '#d0a860', bg1: '#1c150c', bg2: '#0c0805', mood: 'Gaslight, velvet, and obsession.' },
+  arrival_2016:     { accent: '#8bb0b9', bg1: '#141c20', bg2: '#080d0f', mood: 'Fog, calm, and a low hum in the background.' },
+  get_out_2017:     { accent: '#d47559', bg1: '#1b120d', bg2: '#0c0806', mood: "Perfect smiles and something that doesn't add up." },
+  parasite_2019:    { accent: '#c39457', bg1: '#18130c', bg2: '#0a0806', mood: 'A staircase that only seems to lead up.' },
   _default:         { accent: '#7aa2f7', bg1: '#161a22', bg2: '#0a0c11', mood: '' },
 };
 
@@ -702,7 +852,7 @@ function focusComment(spoiler, prefill) {
   main.scrollTo({ top, behavior: 'smooth' });
   setTimeout(() => { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }, 420);
 }
-/* navegación unificada: pre-show + deep-dive (una vez desbloqueado) */
+/* unified navigation: pre-show + deep-dive (once unlocked) */
 let PRE_SECTIONS = [];
 let NAV_SECTIONS = [];
 let LAST_ACTIVE_CHIP = null;
@@ -720,10 +870,10 @@ function centerChipInRail(chipEl) {
 function wireChipClicks(container) {
   container.querySelectorAll('.chip').forEach(ch => {
     ch.onclick = () => {
-      const t = document.getElementById(ch.dataset.go);
+      const target = document.getElementById(ch.dataset.go);
       const main = document.querySelector('main');
-      if (t && main) {
-        const top = main.scrollTop + t.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
+      if (target && main) {
+        const top = main.scrollTop + target.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
         main.scrollTo({ top, behavior: 'smooth' });
       }
     };
@@ -735,8 +885,8 @@ function updateNavMode(state) {
   if (!el) return;
   el.classList.toggle('spoiler', state === 'spoiler');
   el.innerHTML = state === 'spoiler'
-    ? '<span class="pulse"></span> SPOILER MODE'
-    : '<span class="pulse"></span> Sin spoilers';
+    ? `<span class="pulse"></span> ${esc(t('navSpoilerMode'))}`
+    : `<span class="pulse"></span> ${esc(t('navNoSpoilers'))}`;
 }
 
 function onScroll() {
@@ -756,21 +906,21 @@ function onScroll() {
       LAST_ACTIVE_CHIP = active;
       document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.go === active));
       const activeChip = document.querySelector(`.chip[data-go="${active}"]`);
-      centerChipInRail(activeChip); // solo horizontal: nunca toca el scroll vertical de <main>
+      centerChipInRail(activeChip); // horizontal only: never touches <main>'s vertical scroll
     }
   }
 }
 
-/* telón: bloquea/desbloquea el deep-dive (texto exacto pedido en el aviso) */
-const CURTAIN_HTML = `<div class="curtain" id="curtain">
+/* curtain: locks/unlocks the deep dive (exact copy requested in the brief) */
+const CURTAIN_HTML = () => `<div class="curtain" id="curtain">
   <div class="curtain-panel cp-l"></div>
   <div class="curtain-panel cp-r"></div>
   <div class="curtain-prompt">
-    <div class="ic">🎭</div>
-    <h4>El mapa de easter eggs</h4>
-    <p>Metáforas, easter eggs, datos de rodaje, análisis de escenas y crítica.
-    <span class="warn">TODO ESTO CONTIENE SPOILERS.</span></p>
-    <button class="unlock-btn" id="unlockBtn">Ya la he visto — abrir el telón <span class="arrow">▸</span></button>
+    <div class="ic">${t('curtainIcon')}</div>
+    <h4>${esc(t('curtainTitle'))}</h4>
+    <p>${esc(t('curtainBody'))}
+    <span class="warn">${esc(t('curtainWarn'))}</span></p>
+    <button class="unlock-btn" id="unlockBtn">${esc(t('unlockBtn'))} <span class="arrow">▸</span></button>
   </div>
 </div>
 <div class="deep-content" id="deepContent"></div>`;
@@ -780,17 +930,16 @@ function renderFilm(d) {
 
   if (!d.curated) {
     main.innerHTML = `<div class="wrap">
-      <div class="hero"><div class="kicker">${c.stratum === 'longtail' ? 'Cola larga' : 'Popular'}</div>
+      <div class="hero"><div class="kicker">${c.stratum === 'longtail' ? esc(t('groupLongtail')) : esc(t('groupMainstream'))}</div>
       <h2>${esc(c.title)} · ${c.year}</h2></div>
       <div class="zone zone-deep"><div class="unlock"><div class="ic">📭</div>
-        <h4>Ficha sin curar todavía</h4>
-        <p>Está en el catálogo pero aún no tiene contenido investigado. El repertorio se
-        rellena con investigación citada, no generando texto desde la memoria de un modelo.</p></div></div></div>`;
+        <h4>${esc(t('notCuratedTitle'))}</h4>
+        <p>${esc(t('notCuratedBody'))}</p></div></div></div>`;
     return;
   }
 
   const ct = d.content;
-  document.title = `${c.title} — Twistify`;
+  document.title = `${c.title} — ${t('docTitleSuffix')}`;
   const storyHtml = ct.story ? ct.story.split('\n\n').map(p => `<p>${esc(p)}</p>`).join('') : '';
 
   const preSections = [];
@@ -799,71 +948,71 @@ function renderFilm(d) {
   const theme = THEMES[c.title_id] || THEMES._default;
   let html = `<div class="wrap">
     <div class="poster" style="--film-accent:${theme.accent};background:linear-gradient(160deg, ${theme.bg1}, ${theme.bg2})">
-      <div class="kicker">${c.stratum === 'longtail' ? 'Cola larga' : 'Popular'}</div>
+      <div class="kicker">${c.stratum === 'longtail' ? esc(t('groupLongtail')) : esc(t('groupMainstream'))}</div>
       <h2>${esc(c.title)} <span class="pyear">${c.year}</span></h2>
       ${theme.mood ? `<div class="mood-line">${esc(theme.mood)}</div>` : ''}
       ${c.notes ? `<div class="note">${esc(c.notes)}</div>` : ''}
     </div>
 
     <div class="nav-bar" id="navBar">
-      <span class="nav-mode" id="navMode"><span class="pulse"></span> Sin spoilers</span>
+      <span class="nav-mode" id="navMode"><span class="pulse"></span> ${esc(t('navNoSpoilers'))}</span>
       <div class="chips" id="masterChips"></div>
     </div>
 
     <section class="zone zone-safe">
       <div class="zone-frame">
-        <span class="zone-badge"><span class="pulse"></span> Zona sin spoilers</span>
-        <span class="zone-sub">Léelo antes de verla · no revela nada de la trama</span>
+        <span class="zone-badge"><span class="pulse"></span> ${esc(t('zoneSafeBadge'))}</span>
+        <span class="zone-sub">${esc(t('zoneSafeSub'))}</span>
       </div>
       <div class="zone-body stagger">`;
 
   if (ct.story) {
-    pushPre('sec-story', '🎬', 'Cómo se vive');
+    pushPre('sec-story', '🎬', t('secStoryTitle'));
     html += `<div class="card" id="sec-story">
-      <h3><span class="ico">🎬</span> Cómo se vive, en una historia</h3>
-      <div class="lede">El tráiler, pero contado. Nada de spoilers.</div>
+      <h3><span class="ico">🎬</span> ${esc(t('secStoryTitle'))}</h3>
+      <div class="lede">${esc(t('secStoryLede'))}</div>
       <div class="story">${storyHtml}</div></div>`;
   }
 
   if (ct.before_watching && ct.before_watching.length) {
-    pushPre('sec-before', '🧠', 'Antes de verla');
+    pushPre('sec-before', '🧠', t('secBeforeTitle'));
     html += `<div class="card" id="sec-before">
-      <h3><span class="ico">🧠</span> Antes de verla</h3>
-      <div class="lede">Lo que conviene saber para entrar. Nada de la trama.</div>
+      <h3><span class="ico">🧠</span> ${esc(t('secBeforeTitle'))}</h3>
+      <div class="lede">${esc(t('secBeforeLede'))}</div>
       ${factList(ct.before_watching)}</div>`;
   }
 
   if (ct.author_voice && ct.author_voice.length) {
-    pushPre('sec-voice', '🎥', 'Qué buscaba');
+    pushPre('sec-voice', '🎥', t('secVoiceTitle'));
     html += `<div class="card" id="sec-voice">
-      <h3><span class="ico">🎥</span> Qué buscaba quien la hizo</h3>
-      <div class="lede">Su intención, en palabras del propio director.</div>
+      <h3><span class="ico">🎥</span> ${esc(t('secVoiceTitle'))}</h3>
+      <div class="lede">${esc(t('secVoiceLede'))}</div>
       <div class="voices">${ct.author_voice.map(o =>
         `<div class="voice"><div class="q">${esc(o.text)}</div>${sourceTag(o)}</div>`).join('')}</div></div>`;
   }
 
   if (ct.emotional_temperature || ct.why_now) {
-    pushPre('sec-tone', '🎭', 'El tono');
+    pushPre('sec-tone', '🎭', t('secToneTitle'));
     html += `<div class="card" id="sec-tone">
-      <h3><span class="ico">🎭</span> El tono que te espera</h3>
+      <h3><span class="ico">🎭</span> ${esc(t('secToneTitle'))}</h3>
       ${ct.emotional_temperature ? `<p class="tone-lead">${esc(ct.emotional_temperature)}</p>` : ''}
-      ${ct.why_now ? `<div class="why-head">Por qué verla ahora</div><div class="why">${esc(ct.why_now)}</div>` : ''}</div>`;
+      ${ct.why_now ? `<div class="why-head">${esc(t('whyNowHead'))}</div><div class="why">${esc(ct.why_now)}</div>` : ''}</div>`;
   }
 
   html += `</div></section>
 
-    <section class="zone zone-deep curtain-closed" id="deepZone">${CURTAIN_HTML}</section>
+    <section class="zone zone-deep curtain-closed" id="deepZone">${CURTAIN_HTML()}</section>
 
     <div id="phase4"></div>
 
-    <div class="cm-wrap"><h3><span class="ico">💬</span> Comentarios</h3>
+    <div class="cm-wrap"><h3><span class="ico">💬</span> ${esc(t('commentsTitle'))}</h3>
       <div class="cm-form">
         <div class="cm-row">
-          <input type="text" id="cmAuthor" placeholder="Tu nombre (opcional)" maxlength="40">
-          <label class="cm-check"><input type="checkbox" id="cmSpoiler"> contiene spoilers</label>
+          <input type="text" id="cmAuthor" placeholder="${esc(t('cmAuthorPh'))}" maxlength="40">
+          <label class="cm-check"><input type="checkbox" id="cmSpoiler"> ${esc(t('cmSpoilerCheck'))}</label>
         </div>
-        <textarea id="cmText" rows="3" placeholder="¿Qué te ha parecido?"></textarea>
-        <button id="cmSend">Publicar comentario</button>
+        <textarea id="cmText" rows="3" placeholder="${esc(t('cmTextPh'))}"></textarea>
+        <button id="cmSend">${esc(t('cmSend'))}</button>
       </div>
       <div id="cmList"></div></div>
   </div>`;
@@ -884,15 +1033,15 @@ function renderPhase4(ct) {
   let h = '';
   if ((ct.questions || []).length)
     h += `<div class="zone zone-safe think-zone" id="sec-pensar" style="margin-top:26px"><div class="zone-frame">
-      <span class="zone-badge"><span class="pulse"></span> Para pensar</span>
-      <span class="zone-sub">Sin spoilers · deja la conversación abierta</span></div>
-      <div class="zone-body"><div class="card"><h3><span class="ico">🧠</span> Preguntas que deja abiertas</h3>
-      <div class="think-hint">Sin prisa. Esto es lo que se queda dando vueltas cuando acaba.</div>
+      <span class="zone-badge"><span class="pulse"></span> ${esc(t('thinkBadge'))}</span>
+      <span class="zone-sub">${esc(t('thinkSub'))}</span></div>
+      <div class="zone-body"><div class="card"><h3><span class="ico">🧠</span> ${esc(t('thinkTitle'))}</h3>
+      <div class="think-hint">${esc(t('thinkHint'))}</div>
       <ul class="clean q-list">${ct.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div></div></div>`;
   document.getElementById('phase4').innerHTML = h;
 
   if ((ct.questions || []).length) {
-    const s = { id: 'sec-pensar', ico: '🧠', title: 'Para pensar' };
+    const s = { id: 'sec-pensar', ico: '🧠', title: t('thinkBadge') };
     PRE_SECTIONS = [...PRE_SECTIONS, s];
     NAV_SECTIONS = PRE_SECTIONS;
     const masterChips = document.getElementById('masterChips');
@@ -901,8 +1050,8 @@ function renderPhase4(ct) {
   }
 }
 
-/* telón: la primera vez que se abre, carga; las siguientes solo abre/cierra */
-/* poll: una pregunta, dos bandos, votos simulados en vivo (100 cada uno de salida) */
+/* curtain: loads content the first time it's opened; just opens/closes after */
+/* poll: one question, two sides, simulated live votes (100 each to start) */
 function updatePollUI(card) {
   const a = Number(card.dataset.a), b = Number(card.dataset.b), total = a + b;
   const pa = Math.round(100 * a / total), pb = 100 - pa;
@@ -910,16 +1059,16 @@ function updatePollUI(card) {
   const optB = card.querySelector('.poll-opt[data-side="b"]');
   optA.querySelector('.poll-fill').style.width = pa + '%';
   optA.querySelector('.poll-pct').textContent = pa + '%';
-  optA.querySelector('.poll-n').textContent = a + ' votos';
+  optA.querySelector('.poll-n').textContent = a + ' ' + t('pollVotes');
   optB.querySelector('.poll-fill').style.width = pb + '%';
   optB.querySelector('.poll-pct').textContent = pb + '%';
-  optB.querySelector('.poll-n').textContent = b + ' votos';
+  optB.querySelector('.poll-n').textContent = b + ' ' + t('pollVotes');
 }
 
 function pollVote(card, side) {
   const previous = card.dataset.voted;
-  if (previous === side) return; // ya estabas en ese lado
-  if (previous) card.dataset[previous] = String(Number(card.dataset[previous]) - 1); // te cambias de bando
+  if (previous === side) return; // already on that side
+  if (previous) card.dataset[previous] = String(Number(card.dataset[previous]) - 1); // switching sides
   card.dataset.voted = side;
   card.dataset[side] = String(Number(card.dataset[side]) + 1);
   updatePollUI(card);
@@ -930,9 +1079,7 @@ function pollVote(card, side) {
     const q = card.dataset.q;
     const w = q.split(' ');
     const short = w.length > 9 ? w.slice(0, 8).join(' ') + '…' : q;
-    const starter = side === 'a'
-      ? `No hay vuelta de hoja: "${short}". Lo que termina de convencerme es `
-      : `Aquí freno en seco: "${short}" no se sostiene en cuanto piensas en `;
+    const starter = (side === 'a' ? t('pollStarterA') : t('pollStarterB')).replace('{q}', short);
     focusComment(true, starter);
   };
 }
@@ -946,15 +1093,16 @@ async function unlockDeep() {
   const masterChips = document.getElementById('masterChips');
 
   if (dc.dataset.loaded !== '1') {
-    // un solo vuelo: si ya hay una carga en curso (doble clic, chip + botón a
-    // la vez), todos esperan la MISMA promesa en vez de duplicar fetch/chips.
+    // single flight: if a load is already in progress (double click, chip +
+    // button at once), everyone awaits the SAME promise instead of
+    // duplicating fetch/chips.
     if (!dc._loading) dc._loading = loadDeepDive(dc);
     await dc._loading;
   }
 
-  // los chips de las secciones con spoilers se quitan del nav al cerrar el
-  // telón (relockDeep) -- hay que devolverlos cada vez que se reabre, no solo
-  // la primera vez que se cargan.
+  // chips for spoiler sections are removed from the nav when the curtain
+  // closes (relockDeep) -- they need to be added back every time it
+  // reopens, not just the first time they're loaded.
   if (CACHED_SECTIONS.length && !masterChips.querySelector(`.chip[data-go="${CACHED_SECTIONS[0].id}"]`)) {
     masterChips.insertAdjacentHTML('beforeend', CACHED_SECTIONS.map(chipHtml).join(''));
     wireChipClicks(masterChips);
@@ -972,12 +1120,12 @@ function updateCurtainFab(state) {
   fab.classList.add('show');
   fab.classList.toggle('fab-invite', state === 'closed');
   if (state === 'open') {
-    fab.innerHTML = '<span class="ico">🎭</span> cerrar telón';
-    fab.title = 'Cerrar telón y volver a modo sin spoilers';
+    fab.innerHTML = `<span class="ico">🎭</span> ${esc(t('closeCurtainBtn').replace('🎭 ', ''))}`;
+    fab.title = t('fabCloseTitle');
     fab.onclick = relockDeep;
   } else {
-    fab.innerHTML = '<span class="ico">🎭</span> Abrir el telón · SPOILER MODE ON';
-    fab.title = 'Abrir el telón';
+    fab.innerHTML = `<span class="ico">🎭</span> ${esc(t('fabOpenClosedLabel'))}`;
+    fab.title = t('fabOpenTitle');
     fab.onclick = async () => {
       await unlockDeep();
       document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -987,73 +1135,73 @@ function updateCurtainFab(state) {
 
 async function loadDeepDive(dc) {
   const btn = document.getElementById('unlockBtn');
-  btn.disabled = true; btn.innerHTML = 'Abriendo el telón…';
+  btn.disabled = true; btn.innerHTML = t('unlockBtnOpening');
   const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
   const ct = d.content;
 
     const sections = [];
     const push = (id, ico, title, inner, extra = '') =>
       sections.push({ id, ico, title, html:
-        `<div class="card ${extra}" id="${id}"><h3><span class="ico">${ico}</span> ${title}</h3>${inner}</div>` });
+        `<div class="card ${extra}" id="${id}"><h3><span class="ico">${ico}</span> ${esc(title)}</h3>${inner}</div>` });
 
     if ((ct.metaphors || []).length)
-      push('sec-meta', '🪞', 'Lo que en realidad te cuenta', sourcedList(ct.metaphors));
+      push('sec-meta', '🪞', t('secMeta'), sourcedList(ct.metaphors));
     if ((ct.intertextual_refs || []).length)
-      push('sec-ref', '🔗', 'Referencias y guiños', sourcedList(ct.intertextual_refs));
+      push('sec-ref', '🔗', t('secRef'), sourcedList(ct.intertextual_refs));
     if ((ct.production_trivia || []).length)
-      push('sec-rod', '🎬', 'El rodaje por dentro', accordionList(ct.production_trivia));
+      push('sec-rod', '🎬', t('secRod'), accordionList(ct.production_trivia));
     if ((ct.scene_analysis || []).length)
-      push('sec-esc', '🔍', 'Escenas clave, explicadas',
+      push('sec-esc', '🔍', t('secEsc'),
         `<ul class="clean">${ct.scene_analysis.map(s =>
           `<li><div class="scene-name">${esc(s.scene)}</div><div class="scene-txt">${esc(s.text)}</div>${sourceTag(s)}</li>`).join('')}</ul>`);
 
     const cc = ct.critical_consensus || {};
     if (cc.summary || (cc.scores || []).length || (cc.awards || []).length)
-      push('sec-cri', '⭐', 'Qué dijo la crítica',
+      push('sec-cri', '⭐', t('secCri'),
         `${cc.summary ? `<div class="crit-sum">${esc(cc.summary)}</div>` : ''}
          ${(cc.scores || []).length
             ? `<div class="scores">${cc.scores.map(s => `<div class="score"><div class="s">${esc(s.source)}</div>
-               <div class="v">${esc(s.value)}</div>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">↗ verificar</a>` : ''}</div>`).join('')}</div>`
-            : `<div class="nosrc" style="margin-top:16px">⚠ sin puntuaciones verificadas — no se inventan</div>`}
+               <div class="v">${esc(s.value)}</div>${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">↗ verify</a>` : ''}</div>`).join('')}</div>`
+            : `<div class="nosrc" style="margin-top:16px">${esc(t('noScores'))}</div>`}
          ${(cc.awards || []).length ? `<div class="awards">${cc.awards.map(a => `<span class="award">${esc(a)}</span>`).join('')}</div>` : ''}`);
 
     if ((ct.strengths || []).length || (ct.weaknesses || []).length)
-      push('sec-bal', '⚖️', 'Lo mejor y lo peor', `<div class="sw-grid">
-        <div class="sw good"><h4>▲ Lo que borda</h4><ul>${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
-        <div class="sw bad"><h4>▼ Lo discutible</h4><ul>${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div></div>`);
+      push('sec-bal', '⚖️', t('secBal'), `<div class="sw-grid">
+        <div class="sw good"><h4>${esc(t('swGood'))}</h4><ul>${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
+        <div class="sw bad"><h4>${esc(t('swBad'))}</h4><ul>${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div></div>`);
 
     if ((ct.fun_facts || []).length)
-      push('sec-dato', '🎲', 'Datos curiosos de la película', factList(ct.fun_facts));
+      push('sec-dato', '🎲', t('secDato'), factList(ct.fun_facts));
 
     if ((ct.debate_prompts || []).length) {
       const q = ct.debate_prompts[0];
-      push('sec-deb', '🔥', '¿Y tú de qué lado estás?', `
-        <div class="lede-inline">Un tema, dos bandos. Vota y defiende tu postura.</div>
+      push('sec-deb', '🔥', t('secDeb'), `
+        <div class="lede-inline">${esc(t('pollLede'))}</div>
         <div class="poll" id="pollCard" data-q="${esc(q)}" data-a="24" data-b="24">
           <div class="poll-txt">${esc(q)}</div>
           <div class="poll-options">
             <button class="poll-opt" data-side="a">
-              <span class="poll-label">Totalmente de acuerdo</span>
+              <span class="poll-label">${esc(t('pollAgree'))}</span>
               <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
-              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 votos</span></span>
+              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 ${esc(t('pollVotes'))}</span></span>
             </button>
             <button class="poll-opt" data-side="b">
-              <span class="poll-label">Eso no es así</span>
+              <span class="poll-label">${esc(t('pollDisagree'))}</span>
               <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
-              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 votos</span></span>
+              <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 ${esc(t('pollVotes'))}</span></span>
             </button>
           </div>
-          <div class="poll-hint">Puedes cambiar de bando cuando quieras.</div>
-          <button class="defend-btn">✍️ Defiende tu voto</button>
+          <div class="poll-hint">${esc(t('pollHint'))}</div>
+          <button class="defend-btn">${esc(t('pollDefend'))}</button>
         </div>`);
     }
 
     CACHED_SECTIONS = sections;
 
     let inner = `<div class="zone-frame">
-        <span class="zone-badge"><span class="pulse"></span> SPOILER MODE ON</span>
-        <span class="zone-sub">Análisis completo</span>
-        <button class="relock" id="relockBtn">🎭 cerrar telón</button></div>
+        <span class="zone-badge"><span class="pulse"></span> ${esc(t('spoilerModeOn'))}</span>
+        <span class="zone-sub">${esc(t('fullAnalysis'))}</span>
+        <button class="relock" id="relockBtn">${esc(t('closeCurtainBtn'))}</button></div>
       <div class="zone-body stagger">${sections.map(s => s.html).join('')}</div>`;
 
     if (ct.cta) {
@@ -1061,12 +1209,12 @@ async function loadDeepDive(dc) {
       const lead = idx === -1 ? ct.cta : ct.cta.slice(0, idx + 1);
       const rest = idx === -1 ? '' : ct.cta.slice(idx + 2);
       inner += `<div class="zone-body" style="padding-top:0"><div class="rewatch-shell">
-        <div class="rewatch-badge">La segunda vez la ves distinta</div>
+        <div class="rewatch-badge">${esc(t('rewatchBadge'))}</div>
         <div class="rewatch-box"><span class="rewatch-lead">${esc(lead)}</span>${rest ? ` ${esc(rest)}` : ''}</div></div></div>`;
     }
     if ((ct.sources || []).length)
       inner += `<div class="zone-body" style="padding-top:0"><div class="card sources-card">
-        <h3>Fuentes consultadas · ${ct.sources.length}</h3>
+        <h3>${esc(t('sourcesTitle'))} · ${ct.sources.length}</h3>
         <div class="src-list">${ct.sources.map(s => `<a class="src" href="${esc(s)}" target="_blank" rel="noopener">↗ ${esc(host(s))}</a>`).join('')}</div></div></div>`;
 
     dc.innerHTML = inner;
@@ -1080,7 +1228,7 @@ async function loadDeepDive(dc) {
       b.onclick = () => pollVote(pollCard, b.dataset.side));
 
     btn.disabled = false;
-    btn.innerHTML = 'Ya la he visto — abrir el telón <span class="arrow">▸</span>';
+    btn.innerHTML = `${esc(t('unlockBtn'))} <span class="arrow">▸</span>`;
 }
 
 function relockDeep() {
@@ -1088,9 +1236,9 @@ function relockDeep() {
   document.getElementById('curtain').classList.remove('open');
   document.getElementById('deepZone').classList.add('curtain-closed');
   document.querySelectorAll('.acc-item.open').forEach(el => el.classList.remove('open'));
-  // el nav solo debe mostrar lo que hay realmente en pantalla: los chips de
-  // las secciones con spoilers desaparecen del todo, no se quedan como
-  // "atajo oculto" para reabrir el telón desde la navegación.
+  // the nav should only show what's actually on screen: chips for spoiler
+  // sections disappear entirely, they don't stay behind as a "hidden
+  // shortcut" to reopen the curtain from the nav.
   const deepIds = new Set(CACHED_SECTIONS.map(s => s.id));
   document.querySelectorAll('#masterChips .chip').forEach(ch => {
     if (deepIds.has(ch.dataset.go)) ch.remove();
@@ -1101,26 +1249,26 @@ function relockDeep() {
 }
 
 function ownerToken() {
-  let t = localStorage.getItem('psr_owner');
-  if (!t) {
-    t = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
-    localStorage.setItem('psr_owner', t);
+  let tok = localStorage.getItem('psr_owner');
+  if (!tok) {
+    tok = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    localStorage.setItem('psr_owner', tok);
   }
-  return t;
+  return tok;
 }
 
 async function loadComments() {
   const list = document.getElementById('cmList');
   if (!list) return;
   const cs = await (await fetch(`/api/film/${CURRENT}/comments?owner_token=${ownerToken()}`)).json();
-  if (!cs.length) { list.innerHTML = '<div class="empty-note">Sé el primero en comentar.</div>'; return; }
+  if (!cs.length) { list.innerHTML = `<div class="empty-note">${esc(t('cmEmpty'))}</div>`; return; }
   list.innerHTML = cs.slice().reverse().map(c => `
     <div class="cm" data-id="${c.id}"><div class="head"><span class="who">${esc(c.author)}</span>
       <span class="when">${esc((c.at || '').replace('T', ' ').replace('+00:00', ''))}</span>
-      ${c.spoilers ? '<span class="sp">SPOILERS</span>' : ''}
-      ${c.edited ? '<span class="edited">editado</span>' : ''}
-      ${c.mine ? `<span class="cm-owner"><button class="cm-act cm-edit" title="Editar">✎</button>
-        <button class="cm-act cm-delete" title="Eliminar">🗑</button></span>` : ''}</div>
+      ${c.spoilers ? `<span class="sp">${esc(t('cmSpoilersTag'))}</span>` : ''}
+      ${c.edited ? `<span class="edited">${esc(t('cmEdited'))}</span>` : ''}
+      ${c.mine ? `<span class="cm-owner"><button class="cm-act cm-edit" title="${esc(t('cmEditTitle'))}">✎</button>
+        <button class="cm-act cm-delete" title="${esc(t('cmDeleteTitle'))}">🗑</button></span>` : ''}</div>
     <div class="body ${c.spoilers ? 'hidden spoiler-text' : ''}">${esc(c.text)}</div></div>`).join('');
 
   list.querySelectorAll('.cm').forEach(cm => {
@@ -1128,7 +1276,7 @@ async function loadComments() {
     if (body.classList.contains('spoiler-text')) body.onclick = () => body.classList.toggle('hidden');
   });
   list.querySelectorAll('.cm-delete').forEach(btn => btn.onclick = async () => {
-    if (!confirm('¿Eliminar este comentario?')) return;
+    if (!confirm(t('cmConfirmDelete'))) return;
     const id = btn.closest('.cm').dataset.id;
     await fetch(`/api/film/${CURRENT}/comments/${id}?owner_token=${ownerToken()}`, { method: 'DELETE' });
     loadComments();
@@ -1143,8 +1291,8 @@ function startEditComment(cmEl) {
   body.classList.remove('hidden');
   body.innerHTML = `<textarea class="cm-edit-box" rows="3">${esc(original)}</textarea>
     <div class="cm-edit-actions">
-      <button class="cm-save">Guardar</button>
-      <button class="cm-cancel">Cancelar</button>
+      <button class="cm-save">${esc(t('cmSave'))}</button>
+      <button class="cm-cancel">${esc(t('cmCancel'))}</button>
     </div>`;
   body.querySelector('textarea').focus();
   body.querySelector('.cm-save').onclick = async () => {
@@ -1163,7 +1311,7 @@ async function postComment() {
   if (!text) return;
   await fetch(`/api/film/${CURRENT}/comments`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, author: document.getElementById('cmAuthor').value.trim() || 'anónimo',
+    body: JSON.stringify({ text, author: document.getElementById('cmAuthor').value.trim() || t('anonymous'),
       spoilers: document.getElementById('cmSpoiler').checked, owner_token: ownerToken() }) });
   document.getElementById('cmText').value = '';
   document.getElementById('cmSpoiler').checked = false;
@@ -1174,6 +1322,7 @@ document.querySelector('main').addEventListener('scroll', onScroll);
 document.getElementById('toTop').onclick = () =>
   document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
 
+applyStaticStrings();
 loadCatalogue();
 </script>
 </body>
