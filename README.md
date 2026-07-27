@@ -1,97 +1,101 @@
-# Pre-Show Reels
+# 🎬 Twistify
 
-Genera material promocional pre-visionado (spoiler-free) y análisis
-post-visionado a partir de una película, **con dos garantías medidas**:
+**Antes de verla, sin spoilers. Después, con todos los giros.**
 
-1. **No filtra spoilers** — medido contra ground truth etiquetado a mano, con
-   el detector calibrado contra un benchmark público.
-2. **No inventa datos** — cada afirmación factual lleva fuente, o se descarta.
+Twistify es una app de películas con una regla que se cumple de verdad, no
+solo se promete: la trama nunca sale del servidor hasta que tú dices que ya
+la has visto. Debajo, un harness de evaluación mide si esa promesa se
+cumple — con números, no con un sello verde autoconcedido.
 
-El entregable de este repo no son los guiones. Son los números.
+<p align="center">
+  <img src="docs/screenshots/twistify-safe-mode.png" width="49%" alt="Modo sin spoilers">
+  <img src="docs/screenshots/twistify-spoiler-mode.png" width="49%" alt="Modo spoiler abierto">
+</p>
 
 ---
 
-## Estado
-
-| Hito | Qué | Estado |
-|---|---|---|
-| — | Harness de evals (offline, determinista) | ✅ 8 tests en verde |
-| — | Contrato de datos (Pydantic) | ✅ |
-| — | Set de 20 títulos estratificado | ✅ |
-| 0 | Ground truth de spoilers (20 títulos) | ✅ 20/20 (investigado por LLM con fuentes citadas, ver D7 en `docs/DESIGN.md` — no es etiquetado humano) |
-| 0 | Baseline sin retrieval + medición | 🔴 código listo, falta correr con `ANTHROPIC_API_KEY` |
-| — | UI de demo local (gratis, sin retrieval real) | ✅ `webapp/` |
-| 1 | Retrieval + verificador | ⬜ |
-| 2 | Partición de contexto por spoiler | ⬜ |
-| 3 | Adaptador de libros | ⬜ |
-
-## Resultados
-
-Aún no hay. Se rellena cuando el Hito 0 esté medido.
-
-| Config | leakage | core leakage | grounded facts | richness |
-|---|---|---|---|---|
-| Baseline (mainstream) | — | — | — | — |
-| Baseline (cola larga) | — | — | — | — |
-
-**Calibración del juez** (obligatorio antes de creerse la tabla de arriba):
-
-| Juez | precision | recall | n | fuente |
-|---|---|---|---|---|
-| Substring | 0.0* | 0.0 | 183 | interna (`evals/calibrate_substring.py`), no benchmark externo |
-| LLM | — | — | — | pendiente, requiere `ANTHROPIC_API_KEY` |
-
-\* precision=0.0 aquí es "0/0 predicciones positivas", no "siempre se equivoca al decir sí" — el juez nunca dijo sí (tp=0, fp=0). El número real e importante es el recall=0.0: en un split held-out (mitad de las paráfrasis de cada spoiler como needles conocidas, la otra mitad como texto de prueba nunca visto), el `SubstringJudge` no detecta NINGUNA paráfrasis nueva del mismo spoiler. Confirma cuantitativamente el motivo de tener un juez LLM.
-
-Calibración vs. benchmark externo (TV Tropes Movies, IMDB Spoiler Dataset): no se pudo hacer sin credencial — TV Tropes Movies (Boyd-Graber et al. 2013) no tiene descarga directa pública; el IMDB Spoiler Dataset vive en Kaggle y exige cuenta/API key del usuario.
-
-## Correr
+## Pruébalo en 2 minutos
 
 ```bash
-pip install pydantic pytest pyyaml anthropic
-python -m pytest tests/ -q      # no necesita red ni API key
-export ANTHROPIC_API_KEY=sk-...  # solo hace falta para --generator baseline
-python evals/run_eval.py --generator baseline
-```
-
-### UI de demo (gratis, sin API key)
-
-Muestra un brief por plantilla para cada uno de los 20 títulos y lo verifica
-en vivo contra su ground truth real de spoilers, con el mismo harness que usa
-`run_eval.py`. No genera contenido nuevo con un LLM — eso es lo único del
-proyecto que cuesta crédito, y sigue sin ejecutarse (`baseline.py` está listo
-pero no se ha corrido, ver tabla de Resultados arriba).
-
-```bash
-pip install fastapi "uvicorn[standard]"
+git clone https://github.com/serpeigd/Twistify.git
+cd Twistify
+pip install fastapi "uvicorn[standard]" pydantic pyyaml
 python webapp/app.py
 # abre http://127.0.0.1:8000
 ```
 
+Elige una película curada (Sixth Sense, Fight Club, Get Out, Parasite,
+The Prestige, Se7en o Arrival), lee la ficha sin spoilers, y cuando quieras,
+abre el telón.
+
+## Qué hace distinto a esto de "otro CRUD con películas"
+
+- **La partición de spoilers es una propiedad del servidor, no una promesa
+  de la UI.** El contenido post-visionado no se manda al navegador hasta que
+  el cliente declara `seen=true` — abrir devtools no revela nada. No es CSS
+  escondiendo un `<div>`.
+- **Cada afirmación factual dice si tiene fuente o no.** Sin inventar
+  `source_id` falsos cuando no hay retrieval real. El hueco se muestra, no
+  se disimula.
+- **El propio detector de fugas de spoilers está medido, no asumido.** Hay
+  un harness de evals (`evals/`) que calibra el juez contra fugas plantadas
+  y reporta su recall real — incluyendo el caso incómodo en que el juez
+  barato falla (ver [Resultados](#bajo-el-capó-el-harness-de-evaluación)).
+- **Filtros con sentido.** Temáticas (identidad, obsesión, clase y poder…)
+  que agrupan varias películas de verdad, no una etiqueta única por título.
+
+## Cómo está hecho
+
+| Pieza | Qué es |
+|---|---|
+| `webapp/` | FastAPI + vanilla JS. Sirve el catálogo, gestiona el gate de spoilers, comentarios (editar/borrar sin cuentas, con token anónimo por navegador). |
+| `content/curated/*.json` | 7 fichas investigadas a mano (con fuentes citadas: Wikipedia, Hollywood Reporter, No Film School…), no generadas por un LLM sin verificar. |
+| `src/preshow/` | Contratos de datos (Pydantic) tanto del contenido curado como del harness de medición. |
+| `evals/` | El experimento real: métricas de fuga/fundamentación/riqueza, juez calibrado, dataset de 20 títulos estratificado. |
+
+## Estado
+
+| Qué | Estado |
+|---|---|
+| App Twistify (catálogo, gate de spoilers, filtros, comentarios) | ✅ 7/20 fichas curadas |
+| Harness de evals offline | ✅ 8 tests en verde |
+| Ground truth de spoilers (20 títulos) | ✅ 20/20, investigado con fuentes citadas |
+| Generador baseline (sin retrieval) | ✅ código listo |
+| Calibración del juez (offline) | ✅ recall=0.0 confirmado — justifica por qué hace falta un juez mejor |
+| Medir el baseline sobre los 20 títulos | 🔴 pendiente de correr |
+| Retrieval (TMDB/OMDb/Wikipedia) + verificador | ⬜ próximo hito |
+
+## Bajo el capó: el harness de evaluación
+
+La parte que no se ve en las capturas es la que sostiene la promesa de la
+app: un sistema que **mide**, en vez de prometer, tres cosas por cada ficha:
+
+1. **`leakage_rate`** — ¿se coló algún spoiler en el contenido pre-visionado?
+2. **`grounded_fact_rate`** — ¿cuántas afirmaciones llevan fuente real?
+3. **`richness`** — ¿cuánto dice realmente? (un output vacío puntúa perfecto
+   en las dos primeras — por eso nunca se reporta sin esta)
+
+```bash
+python -m pytest tests/ -q                      # 8/8, sin red, sin API key
+python evals/run_eval.py --generator baseline   # bloquea con <15 títulos etiquetados
+```
+
+Las decisiones detrás de este diseño (por qué no hay LangGraph, por qué el
+esquema permite estados inválidos a propósito, por qué el ground truth no lo
+puede generar el mismo modelo que se está midiendo) están documentadas en
+[`docs/DESIGN.md`](docs/DESIGN.md).
+
 ## Fuentes y restricciones legales
 
-- **TMDB** — gratis para uso no comercial, exige atribución y logo. Ojo: sus
-  términos se reservan el derecho a prohibir el uso de contenido TMDB *en
-  conexión con o para entrenar* una aplicación basada en IA. Uso en inferencia
-  con atribución es la interpretación habitual, pero **léelo antes de hacer
-  esto público** y no lo uses para fine-tuning. TTL de caché no comercial: 6
-  meses. Rate limit ~40 rps.
-- **OMDb** — única vía limpia a puntuaciones de Rotten Tomatoes y Metascore.
-  Tier gratis muy limitado en peticiones/día.
-- **Wikipedia** — CC BY-SA. La sección `Plot` viene pre-marcada como
-  spoiler por la propia estructura del artículo: regalo estructural.
-- **Scraping de IMDb** — prohibido por sus ToS. No lo hagas y dilo en el
-  writeup; saber dónde está la línea también es ingeniería.
-- **Libros (Hito 3)** — la API de Goodreads se cerró en 2020 y LibraryThing
-  también. Quedan Open Library y Hardcover (GraphQL). No hay equivalente a
-  Rotten Tomatoes ni a "datos de rodaje": el esquema tendrá que degradar
-  campos a opcionales por dominio.
+- **TMDB** — gratis para uso no comercial, exige atribución. Sus términos
+  restringen usar el contenido para *entrenar* sistemas de IA; inferencia con
+  atribución es la lectura habitual, pero revísalo antes de escalar esto.
+- **OMDb** — vía a puntuaciones de Rotten Tomatoes/Metascore, tier gratis
+  limitado.
+- **Wikipedia** — CC BY-SA, ya en uso para las fichas curadas.
+- **Scraping de IMDb** — prohibido por ToS, no se hace bajo ninguna excusa.
 
-## Benchmarks para calibrar el juez
+## Licencia
 
-- TV Tropes Movies (Boyd-Graber et al., 2013) — ~16k frases, ~50% spoiler.
-- IMDB Spoiler Dataset (Misra, arXiv:2212.06034).
-- Goodreads / UCSD Book Graph (Wan et al., 2019) — 1.3M reseñas, ~3% positivas.
-
-Advertencia: clasifican "¿es spoiler?"; tú necesitas "¿revela ESTE spoiler?".
-Es entailment, no clasificación. La calibración da una cota, no una validación.
+Sin licencia definida todavía — repo de portfolio personal. Si quieres
+reutilizar algo, pregunta antes.
