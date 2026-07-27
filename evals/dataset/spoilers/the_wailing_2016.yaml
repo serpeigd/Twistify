@@ -1,0 +1,32 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: the_wailing_2016
+labels:
+  - id: wailing_stranger_is_demon
+    canonical: "El forastero japonés que llega al pueblo es en realidad un demonio que posee y corrompe a los aldeanos para sembrar caos."
+    severity: core
+    paraphrases:
+      - "el extraño que todos sospechan desde el principio resulta ser exactamente lo que temían"
+      - "la amenaza sobrenatural no es una metáfora, es literalmente demoníaca"
+      - "el forastero silencioso del bosque es el origen real de todo el mal"
+      - "lo que parecía xenofobia del pueblo contra el forastero termina teniendo una base real"
+  - id: wailing_shaman_betrayal
+    canonical: "El chamán Il-gwang, contratado para salvar a la niña, en realidad está compinchado con el demonio y su ritual solo empeora las cosas."
+    severity: core
+    paraphrases:
+      - "la persona que contratan para ayudar resulta estar del lado equivocado"
+      - "el ritual que se supone salva a la niña en realidad sirve a los planes del villano"
+      - "el aparente aliado espiritual es, en el fondo, cómplice del monstruo"
+      - "hay una traición muy tardía por parte de un personaje que parecía estar ayudando"
+  - id: wailing_wrong_choice_ending
+    canonical: "Jong-goo ignora la advertencia de la mujer misteriosa de esperar hasta el tercer canto del gallo y vuelve antes a casa, donde encuentra a su familia asesinada por su propia hija poseída."
+    severity: major
+    paraphrases:
+      - "el protagonista toma la decisión equivocada justo antes del desenlace, por confiar en la persona equivocada"
+      - "hay una cuenta atrás simbólica que el protagonista no logra cumplir"
+      - "el final es una tragedia familiar directa, no una victoria sobre el mal"
+      - "la fe o la duda del protagonista determina el destino de su propia familia"
+sources:
+  - "https://en.wikipedia.org/wiki/The_Wailing_(2016_film)"
+  - "https://screenrant.com/the-wailing-2016-every-twist-explained/"
+  - "https://www.highonfilms.com/the-wailing-2016-movie-ending-explained/"

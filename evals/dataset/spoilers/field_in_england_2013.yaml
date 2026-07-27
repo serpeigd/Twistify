@@ -1,0 +1,33 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: field_in_england_2013
+labels:
+  - id: fie_treasure_is_skull
+    canonical: "El 'tesoro' que el alquimista O'Neill promete encontrar en el campo resulta ser solo una calavera, no oro."
+    severity: core
+    paraphrases:
+      - "lo que están buscando bajo tierra no tiene ningún valor material"
+      - "toda la excavación termina siendo una decepción total, no hay riqueza al final"
+      - "el objeto que desentierran provoca que uno de ellos le dispare de la rabia que le da"
+      - "la búsqueda de fortuna del grupo es literalmente una búsqueda de huesos"
+      - "el 'premio' final del viaje es una broma cruel sobre lo que perseguían"
+  - id: fie_whitehead_kills_oneill
+    canonical: "Whitehead, el personaje más pasivo y sometido del grupo, termina matando a O'Neill de un disparo por la espalda."
+    severity: major
+    paraphrases:
+      - "el personaje que pasa casi toda la historia dominado y humillado es quien acaba con el villano"
+      - "hay un giro de poder donde la víctima se convierte en verdugo"
+      - "el asistente débil termina siendo el único superviviente y el que dispara el tiro final"
+      - "el que parecía indefenso todo el tiempo termina vistiendo la ropa del hombre que lo controlaba"
+  - id: fie_ambiguous_vision_ending
+    canonical: "La película termina con Whitehead viendo, tras cruzar el seto, a sus amigos muertos (Friend y Jacob) de pie junto a él, dejando ambiguo si es una visión o algo sobrenatural."
+    severity: minor
+    paraphrases:
+      - "el final deja en duda si lo que ves fue real o alucinado por los hongos"
+      - "cierra con una imagen fantasmal de personajes que ya habían muerto"
+      - "no hay una explicación clara de qué pasó realmente en ese campo"
+      - "el desenlace se siente más a ritual esotérico que a resolución narrativa convencional"
+sources:
+  - "https://en.wikipedia.org/wiki/A_Field_in_England"
+  - "https://leftthinktank.substack.com/p/film-review-a-field-in-england-2013"
+  - "https://www.simonprior.com/a-field-in-england-2013/"

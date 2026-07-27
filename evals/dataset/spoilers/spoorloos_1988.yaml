@@ -1,0 +1,24 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: spoorloos_1988
+labels:
+  - id: sp_raymond_motive
+    canonical: "El secuestrador Raymond es un sociópata metódico que planeó el crimen durante años como un experimento personal para probarse a sí mismo que era capaz del mal absoluto."
+    severity: major
+    paraphrases:
+      - "el villano no actúa por impulso, sino por una especie de filosofía moral retorcida"
+      - "él quiere demostrarse algo sobre su propia capacidad para hacer el mal"
+      - "hay una escena larga en la que el secuestrador explica con total calma por qué lo hizo"
+      - "su lógica es que solo puedes ser realmente bueno si eres capaz de lo peor"
+  - id: sp_ending_buried_alive
+    canonical: "Rex acepta beber café con un sedante para saber qué le pasó a Saskia, y termina despertando enterrado vivo en un ataúd, el mismo destino que sufrió ella tres años antes."
+    severity: core
+    paraphrases:
+      - "el protagonista decide averiguar la verdad al precio más alto posible, literalmente"
+      - "el final ocurre bajo tierra, en completa oscuridad, con un mechero como única luz"
+      - "para saber qué pasó, tiene que vivir exactamente lo mismo que la víctima"
+      - "no hay rescate, no hay final feliz, solo la misma trampa repetida"
+      - "el desenlace es tan simple como terrible: comparten la misma tumba"
+sources:
+  - "https://en.wikipedia.org/wiki/Spoorloos"
+  - "https://www.highonfilms.com/the-vanishing-1988-movie-ending-explained/"

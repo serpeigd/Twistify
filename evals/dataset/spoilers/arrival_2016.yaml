@@ -1,0 +1,23 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: arrival_2016
+labels:
+  - id: arr_hannah_is_future
+    canonical: "Las escenas de la protagonista con su hija Hannah no son recuerdos del pasado, sino visiones de un futuro que aún no ha ocurrido."
+    severity: core
+    paraphrases:
+      - "lo que parecen flashbacks al inicio en realidad pasa después del final de la película"
+      - "la estructura temporal de lo que ves engaña deliberadamente sobre cuándo ocurre"
+      - "la protagonista está recordando algo que todavía no ha vivido"
+      - "el idioma alienígena le da a la protagonista una forma de percibir el tiempo de manera no lineal"
+  - id: arr_daughter_dies_young
+    canonical: "La protagonista sabe que su futura hija morirá joven por una enfermedad, y aun así decide tener a esa hija y vivir esa vida con Ian."
+    severity: major
+    paraphrases:
+      - "ella elige un futuro a sabiendas de que incluye una pérdida devastadora"
+      - "el padre de la niña en el futuro es el compañero científico con el que trabaja durante la película"
+      - "conocer el destino trágico de su hija no le impide seguir adelante con esa relación"
+      - "hay una tragedia familiar futura que la protagonista ya conoce de antemano"
+sources:
+  - "https://www.looper.com/87043/ending-arrival-explained/"
+  - "https://www.thereviewgeek.com/arrival-endingexplained/"

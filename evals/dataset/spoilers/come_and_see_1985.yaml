@@ -1,0 +1,34 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: come_and_see_1985
+labels:
+  - id: cs_village_massacre
+    canonical: "Los soldados alemanes encierran a los aldeanos en un granero-iglesia y les prenden fuego, matándolos a todos mientras celebran."
+    severity: core
+    paraphrases:
+      - "hay una escena en la que queman viva a toda una aldea entera dentro de un edificio"
+      - "los nazis convierten la masacre de un pueblo en una especie de fiesta macabra"
+      - "el horror central de la película no es una batalla, es un exterminio colectivo de civiles encerrados"
+      - "el protagonista presencia cómo asesinan en masa a mujeres, niños y ancianos en un solo lugar"
+      - "hay un momento donde queda claro que nadie de ese pueblo sobrevive"
+  - id: cs_family_death
+    canonical: "Flyora descubre que toda su familia (madre y hermanas) ha sido asesinada mientras él estaba con los partisanos."
+    severity: major
+    paraphrases:
+      - "cuando vuelve a su casa, su familia ya no está viva"
+      - "el chico se niega a aceptar que perdió a los suyos hasta que se lo confirman"
+      - "detrás de su casa hay un montón de cadáveres de vecinos"
+      - "su regreso al pueblo natal termina siendo la peor parte de la película"
+  - id: cs_hitler_baby_ending
+    canonical: "En la escena final, Flyora dispara repetidamente a un retrato de Hitler mientras se proyecta en reversa un noticiero de su vida, y deja de disparar al llegar a la imagen de Hitler bebé."
+    severity: major
+    paraphrases:
+      - "el final tiene una secuencia de archivo histórico reproducida al revés"
+      - "hay un cierre muy simbólico donde el chico deja de disparar justo al ver una imagen de infancia"
+      - "la última escena conecta al villano histórico con su propia niñez, y eso rompe al protagonista"
+      - "el final no es una batalla, es un gesto casi ritual del chico frente a una imagen"
+      - "termina con una reflexión visual sobre el origen del mal, no con una resolución de trama"
+sources:
+  - "https://en.wikipedia.org/wiki/Come_and_See"
+  - "https://historical-films.fandom.com/wiki/Come_and_See_(1985)"
+  - "https://medium.com/its-only-a-movie/come-and-see-1985-beholding-the-face-of-death-079cb8202a21"

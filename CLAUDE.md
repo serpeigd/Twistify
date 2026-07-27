@@ -104,13 +104,28 @@ documento vivo, no un resumen final.
 
 ## 3. Estado del repo (verificar, no confiar en esta tabla si el código dice otra cosa)
 
+Dos pistas paralelas en este repo, no confundirlas:
+
+- **Pista de medición** (`evals/`, `tests/`, `src/preshow/schemas.py|baseline.py`):
+  el sistema con garantías MEDIDAS que el README promete. Es la que importa
+  para el portfolio.
+- **Pista de demo/contenido** (`webapp/`, `content/curated/*.json`,
+  `src/preshow/content.py`): una app local con 7 fichas escritas a mano
+  (investigadas con fuentes citadas, no generadas por el baseline) para
+  enseñar la UX del gate de spoilers. No usa el generador del Hito 0 ni
+  pasa por el juez — es una demo editorial, no el experimento.
+
 | Hito | Qué | Estado |
 |---|---|---|
 | — | Harness de evals offline (pytest, sin red) | ✅ 8 tests |
 | — | Contrato de datos (`schemas.py`) | ✅ |
 | — | Set de 20 títulos, estratificado mainstream/cola larga | ✅ |
-| 0 | Ground truth de spoilers etiquetado a mano (20 títulos) | 🔴 1/20 hecho |
-| 0 | Generador baseline (una llamada, sin retrieval) + medición | ⬜ no empezado |
+| 0 | Ground truth de spoilers (20 títulos) | ✅ 20/20 (investigado por LLM con fuentes citadas, ver D7 en DESIGN.md — no es etiquetado humano) |
+| 0 | Generador baseline (`src/preshow/baseline.py`, tool use, sin retrieval) | ✅ código listo |
+| 0 | Calibración `SubstringJudge` offline (sin coste) | ✅ recall=0.0 confirmado (`evals/calibrate_substring.py`) |
+| 0 | Correr baseline sobre los 20 títulos + pegar números en README | 🔴 falta un `ANTHROPIC_API_KEY` real para ejecutarlo — es lo único que bloquea cerrar el Hito 0 |
+| 0 | Calibrar juez contra benchmark EXTERNO (TV Tropes / IMDB Spoiler Dataset) | ⬜ bloqueado: sin descarga pública directa / requiere cuenta Kaggle |
+| — | Demo local (`webapp/`, "Twistify"): catálogo curado con gate de spoilers, comentarios, filtros | ✅ 7/20 fichas curadas, resto son stubs |
 | 1 | Retrieval (TMDB/OMDb/Wikipedia) + verificador de claims | ⬜ |
 | 2 | Partición de contexto por `SpoilerTier` | ⬜ |
 | 3 | Adaptador de libros | ⬜ |
@@ -119,30 +134,40 @@ Estructura:
 
 ```
 src/preshow/
-  schemas.py        # contrato de datos — leer primero, es el núcleo del diseño
+  schemas.py        # contrato de datos del harness de medición — leer primero
   generator.py       # Protocol Generator + fake determinista para tests
-  adapters/           # vacío — aquí van TMDBAdapter, WikipediaAdapter, etc.
+  baseline.py         # Hito 0: una llamada a Anthropic, tool use, sin retrieval
+  content.py           # contrato de datos de la DEMO (distinto de schemas.py, ver arriba)
+  adapters/              # vacío — aquí van TMDBAdapter, WikipediaAdapter, etc.
 evals/
   metrics.py          # leakage / grounding / richness — nunca reportar una sin las otras
   judge.py             # SubstringJudge (baseline malo a propósito) + LLMJudge + calibración
+  calibrate_substring.py # calibración offline del juez, sin red ni coste
   run_eval.py           # runner, bloquea si hay <15 títulos etiquetados
   dataset/titles.yaml    # 20 casos, mainstream vs longtail
-  dataset/spoilers/*.yaml # ground truth — 1 hecho, 19 stubs vacíos
+  dataset/spoilers/*.yaml # ground truth — 20/20 completos
 tests/test_metrics.py    # prueba el harness contra fugas plantadas, corre offline
-docs/DESIGN.md            # decisiones de diseño, documento vivo
-README.md                  # estado, cómo correr, restricciones legales de fuentes
+webapp/app.py             # FastAPI de la demo (distinta del harness de medición)
+content/curated/*.json     # 7 fichas escritas a mano para la demo
+docs/DESIGN.md               # decisiones de diseño, documento vivo (D1-D8)
+README.md                     # estado, cómo correr, restricciones legales de fuentes
 ```
 
 ---
 
 ## 4. Reglas de trabajo específicas de este repo
 
-- **El ground truth de spoilers NUNCA se genera con un LLM**, ni tú ni el
-  usuario. Sería medir la coherencia del modelo consigo mismo — el fallo
-  exacto que el proyecto existe para detectar. Si el usuario te pide "rellena
-  los 19 títulos que faltan", recuérdaselo y ofrécete a acompañarlo mientras
-  él los etiqueta (puedes ayudar a redactar paráfrasis una vez él confirme el
-  hecho central, pero el hecho en sí lo decide él viendo/consultando la obra).
+- **El ground truth de spoilers se genera con investigación web citada, no de
+  memoria del modelo.** Regla original (hasta 2026-07-25): nunca generado por
+  LLM, ni tú ni el usuario, para evitar medir la coherencia del modelo consigo
+  mismo. El usuario revirtió esa regla explícitamente (ver D7 en
+  `docs/DESIGN.md`) para poder escalar el etiquetado de los 20 títulos. Si lo
+  haces: cada `canonical` debe llevar fuente real (Wikipedia/reseña/vlog
+  citado, no conocimiento paramétrico), y el README/resultados deben decir
+  explícitamente que el ground truth es "investigado por LLM con fuentes
+  citadas", no "etiquetado a mano por humano" — son afirmaciones distintas y
+  mezclarlas sería el mismo error de autoevaluación que esta regla existía
+  para evitar.
 - **`run_eval.py` bloquea con <15 títulos etiquetados a propósito.** No lo
   desactives ni bajes el umbral para poder enseñar un número. Un leakage_rate
   sobre pocos casos no significa nada — es peor que no tener número.
@@ -169,30 +194,29 @@ README.md                  # estado, cómo correr, restricciones legales de fuen
 
 ---
 
-## 5. Próxima tarea concreta (Hito 0)
+## 5. Próxima tarea concreta (cerrar el Hito 0)
 
-1. El usuario etiqueta manualmente los 14 títulos que faltan hasta 15
-   (`evals/dataset/spoilers/*.yaml`, formato en `sixth_sense_1999.yaml`). Tu
-   trabajo aquí: revisar sus etiquetas, no escribirlas. Si una paráfrasis es
-   demasiado literal o demasiado floja, dilo.
-2. Implementar el generador baseline: una sola llamada a la API de Anthropic,
-   sin retrieval, con el prompt original reescrito para forzar salida
-   `PreShowBrief` (usa structured output / tool use, no parseo de markdown).
-   Guárdalo en `src/preshow/baseline.py`.
-3. Conectar ese generador a `evals/run_eval.py` (ahora mismo lanza
-   `NotImplementedError` a propósito ahí).
-4. Correr sobre los 15-20 títulos etiquetados, generar la tabla de
-   `overall / mainstream / longtail` que ya existe en `evals/metrics.py`
-   (`aggregate()`), y pegarla en el README sustituyendo los guiones.
-5. Calibrar `SubstringJudge` contra unas 30-50 frases de TV Tropes Movies o
-   IMDB Spoiler Dataset antes de confiar en los números de leakage. Sin esto,
-   el número del README no está justificado.
-6. Actualizar `docs/DESIGN.md` con lo que se aprenda del baseline: dónde falla
-   más, si la hipótesis mainstream-vs-longtail se confirma con datos reales.
+Etiquetado, baseline y calibración offline ya están hechos (ver tabla arriba).
+Lo único que falta para poder decir "Hito 0 medido" de verdad:
+
+1. Conseguir un `ANTHROPIC_API_KEY` real (en `.env`, nunca en texto plano ni
+   hardcodeado) y correr `python evals/run_eval.py --generator baseline`
+   sobre los 20 títulos ya etiquetados.
+2. Pegar la tabla `overall / mainstream / longtail` que devuelve
+   `aggregate()` en el README, sustituyendo los guiones.
+3. Antes de confiar en el `leakage_rate` de esa tabla: calibrar contra un
+   benchmark EXTERNO (TV Tropes Movies o IMDB Spoiler Dataset), no solo el
+   split interno ya hecho (`evals/calibrate_substring.py`, recall=0.0). Sin
+   esto el número del README sigue sin estar justificado — el offline
+   confirma que el juez es malo, no cuánto.
+4. Actualizar `docs/DESIGN.md` con lo que se aprenda del baseline: dónde
+   falla más, si la hipótesis mainstream-vs-longtail se confirma con datos
+   reales.
 
 Solo cuando el Hito 0 esté medido y documentado se propone el Hito 1
 (retrieval + verificador). No adelantar trabajo de un hito futuro sin que el
-anterior tenga números.
+anterior tenga números. La pista de la demo (`webapp/`) puede seguir
+creciendo en paralelo — es trabajo distinto, no sustituye a esto.
 
 ---
 

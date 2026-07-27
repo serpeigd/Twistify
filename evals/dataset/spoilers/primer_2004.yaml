@@ -1,0 +1,40 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+#
+# NOTA DE CONFIANZA: la cronología exacta de qué copia de Aaron/Abe es
+# "la original" hacia el final es objeto de debate incluso entre críticos
+# especializados (el propio director escribió una explicación de 100
+# páginas nunca publicada). Los hechos de abajo están confirmados por
+# fuentes; el detalle de "quién es la copia más pura" no se afirma con
+# certeza absoluta, ver paraphrase de tc_aaron_gains_upper_hand.
+title_id: primer_2004
+labels:
+  - id: primer_secret_failsafe_box
+    canonical: "Abe, alarmado por los efectos y usos descontrolados de la máquina, construye en secreto una segunda caja ('failsafe') que corre continuamente para poder viajar más atrás y evitar que el experimento avance."
+    severity: core
+    paraphrases:
+      - "uno de los dos inventores empieza a operar por su cuenta, escondiéndole cosas al otro"
+      - "hay una máquina de repuesto funcionando en secreto todo el tiempo, por si acaso"
+      - "uno de ellos intenta usar el propio invento para deshacer decisiones que ya tomaron juntos"
+      - "el plan de 'arreglarlo todo' viajando más atrás sale mucho peor de lo esperado"
+  - id: primer_multiple_doubles_coexist
+    canonical: "El uso repetido y descontrolado de la máquina genera múltiples versiones duplicadas de Abe y Aaron coexistiendo el mismo día, algunas de ellas ocultas o dormidas hasta que se necesitan."
+    severity: core
+    paraphrases:
+      - "para el final ya no está claro cuántas copias de cada protagonista andan sueltas"
+      - "hay versiones de los mismos personajes que ni siquiera saben de la existencia de las otras"
+      - "algunos de ellos guardan copias 'dormidas' de sí mismos por si las necesitan más adelante"
+      - "el enredo temporal termina con gente cruzándose consigo misma sin que el espectador pueda estar seguro de quién es quién"
+  - id: primer_aaron_gains_upper_hand
+    canonical: "Hacia el final, Aaron termina teniendo más información y ventaja que Abe, usa el viaje en el tiempo para intervenir en un tiroteo y presentarse como héroe, y aparentemente sigue construyendo una máquina mucho mayor en otro país."
+    severity: major
+    paraphrases:
+      - "uno de los dos amigos termina jugando con ventaja sobre el otro sin que este lo sepa del todo"
+      - "el que parecía el más prudente de los dos termina siendo el más peligroso al final"
+      - "alguien usa su ventaja temporal para quedar como el salvador de una situación violenta"
+      - "el desenlace sugiere que uno de ellos se lleva el invento a una escala mucho mayor, lejos del otro"
+      - "la amistad entre los dos inventores no sobrevive intacta a todo esto"
+sources:
+  - "https://en.wikipedia.org/wiki/Primer_(film)"
+  - "https://www.thisisbarry.com/film/primer-2004-movie-plot-ending-explained/"
+  - "https://www.astronomytrek.com/primer-2004-explained/"

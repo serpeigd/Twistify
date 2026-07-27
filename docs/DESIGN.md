@@ -61,6 +61,45 @@ Efecto lateral: los tests corren en CI sin secretos.
 Sería medir la coherencia del modelo consigo mismo. El fallo exacto que el
 proyecto existe para detectar. 15 min/título, a mano.
 
+## D7 — El ground truth se genera con investigación web citada, no a mano
+
+Regla original: ningún LLM (ni Claude ni el usuario delegándolo) genera el
+ground truth de spoilers, porque eso mediría la coherencia del modelo consigo
+mismo — el mismo fallo que el proyecto existe para detectar.
+
+El usuario revirtió esto el 2026-07-25 para poder escalar el etiquetado de 20
+títulos sin gastar ~15 min/título a mano. Decisión suya, tomada con el
+trade-off explícito sobre la mesa.
+
+Mitigación parcial (no elimina el riesgo, lo acota): cada `canonical` se
+construye a partir de fuentes reales citadas (Wikipedia, reseñas, vlogs) en
+vez de memoria paramétrica del modelo — no es lo mismo que "alucinar" un
+spoiler plausible. Pero sigue siendo un LLM decidiendo qué cuenta como spoiler
+y qué severidad tiene, evaluado más tarde por otro LLM (el generador) y
+juzgado por un tercero (el juez). Tres etapas del mismo tipo de sesgo.
+
+Consecuencia obligatoria: el README y cualquier resultado publicado deben
+decir "ground truth investigado por LLM con fuentes citadas", nunca "ground
+truth humano" ni "etiquetado a mano". Son afirmaciones distintas y confundirlas
+sería reintroducir el problema original (semáforo autoetiquetado, ver D3) por
+otra vía.
+
+## D8 — `awards_count` se expone en el catálogo aunque `critical_consensus` sea POST_SHOW
+
+El catálogo (`/api/catalogue`, visible antes de elegir título) ahora incluye
+`director`, `themes` y `awards_count` por película, para poder filtrar/ordenar
+sin abrir la ficha. `director` y `themes` son metadatos nuevos, sin conflicto.
+`awards_count` es distinto: es `len(critical_consensus.awards)`, y
+`critical_consensus` completo vive en `POST_SHOW_FIELDS` (D3) porque su
+`summary` puede llevar lectura crítica con matices de trama.
+
+Se expone solo el **conteo**, nunca la lista de premios ni el resumen. Un
+número ("3 premios") no es spoiler de trama bajo ningún criterio razonable —
+a diferencia de `summary`, que si podría insinuar giros ("la actuación que
+sostiene el descubrimiento final"). La partición D3 protege spoilers, no todo
+dato post-visionado por igual; una excepción puntual y explícita a un derivado
+no narrativo no reabre el problema que D3 resuelve.
+
 ## Descartado
 
 - **Multi-agente (researcher / writer / critic).** No hay decisión dinámica

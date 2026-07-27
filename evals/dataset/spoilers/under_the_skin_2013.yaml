@@ -1,0 +1,24 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: under_the_skin_2013
+labels:
+  - id: uts_true_nature
+    canonical: "Bajo su piel humana, la protagonista es un ser alienígena sin forma, y su piel es solo un disfraz que puede quitarse."
+    severity: core
+    paraphrases:
+      - "lo que hay debajo de su apariencia humana no es un cuerpo como el nuestro"
+      - "su piel no es realmente piel, es una especie de traje"
+      - "hay una escena en la que se quita literalmente a sí misma como si se desnudara de su propio cuerpo"
+      - "el título de la película hay que tomárselo de forma muy literal"
+      - "ella no es lo que aparenta ser desde el principio, ni remotamente humana"
+  - id: uts_ending_death
+    canonical: "Tras ser agredida sexualmente y que le rasguen la piel revelando su verdadera naturaleza, un hombre la rocía con gasolina y le prende fuego, y muere quemada en el bosque."
+    severity: major
+    paraphrases:
+      - "su historia termina de forma brutal a manos de un hombre en un bosque"
+      - "el final es devastador: ella acaba siendo la víctima, no la depredadora"
+      - "muere quemada tras un ataque en la parte final de la película"
+      - "el motociclista que la vigilaba la observa por última vez desde lejos sin intervenir"
+sources:
+  - "https://en.wikipedia.org/wiki/Under_the_Skin_(2013_film)"
+  - "https://hellhorror.com/movies/under-the-skin-review-47532.html"

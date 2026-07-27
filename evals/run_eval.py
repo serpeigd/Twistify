@@ -23,11 +23,18 @@ from judge import SubstringJudge  # noqa: E402
 from metrics import aggregate, evaluate_case  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 
+def _load_generator(name: str):
+    if name == "baseline":
+        from preshow.baseline import AnthropicBaselineGenerator
+
+        return AnthropicBaselineGenerator()
+    return None
+
 DATA = ROOT / "evals" / "dataset"
 
 
 def load_cases() -> list[TitleCase]:
-    raw = yaml.safe_load((DATA / "titles.yaml").read_text())
+    raw = yaml.safe_load((DATA / "titles.yaml").read_text(encoding="utf-8"))
     return [TitleCase(kind="film", **f) for f in raw["films"]]
 
 
@@ -60,12 +67,30 @@ def main() -> int:
         return 1
 
     if args.generator == "fake":
-        print("El generador 'fake' solo sirve para tests. Implementa baseline.")
+        print("El generador 'fake' solo sirve para tests. Usa --generator baseline.")
         return 1
 
-    raise NotImplementedError(
-        "TODO(tú): conecta aquí tu generador del Hito 0 y corre las 20 fichas."
-    )
+    generator = _load_generator(args.generator)
+    if generator is None:
+        print(f"Generador desconocido: {args.generator}", file=sys.stderr)
+        return 1
+
+    judge = SubstringJudge()
+    results = []
+    for case in labelled:
+        labels = load_labels(case.title_id)
+        brief = generator.pre_show(case, corpus=[])
+        results.append(evaluate_case(brief, labels, case.stratum, judge))
+        print(f"  {case.title_id}: {'LEAK' if results[-1].leaked else 'ok'}", file=sys.stderr)
+
+    agg = aggregate(results)
+
+    out_path = ROOT / args.out
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(json.dumps(agg, indent=2, ensure_ascii=False))
+
+    print(json.dumps(agg, indent=2, ensure_ascii=False))
+    return 0
 
 
 if __name__ == "__main__":

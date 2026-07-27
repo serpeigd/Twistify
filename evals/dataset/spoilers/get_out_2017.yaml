@@ -1,0 +1,23 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: get_out_2017
+labels:
+  - id: go_brain_transplant_cult
+    canonical: "La familia Armitage dirige un culto que secuestra a personas negras para trasplantarles el cerebro de compradores blancos, tomando control de sus cuerpos."
+    severity: core
+    paraphrases:
+      - "las personas amables de la casa en realidad seleccionan víctimas para un procedimiento quirúrgico siniestro"
+      - "los invitados a la fiesta están ahí para 'pujar' por algo relacionado con el protagonista"
+      - "el cuerpo de alguien puede terminar controlado por la mente de otra persona totalmente distinta"
+      - "hay una organización familiar que lleva generaciones haciendo esto a la gente que invitan a su casa"
+  - id: go_sunken_place_servants
+    canonical: "El jardinero y la empleada doméstica de la casa son en realidad los abuelos de Rose, cuyos cuerpos fueron ocupados por otras conciencias, con la mente original atrapada en el 'lugar hundido'."
+    severity: major
+    paraphrases:
+      - "el personal de servicio de la casa no es quien aparenta ser en absoluto"
+      - "hay una consciencia atrapada e impotente dentro de un cuerpo que actúa de forma extraña"
+      - "un flash de cámara puede sacar momentáneamente a alguien de ese estado de control"
+      - "dos empleados de la casa son en realidad parte de la misma familia que los recibe"
+sources:
+  - "https://screenrant.com/get-out-ending-explained/"
+  - "https://www.cbr.com/get-out-plot-twist-explained/"

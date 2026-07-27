@@ -1,0 +1,11 @@
+{
+  "judge": "substring",
+  "n": 183,
+  "precision": 0.0,
+  "recall": 0.0,
+  "tp": 0,
+  "fp": 0,
+  "tn": 60,
+  "fn": 123,
+  "nota": "Calibrado contra el propio ground truth del proyecto (paráfrasis LLM vs LLM), no contra TV Tropes Movies ni IMDB Spoiler Dataset (ambos requieren descarga autenticada). No es una calibración independiente."
+}

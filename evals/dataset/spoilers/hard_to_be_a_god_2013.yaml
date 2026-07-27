@@ -1,0 +1,33 @@
+# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
+# a mano por humano). Ver D7 en docs/DESIGN.md.
+title_id: hard_to_be_a_god_2013
+labels:
+  - id: htbg_budakh_impostor
+    canonical: "El sabio Budakh que Rumata rescata primero resulta ser un impostor inútil; el verdadero Budakh sigue prisionero en el castillo de Don Reba."
+    severity: major
+    paraphrases:
+      - "el intelectual que el protagonista cree haber salvado no es quien dice ser"
+      - "hay una sustitución: el sabio de verdad seguía secuestrado todo el tiempo"
+      - "el rescate inicial resulta ser inútil porque rescataron a la persona equivocada"
+      - "el personaje que debía representar la esperanza intelectual del planeta es en realidad un patético impostor"
+  - id: htbg_rumata_breaks_neutrality
+    canonical: "Tras el asesinato de su prometida Ari por las fuerzas de Don Reba, Rumata rompe su directriz de no interferir y desata una masacre violenta contra sus enemigos."
+    severity: core
+    paraphrases:
+      - "el protagonista termina traicionando la regla principal de su misión: no involucrarse"
+      - "la muerte de un personaje cercano hace que el 'dios' pacífico se convierta en un vengador brutal"
+      - "el desenlace es una espiral de violencia desatada por el propio protagonista, no por los villanos"
+      - "el observador científico que debía mantenerse neutral termina participando activamente en la masacre"
+      - "hay un punto de quiebre emocional que lo lleva a abandonar por completo su papel de científico distante"
+  - id: htbg_rumata_stays_behind
+    canonical: "Al final, Rumata rechaza el rescate de otro científico terrestre y se queda en el planeta, diciendo que 'es difícil ser un dios', en vez de volver a la Tierra."
+    severity: minor
+    paraphrases:
+      - "el protagonista tiene la oportunidad de volver a casa y decide no tomarla"
+      - "termina quedándose atrapado, por elección propia, en el mundo que debía solo observar"
+      - "el título de la película se convierte casi literalmente en su última frase"
+      - "no hay un regreso triunfal a la Tierra, la historia se cierra con él aislado"
+sources:
+  - "https://en.wikipedia.org/wiki/Hard_to_Be_a_God_(2013_film)"
+  - "https://www.filminquiry.com/hard-to-be-a-god-2013-review/"
+  - "https://www.imdb.com/title/tt2328813/plotsummary/"
