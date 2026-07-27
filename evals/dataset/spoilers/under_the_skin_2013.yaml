@@ -1,24 +1,24 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: under_the_skin_2013
 labels:
   - id: uts_true_nature
-    canonical: "Bajo su piel humana, la protagonista es un ser alienígena sin forma, y su piel es solo un disfraz que puede quitarse."
+    canonical: "Beneath her human skin, the protagonist is a shapeless alien being, and her skin is only a disguise she can take off."
     severity: core
     paraphrases:
-      - "lo que hay debajo de su apariencia humana no es un cuerpo como el nuestro"
-      - "su piel no es realmente piel, es una especie de traje"
-      - "hay una escena en la que se quita literalmente a sí misma como si se desnudara de su propio cuerpo"
-      - "el título de la película hay que tomárselo de forma muy literal"
-      - "ella no es lo que aparenta ser desde el principio, ni remotamente humana"
+      - "what's underneath her human appearance isn't a body like ours"
+      - "her skin isn't really skin, it's a kind of suit"
+      - "there's a scene where she literally removes herself as if undressing from her own body"
+      - "the movie's title has to be taken very literally"
+      - "she isn't what she appears to be from the start, not remotely human"
   - id: uts_ending_death
-    canonical: "Tras ser agredida sexualmente y que le rasguen la piel revelando su verdadera naturaleza, un hombre la rocía con gasolina y le prende fuego, y muere quemada en el bosque."
+    canonical: "After being sexually assaulted and having her skin torn, revealing her true nature, a man douses her in gasoline and sets her on fire, and she dies burning in the woods."
     severity: major
     paraphrases:
-      - "su historia termina de forma brutal a manos de un hombre en un bosque"
-      - "el final es devastador: ella acaba siendo la víctima, no la depredadora"
-      - "muere quemada tras un ataque en la parte final de la película"
-      - "el motociclista que la vigilaba la observa por última vez desde lejos sin intervenir"
+      - "her story ends brutally at the hands of a man in the woods"
+      - "the ending is devastating: she ends up being the victim, not the predator"
+      - "she dies burned after an attack in the film's final part"
+      - "the motorcyclist who was watching her observes her one last time from afar without intervening"
 sources:
   - "https://en.wikipedia.org/wiki/Under_the_Skin_(2013_film)"
   - "https://hellhorror.com/movies/under-the-skin-review-47532.html"

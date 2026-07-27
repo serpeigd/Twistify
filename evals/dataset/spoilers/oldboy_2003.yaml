@@ -1,34 +1,34 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: oldboy_2003
 labels:
   - id: ob_midoo_is_daughter
-    canonical: "Mi-do, la mujer de la que Dae-su se enamora tras salir de su encierro, es en realidad su propia hija."
+    canonical: "Mi-do, the woman Dae-su falls in love with after his release, is actually his own daughter."
     severity: core
     paraphrases:
-      - "la relación romántica del protagonista es en realidad un vínculo de sangre"
-      - "descubre en un álbum de fotos que la chica con la que está no es quien creía"
-      - "el interés amoroso final del héroe resulta ser de su propia familia"
-      - "todo el romance de la segunda mitad de la película esconde un horror genealógico"
+      - "the protagonist's romantic relationship is actually a blood tie"
+      - "he discovers in a photo album that the girl he's with isn't who he thought"
+      - "the hero's final love interest turns out to be from his own family"
+      - "the whole romance of the second half of the film hides a genealogical horror"
   - id: ob_hypnosis_engineered_relationship
-    canonical: "Woo-jin hipnotizó y manipuló a Dae-su y a Mi-do para que se enamoraran sin saber su parentesco, como venganza definitiva."
+    canonical: "Woo-jin hypnotized and manipulated Dae-su and Mi-do into falling in love without knowing they were related, as the ultimate revenge."
     severity: core
     paraphrases:
-      - "el villano no se limitó a encerrarlo, diseñó también su vida amorosa tras salir"
-      - "el reencuentro que parece casualidad fue orquestado con hipnosis"
-      - "la venganza no termina con la liberación, continúa manipulando lo que pasa después"
+      - "the villain didn't just lock him up, he also designed his love life after release"
+      - "the reunion that looks like coincidence was orchestrated with hypnosis"
+      - "the revenge doesn't end with the release, it keeps manipulating what happens afterward"
   - id: ob_incest_rumor_origin
-    canonical: "Dae-su, sin saberlo, originó los rumores que llevaron al suicidio de la hermana de Woo-jin, al haber visto y comentado su relación incestuosa con él en el instituto."
+    canonical: "Dae-su unknowingly started the rumors that led to the suicide of Woo-jin's sister, having seen and gossiped about her incestuous relationship with him in high school."
     severity: major
     paraphrases:
-      - "el motivo del encierro se remonta a un chisme de instituto que el protagonista contó sin mala intención"
-      - "la razón de toda la venganza es una muerte que el propio Dae-su provocó sin darse cuenta décadas atrás"
-      - "lo que vio de adolescente y comentó a un amigo desató una tragedia que no imaginaba"
+      - "the reason for the imprisonment traces back to high school gossip the protagonist spread without meaning harm"
+      - "the reason for the entire revenge plot is a death Dae-su himself caused unknowingly decades earlier"
+      - "what he saw as a teenager and mentioned to a friend triggered a tragedy he never imagined"
   - id: ob_tongue_cut
-    canonical: "Al descubrir la verdad, Dae-su se corta la propia lengua como acto de penitencia y súplica."
+    canonical: "Upon discovering the truth, Dae-su cuts out his own tongue as an act of penance and supplication."
     severity: minor
     paraphrases:
-      - "el protagonista se automutila de forma brutal al enterarse de la verdad"
-      - "hay una escena final donde se castiga físicamente a sí mismo pidiendo perdón"
+      - "the protagonist brutally mutilates himself upon learning the truth"
+      - "there's a final scene where he physically punishes himself, begging forgiveness"
 sources:
   - "https://en.wikipedia.org/wiki/Oldboy_(2003_film)"

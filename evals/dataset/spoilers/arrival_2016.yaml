@@ -1,23 +1,23 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: arrival_2016
 labels:
   - id: arr_hannah_is_future
-    canonical: "Las escenas de la protagonista con su hija Hannah no son recuerdos del pasado, sino visiones de un futuro que aún no ha ocurrido."
+    canonical: "The protagonist's scenes with her daughter Hannah aren't memories of the past — they're visions of a future that hasn't happened yet."
     severity: core
     paraphrases:
-      - "lo que parecen flashbacks al inicio en realidad pasa después del final de la película"
-      - "la estructura temporal de lo que ves engaña deliberadamente sobre cuándo ocurre"
-      - "la protagonista está recordando algo que todavía no ha vivido"
-      - "el idioma alienígena le da a la protagonista una forma de percibir el tiempo de manera no lineal"
+      - "what look like flashbacks at the start actually happen after the movie ends"
+      - "the timeline of what you're seeing deliberately deceives you about when it occurs"
+      - "the protagonist is remembering something she hasn't lived yet"
+      - "the alien language gives the protagonist a way to perceive time non-linearly"
   - id: arr_daughter_dies_young
-    canonical: "La protagonista sabe que su futura hija morirá joven por una enfermedad, y aun así decide tener a esa hija y vivir esa vida con Ian."
+    canonical: "The protagonist knows her future daughter will die young of an illness, and still chooses to have that daughter and live that life with Ian."
     severity: major
     paraphrases:
-      - "ella elige un futuro a sabiendas de que incluye una pérdida devastadora"
-      - "el padre de la niña en el futuro es el compañero científico con el que trabaja durante la película"
-      - "conocer el destino trágico de su hija no le impide seguir adelante con esa relación"
-      - "hay una tragedia familiar futura que la protagonista ya conoce de antemano"
+      - "she chooses a future knowing it includes a devastating loss"
+      - "the girl's future father is the fellow scientist she works with throughout the film"
+      - "knowing her daughter's tragic fate doesn't stop her from going through with that relationship"
+      - "there's a future family tragedy the protagonist already knows about in advance"
 sources:
   - "https://www.looper.com/87043/ending-arrival-explained/"
   - "https://www.thereviewgeek.com/arrival-endingexplained/"

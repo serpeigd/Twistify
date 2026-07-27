@@ -1,31 +1,31 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: the_wailing_2016
 labels:
   - id: wailing_stranger_is_demon
-    canonical: "El forastero japonés que llega al pueblo es en realidad un demonio que posee y corrompe a los aldeanos para sembrar caos."
+    canonical: "The Japanese stranger who arrives in the village is actually a demon who possesses and corrupts the villagers to sow chaos."
     severity: core
     paraphrases:
-      - "el extraño que todos sospechan desde el principio resulta ser exactamente lo que temían"
-      - "la amenaza sobrenatural no es una metáfora, es literalmente demoníaca"
-      - "el forastero silencioso del bosque es el origen real de todo el mal"
-      - "lo que parecía xenofobia del pueblo contra el forastero termina teniendo una base real"
+      - "the stranger everyone suspects from the start turns out to be exactly what they feared"
+      - "the supernatural threat isn't a metaphor, it's literally demonic"
+      - "the silent stranger from the woods is the real source of all the evil"
+      - "what looked like the village's xenophobia toward the outsider ends up having a real basis"
   - id: wailing_shaman_betrayal
-    canonical: "El chamán Il-gwang, contratado para salvar a la niña, en realidad está compinchado con el demonio y su ritual solo empeora las cosas."
+    canonical: "The shaman Il-gwang, hired to save the girl, is actually in league with the demon, and his ritual only makes things worse."
     severity: core
     paraphrases:
-      - "la persona que contratan para ayudar resulta estar del lado equivocado"
-      - "el ritual que se supone salva a la niña en realidad sirve a los planes del villano"
-      - "el aparente aliado espiritual es, en el fondo, cómplice del monstruo"
-      - "hay una traición muy tardía por parte de un personaje que parecía estar ayudando"
+      - "the person hired to help turns out to be on the wrong side"
+      - "the ritual meant to save the girl actually serves the villain's plans"
+      - "the apparent spiritual ally is, deep down, an accomplice of the monster"
+      - "there's a very late betrayal by a character who seemed to be helping"
   - id: wailing_wrong_choice_ending
-    canonical: "Jong-goo ignora la advertencia de la mujer misteriosa de esperar hasta el tercer canto del gallo y vuelve antes a casa, donde encuentra a su familia asesinada por su propia hija poseída."
+    canonical: "Jong-goo ignores the mysterious woman's warning to wait until the third rooster's crow and comes home early, where he finds his family murdered by his own possessed daughter."
     severity: major
     paraphrases:
-      - "el protagonista toma la decisión equivocada justo antes del desenlace, por confiar en la persona equivocada"
-      - "hay una cuenta atrás simbólica que el protagonista no logra cumplir"
-      - "el final es una tragedia familiar directa, no una victoria sobre el mal"
-      - "la fe o la duda del protagonista determina el destino de su propia familia"
+      - "the protagonist makes the wrong decision right before the ending, by trusting the wrong person"
+      - "there's a symbolic countdown the protagonist fails to meet"
+      - "the ending is a direct family tragedy, not a victory over evil"
+      - "the protagonist's faith or doubt determines his own family's fate"
 sources:
   - "https://en.wikipedia.org/wiki/The_Wailing_(2016_film)"
   - "https://screenrant.com/the-wailing-2016-every-twist-explained/"

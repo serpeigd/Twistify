@@ -1,23 +1,23 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: parasite_2019
 labels:
   - id: par_bunker_man
-    canonical: "Hay un hombre (Geun-se) viviendo oculto en un búnker secreto bajo la casa de los Park, sin que la familia rica lo sepa."
+    canonical: "There's a man (Geun-se) living hidden in a secret bunker beneath the Park family's house, unknown to the wealthy family."
     severity: core
     paraphrases:
-      - "la casa lujosa esconde a alguien que nadie de la familia adinerada conoce"
-      - "existe un tercer grupo de personas de clase baja que también depende de esa casa"
-      - "lo que el niño pequeño creía haber visto como un fantasma era una persona real escondida"
-      - "hay un nivel oculto de la casa que cambia todo el equilibrio de la historia"
+      - "the luxurious house hides someone none of the wealthy family knows about"
+      - "there's a third group of lower-class people who also depend on that house"
+      - "what the young boy thought he'd seen as a ghost was a real person hiding"
+      - "there's a hidden level of the house that changes the whole balance of the story"
   - id: par_stabbing_ending
-    canonical: "El padre de la familia pobre apuñala mortalmente al padre de la familia rica durante la fiesta de cumpleaños y luego se esconde en el búnker."
+    canonical: "The poor family's father fatally stabs the rich family's father during the birthday party and then hides in the bunker."
     severity: major
     paraphrases:
-      - "la fiesta termina en una muerte violenta e inesperada"
-      - "uno de los patriarcas termina escondiéndose de por vida en el mismo lugar que antes ocultaba a otra persona"
-      - "el desenlace es mucho más trágico y sangriento de lo que el tono inicial sugería"
-      - "el final deja a un personaje atrapado indefinidamente en las sombras de la casa"
+      - "the party ends in an unexpected, violent death"
+      - "one of the patriarchs ends up hiding for life in the same place that once concealed someone else"
+      - "the outcome is far more tragic and bloody than the initial tone suggests"
+      - "the ending leaves a character trapped indefinitely in the shadows of the house"
 sources:
   - "https://en.wikipedia.org/wiki/Parasite_(2019_film)"
   - "https://collider.com/parasite-ending-explained/"

@@ -1,23 +1,23 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: get_out_2017
 labels:
   - id: go_brain_transplant_cult
-    canonical: "La familia Armitage dirige un culto que secuestra a personas negras para trasplantarles el cerebro de compradores blancos, tomando control de sus cuerpos."
+    canonical: "The Armitage family runs a cult that kidnaps Black people to transplant white buyers' brains into them, taking control of their bodies."
     severity: core
     paraphrases:
-      - "las personas amables de la casa en realidad seleccionan víctimas para un procedimiento quirúrgico siniestro"
-      - "los invitados a la fiesta están ahí para 'pujar' por algo relacionado con el protagonista"
-      - "el cuerpo de alguien puede terminar controlado por la mente de otra persona totalmente distinta"
-      - "hay una organización familiar que lleva generaciones haciendo esto a la gente que invitan a su casa"
+      - "the friendly people at the house actually select victims for a sinister surgical procedure"
+      - "the party guests are there to 'bid' on something related to the protagonist"
+      - "someone's body can end up controlled by the mind of a completely different person"
+      - "there's a family organization that's been doing this for generations to the people they invite into their home"
   - id: go_sunken_place_servants
-    canonical: "El jardinero y la empleada doméstica de la casa son en realidad los abuelos de Rose, cuyos cuerpos fueron ocupados por otras conciencias, con la mente original atrapada en el 'lugar hundido'."
+    canonical: "The house's gardener and housekeeper are actually Rose's grandparents, whose bodies were taken over by other consciousnesses, with the original mind trapped in the 'Sunken Place.'"
     severity: major
     paraphrases:
-      - "el personal de servicio de la casa no es quien aparenta ser en absoluto"
-      - "hay una consciencia atrapada e impotente dentro de un cuerpo que actúa de forma extraña"
-      - "un flash de cámara puede sacar momentáneamente a alguien de ese estado de control"
-      - "dos empleados de la casa son en realidad parte de la misma familia que los recibe"
+      - "the house staff aren't at all who they appear to be"
+      - "there's a trapped, powerless consciousness inside a body acting strangely"
+      - "a camera flash can momentarily snap someone out of that controlled state"
+      - "two of the household staff are actually part of the same family hosting the visit"
 sources:
   - "https://screenrant.com/get-out-ending-explained/"
   - "https://www.cbr.com/get-out-plot-twist-explained/"

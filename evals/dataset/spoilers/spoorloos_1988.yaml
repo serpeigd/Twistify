@@ -1,24 +1,24 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: spoorloos_1988
 labels:
   - id: sp_raymond_motive
-    canonical: "El secuestrador Raymond es un sociópata metódico que planeó el crimen durante años como un experimento personal para probarse a sí mismo que era capaz del mal absoluto."
+    canonical: "The kidnapper Raymond is a methodical sociopath who planned the crime for years as a personal experiment to prove to himself he was capable of absolute evil."
     severity: major
     paraphrases:
-      - "el villano no actúa por impulso, sino por una especie de filosofía moral retorcida"
-      - "él quiere demostrarse algo sobre su propia capacidad para hacer el mal"
-      - "hay una escena larga en la que el secuestrador explica con total calma por qué lo hizo"
-      - "su lógica es que solo puedes ser realmente bueno si eres capaz de lo peor"
+      - "the villain doesn't act on impulse, but out of a kind of twisted moral philosophy"
+      - "he wants to prove something to himself about his own capacity for evil"
+      - "there's a long scene where the kidnapper calmly explains why he did it"
+      - "his logic is that you can only be truly good if you're capable of the worst"
   - id: sp_ending_buried_alive
-    canonical: "Rex acepta beber café con un sedante para saber qué le pasó a Saskia, y termina despertando enterrado vivo en un ataúd, el mismo destino que sufrió ella tres años antes."
+    canonical: "Rex agrees to drink drugged coffee to learn what happened to Saskia, and ends up waking up buried alive in a coffin, the same fate she suffered three years earlier."
     severity: core
     paraphrases:
-      - "el protagonista decide averiguar la verdad al precio más alto posible, literalmente"
-      - "el final ocurre bajo tierra, en completa oscuridad, con un mechero como única luz"
-      - "para saber qué pasó, tiene que vivir exactamente lo mismo que la víctima"
-      - "no hay rescate, no hay final feliz, solo la misma trampa repetida"
-      - "el desenlace es tan simple como terrible: comparten la misma tumba"
+      - "the protagonist decides to find out the truth at the highest possible price, literally"
+      - "the ending happens underground, in complete darkness, with a lighter as the only light"
+      - "to learn the truth, he has to live through exactly what the victim went through"
+      - "there's no rescue, no happy ending, just the same trap repeated"
+      - "the ending is as simple as it is terrible: they share the same grave"
 sources:
   - "https://en.wikipedia.org/wiki/Spoorloos"
   - "https://www.highonfilms.com/the-vanishing-1988-movie-ending-explained/"

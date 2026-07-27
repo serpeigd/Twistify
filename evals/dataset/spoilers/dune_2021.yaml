@@ -1,40 +1,40 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: dune_2021
 labels:
   - id: dune_leto_betrayal_death
-    canonical: "El Doctor Yueh traiciona a la Casa Atreides desactivando los escudos, lo que permite que el Barón Harkonnen mate al Duque Leto."
+    canonical: "Doctor Yueh betrays House Atreides by deactivating the shields, allowing Baron Harkonnen to kill Duke Leto."
     severity: core
     paraphrases:
-      - "el padre de Paul no llega vivo al final de la película"
-      - "hay un traidor infiltrado en el círculo íntimo de los Atreides"
-      - "alguien de máxima confianza médica es quien abre la puerta al enemigo"
-      - "el duque cae en la trampa del Barón por culpa de uno de los suyos"
-      - "el líder de la familia protagonista no sobrevive al ataque en Arrakis"
+      - "Paul's father doesn't make it to the end of the film alive"
+      - "there's a traitor embedded in the Atreides' inner circle"
+      - "someone with the highest medical trust is the one who opens the door to the enemy"
+      - "the duke falls into the Baron's trap because of one of his own"
+      - "the leader of the protagonist family doesn't survive the attack on Arrakis"
   - id: dune_paul_kwisatz_haderach
-    canonical: "Paul es el producto de un programa de cría selectiva de las Bene Gesserit para crear al Kwisatz Haderach, una figura mesiánica."
+    canonical: "Paul is the product of a Bene Gesserit selective breeding program to create the Kwisatz Haderach, a messianic figure."
     severity: major
     paraphrases:
-      - "el joven protagonista fue 'diseñado' genéticamente por una orden de mujeres poderosas"
-      - "su madre desobedeció órdenes al tenerlo a él en vez de a una hija"
-      - "hay toda una conspiración religiosa detrás del nacimiento del héroe"
-      - "Paul podría ser el ser especial que llevan siglos esperando en secreto"
+      - "the young protagonist was genetically 'designed' by an order of powerful women"
+      - "his mother disobeyed orders by having him instead of a daughter"
+      - "there's an entire religious conspiracy behind the hero's birth"
+      - "Paul might be the special being they've been secretly waiting for centuries"
   - id: dune_fremen_prophecy_manufactured
-    canonical: "La reverencia de los fremen hacia Paul se debe a una propaganda religiosa (Missionaria Protectiva) implantada siglos atrás por las Bene Gesserit, no a una profecía real."
+    canonical: "The Fremen's reverence for Paul stems from religious propaganda (Missionaria Protectiva) planted centuries earlier by the Bene Gesserit, not a real prophecy."
     severity: major
     paraphrases:
-      - "la 'profecía' que todos veneran fue fabricada de antemano por manipuladoras políticas"
-      - "los nativos del desierto creen en un mito que en realidad fue plantado artificialmente"
-      - "el mesianismo que rodea al protagonista tiene un origen bastante menos místico de lo que parece"
-      - "hay una organización que sembró leyendas en varios planetas por si algún día les convenía usarlas"
+      - "the 'prophecy' everyone reveres was fabricated in advance by political manipulators"
+      - "the desert natives believe in a myth that was actually planted artificially"
+      - "the messianism surrounding the protagonist has a much less mystical origin than it seems"
+      - "there's an organization that seeded legends on several planets in case they'd ever be useful"
   - id: dune_part_one_open_ending
-    canonical: "La película termina sin resolución final: Paul se une a los fremen tras vencer a Jamis en combate, y la historia queda abierta ('esto es solo el principio')."
+    canonical: "The film ends without final resolution: Paul joins the Fremen after defeating Jamis in combat, and the story stays open ('this is only the beginning')."
     severity: minor
     paraphrases:
-      - "no esperes un cierre de la trama, es solo la primera mitad de la historia"
-      - "la peli acaba justo cuando el protagonista empieza a integrarse con el pueblo del desierto"
-      - "el final deja todo el conflicto grande para una segunda parte"
-      - "termina con una frase que deja claro que lo importante todavía no ha pasado"
+      - "don't expect the plot to close, it's only the first half of the story"
+      - "the movie ends right as the protagonist starts integrating with the desert people"
+      - "the ending leaves the big conflict for a sequel"
+      - "it ends with a line that makes clear the important part hasn't happened yet"
 sources:
   - "https://en.wikipedia.org/wiki/Dune_(2021_film)"
   - "https://flickside.com/dune-2021-explained/"

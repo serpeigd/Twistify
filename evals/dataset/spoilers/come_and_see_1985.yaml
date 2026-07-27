@@ -1,33 +1,33 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: come_and_see_1985
 labels:
   - id: cs_village_massacre
-    canonical: "Los soldados alemanes encierran a los aldeanos en un granero-iglesia y les prenden fuego, matándolos a todos mientras celebran."
+    canonical: "German soldiers lock the villagers inside a barn-church and set it on fire, killing them all while celebrating."
     severity: core
     paraphrases:
-      - "hay una escena en la que queman viva a toda una aldea entera dentro de un edificio"
-      - "los nazis convierten la masacre de un pueblo en una especie de fiesta macabra"
-      - "el horror central de la película no es una batalla, es un exterminio colectivo de civiles encerrados"
-      - "el protagonista presencia cómo asesinan en masa a mujeres, niños y ancianos en un solo lugar"
-      - "hay un momento donde queda claro que nadie de ese pueblo sobrevive"
+      - "there's a scene where an entire village is burned alive inside a building"
+      - "the Nazis turn the massacre of a village into a kind of macabre party"
+      - "the film's central horror isn't a battle, it's the collective extermination of locked-up civilians"
+      - "the protagonist witnesses the mass killing of women, children, and the elderly in one place"
+      - "there's a moment where it becomes clear no one from that village survives"
   - id: cs_family_death
-    canonical: "Flyora descubre que toda su familia (madre y hermanas) ha sido asesinada mientras él estaba con los partisanos."
+    canonical: "Flyora discovers his entire family (mother and sisters) has been killed while he was away with the partisans."
     severity: major
     paraphrases:
-      - "cuando vuelve a su casa, su familia ya no está viva"
-      - "el chico se niega a aceptar que perdió a los suyos hasta que se lo confirman"
-      - "detrás de su casa hay un montón de cadáveres de vecinos"
-      - "su regreso al pueblo natal termina siendo la peor parte de la película"
+      - "when he gets home, his family is no longer alive"
+      - "the boy refuses to accept he's lost his own until it's confirmed to him"
+      - "there's a pile of neighbors' corpses behind his house"
+      - "his return to his home village ends up being the worst part of the film"
   - id: cs_hitler_baby_ending
-    canonical: "En la escena final, Flyora dispara repetidamente a un retrato de Hitler mientras se proyecta en reversa un noticiero de su vida, y deja de disparar al llegar a la imagen de Hitler bebé."
+    canonical: "In the final scene, Flyora repeatedly shoots a portrait of Hitler while archival newsreel footage of his life plays in reverse, and he stops shooting once it reaches an image of Hitler as a baby."
     severity: major
     paraphrases:
-      - "el final tiene una secuencia de archivo histórico reproducida al revés"
-      - "hay un cierre muy simbólico donde el chico deja de disparar justo al ver una imagen de infancia"
-      - "la última escena conecta al villano histórico con su propia niñez, y eso rompe al protagonista"
-      - "el final no es una batalla, es un gesto casi ritual del chico frente a una imagen"
-      - "termina con una reflexión visual sobre el origen del mal, no con una resolución de trama"
+      - "the ending has a sequence of archival footage played backwards"
+      - "there's a very symbolic close where the boy stops shooting right when he sees a childhood image"
+      - "the final scene connects the historical villain to his own childhood, and it breaks the protagonist"
+      - "the ending isn't a battle, it's an almost ritual gesture by the boy in front of an image"
+      - "it closes with a visual meditation on the origin of evil, not a plot resolution"
 sources:
   - "https://en.wikipedia.org/wiki/Come_and_See"
   - "https://historical-films.fandom.com/wiki/Come_and_See_(1985)"

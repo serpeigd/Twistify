@@ -1,32 +1,32 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: field_in_england_2013
 labels:
   - id: fie_treasure_is_skull
-    canonical: "El 'tesoro' que el alquimista O'Neill promete encontrar en el campo resulta ser solo una calavera, no oro."
+    canonical: "The 'treasure' that the alchemist O'Neill promises to find in the field turns out to be just a skull, not gold."
     severity: core
     paraphrases:
-      - "lo que están buscando bajo tierra no tiene ningún valor material"
-      - "toda la excavación termina siendo una decepción total, no hay riqueza al final"
-      - "el objeto que desentierran provoca que uno de ellos le dispare de la rabia que le da"
-      - "la búsqueda de fortuna del grupo es literalmente una búsqueda de huesos"
-      - "el 'premio' final del viaje es una broma cruel sobre lo que perseguían"
+      - "what they're digging for underground has no material value at all"
+      - "the whole excavation turns out to be a total letdown, there's no wealth at the end"
+      - "the object they dig up makes one of them shoot it out of rage"
+      - "the group's search for fortune is literally a search for bones"
+      - "the final 'prize' of the journey is a cruel joke about what they were chasing"
   - id: fie_whitehead_kills_oneill
-    canonical: "Whitehead, el personaje más pasivo y sometido del grupo, termina matando a O'Neill de un disparo por la espalda."
+    canonical: "Whitehead, the group's most passive and submissive character, ends up shooting O'Neill in the back and killing him."
     severity: major
     paraphrases:
-      - "el personaje que pasa casi toda la historia dominado y humillado es quien acaba con el villano"
-      - "hay un giro de poder donde la víctima se convierte en verdugo"
-      - "el asistente débil termina siendo el único superviviente y el que dispara el tiro final"
-      - "el que parecía indefenso todo el tiempo termina vistiendo la ropa del hombre que lo controlaba"
+      - "the character who spends nearly the whole story dominated and humiliated is the one who takes down the villain"
+      - "there's a power reversal where the victim becomes the executioner"
+      - "the weak assistant ends up being the sole survivor and the one who fires the final shot"
+      - "the one who seemed helpless the whole time ends up wearing the clothes of the man who controlled him"
   - id: fie_ambiguous_vision_ending
-    canonical: "La película termina con Whitehead viendo, tras cruzar el seto, a sus amigos muertos (Friend y Jacob) de pie junto a él, dejando ambiguo si es una visión o algo sobrenatural."
+    canonical: "The film ends with Whitehead, after crossing the hedge, seeing his dead friends (Friend and Jacob) standing next to him, leaving it ambiguous whether it's a vision or something supernatural."
     severity: minor
     paraphrases:
-      - "el final deja en duda si lo que ves fue real o alucinado por los hongos"
-      - "cierra con una imagen fantasmal de personajes que ya habían muerto"
-      - "no hay una explicación clara de qué pasó realmente en ese campo"
-      - "el desenlace se siente más a ritual esotérico que a resolución narrativa convencional"
+      - "the ending leaves it unclear whether what you saw was real or a mushroom-induced hallucination"
+      - "it closes with a ghostly image of characters who had already died"
+      - "there's no clear explanation of what really happened in that field"
+      - "the ending feels more like an esoteric ritual than a conventional narrative resolution"
 sources:
   - "https://en.wikipedia.org/wiki/A_Field_in_England"
   - "https://leftthinktank.substack.com/p/film-review-a-field-in-england-2013"

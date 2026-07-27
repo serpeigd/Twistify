@@ -1,32 +1,32 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: hard_to_be_a_god_2013
 labels:
   - id: htbg_budakh_impostor
-    canonical: "El sabio Budakh que Rumata rescata primero resulta ser un impostor inútil; el verdadero Budakh sigue prisionero en el castillo de Don Reba."
+    canonical: "The wise man Budakh whom Rumata rescues first turns out to be a useless impostor; the real Budakh remains a prisoner in Don Reba's castle."
     severity: major
     paraphrases:
-      - "el intelectual que el protagonista cree haber salvado no es quien dice ser"
-      - "hay una sustitución: el sabio de verdad seguía secuestrado todo el tiempo"
-      - "el rescate inicial resulta ser inútil porque rescataron a la persona equivocada"
-      - "el personaje que debía representar la esperanza intelectual del planeta es en realidad un patético impostor"
+      - "the intellectual the protagonist thinks he's saved isn't who he claims to be"
+      - "there's a substitution: the real sage was held captive the whole time"
+      - "the initial rescue turns out to be pointless because they rescued the wrong person"
+      - "the character meant to represent the planet's intellectual hope is actually a pathetic impostor"
   - id: htbg_rumata_breaks_neutrality
-    canonical: "Tras el asesinato de su prometida Ari por las fuerzas de Don Reba, Rumata rompe su directriz de no interferir y desata una masacre violenta contra sus enemigos."
+    canonical: "After his fiancée Ari is murdered by Don Reba's forces, Rumata breaks his non-interference directive and unleashes a violent massacre against his enemies."
     severity: core
     paraphrases:
-      - "el protagonista termina traicionando la regla principal de su misión: no involucrarse"
-      - "la muerte de un personaje cercano hace que el 'dios' pacífico se convierta en un vengador brutal"
-      - "el desenlace es una espiral de violencia desatada por el propio protagonista, no por los villanos"
-      - "el observador científico que debía mantenerse neutral termina participando activamente en la masacre"
-      - "hay un punto de quiebre emocional que lo lleva a abandonar por completo su papel de científico distante"
+      - "the protagonist ends up betraying his mission's central rule: don't get involved"
+      - "the death of a loved one turns the peaceful 'god' into a brutal avenger"
+      - "the ending is a spiral of violence unleashed by the protagonist himself, not the villains"
+      - "the scientific observer who was supposed to stay neutral ends up actively taking part in the massacre"
+      - "there's an emotional breaking point that leads him to fully abandon his role as a detached scientist"
   - id: htbg_rumata_stays_behind
-    canonical: "Al final, Rumata rechaza el rescate de otro científico terrestre y se queda en el planeta, diciendo que 'es difícil ser un dios', en vez de volver a la Tierra."
+    canonical: "At the end, Rumata turns down rescue from another Earth scientist and stays on the planet, saying 'it's hard to be a god,' instead of returning to Earth."
     severity: minor
     paraphrases:
-      - "el protagonista tiene la oportunidad de volver a casa y decide no tomarla"
-      - "termina quedándose atrapado, por elección propia, en el mundo que debía solo observar"
-      - "el título de la película se convierte casi literalmente en su última frase"
-      - "no hay un regreso triunfal a la Tierra, la historia se cierra con él aislado"
+      - "the protagonist gets the chance to go home and decides not to take it"
+      - "he ends up staying, by his own choice, trapped in the world he was only meant to observe"
+      - "the film's title becomes almost literally its final line"
+      - "there's no triumphant return to Earth, the story closes with him isolated"
 sources:
   - "https://en.wikipedia.org/wiki/Hard_to_Be_a_God_(2013_film)"
   - "https://www.filminquiry.com/hard-to-be-a-god-2013-review/"

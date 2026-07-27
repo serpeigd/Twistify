@@ -1,39 +1,39 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 #
-# NOTA DE CONFIANZA: la cronología exacta de qué copia de Aaron/Abe es
-# "la original" hacia el final es objeto de debate incluso entre críticos
-# especializados (el propio director escribió una explicación de 100
-# páginas nunca publicada). Los hechos de abajo están confirmados por
-# fuentes; el detalle de "quién es la copia más pura" no se afirma con
-# certeza absoluta, ver paraphrase de tc_aaron_gains_upper_hand.
+# CONFIDENCE NOTE: the exact chronology of which copy of Aaron/Abe is "the
+# original" toward the end is debated even among specialist critics (the
+# director himself wrote a 100-page explanation that was never published).
+# The facts below are source-confirmed; the detail of "who is the purest
+# copy" isn't asserted with absolute certainty, see the paraphrase for
+# tc_aaron_gains_upper_hand.
 title_id: primer_2004
 labels:
   - id: primer_secret_failsafe_box
-    canonical: "Abe, alarmado por los efectos y usos descontrolados de la máquina, construye en secreto una segunda caja ('failsafe') que corre continuamente para poder viajar más atrás y evitar que el experimento avance."
+    canonical: "Alarmed by the uncontrolled effects and uses of the machine, Abe secretly builds a second box (a 'failsafe') that runs continuously so he can travel further back and stop the experiment from progressing."
     severity: core
     paraphrases:
-      - "uno de los dos inventores empieza a operar por su cuenta, escondiéndole cosas al otro"
-      - "hay una máquina de repuesto funcionando en secreto todo el tiempo, por si acaso"
-      - "uno de ellos intenta usar el propio invento para deshacer decisiones que ya tomaron juntos"
-      - "el plan de 'arreglarlo todo' viajando más atrás sale mucho peor de lo esperado"
+      - "one of the two inventors starts operating on his own, keeping things from the other"
+      - "there's a backup machine running in secret at all times, just in case"
+      - "one of them tries to use the invention itself to undo decisions they already made together"
+      - "the plan to 'fix everything' by going further back turns out much worse than expected"
   - id: primer_multiple_doubles_coexist
-    canonical: "El uso repetido y descontrolado de la máquina genera múltiples versiones duplicadas de Abe y Aaron coexistiendo el mismo día, algunas de ellas ocultas o dormidas hasta que se necesitan."
+    canonical: "Repeated, uncontrolled use of the machine generates multiple duplicate versions of Abe and Aaron coexisting on the same day, some of them hidden or dormant until needed."
     severity: core
     paraphrases:
-      - "para el final ya no está claro cuántas copias de cada protagonista andan sueltas"
-      - "hay versiones de los mismos personajes que ni siquiera saben de la existencia de las otras"
-      - "algunos de ellos guardan copias 'dormidas' de sí mismos por si las necesitan más adelante"
-      - "el enredo temporal termina con gente cruzándose consigo misma sin que el espectador pueda estar seguro de quién es quién"
+      - "by the end it's no longer clear how many copies of each protagonist are running around"
+      - "there are versions of the same characters who don't even know the others exist"
+      - "some of them keep 'dormant' copies of themselves in case they're needed later"
+      - "the temporal tangle ends with people crossing paths with themselves, and the viewer can't be sure who is who"
   - id: primer_aaron_gains_upper_hand
-    canonical: "Hacia el final, Aaron termina teniendo más información y ventaja que Abe, usa el viaje en el tiempo para intervenir en un tiroteo y presentarse como héroe, y aparentemente sigue construyendo una máquina mucho mayor en otro país."
+    canonical: "Toward the end, Aaron ends up with more information and an advantage over Abe, uses time travel to intervene in a shooting and present himself as a hero, and apparently keeps building a much larger machine in another country."
     severity: major
     paraphrases:
-      - "uno de los dos amigos termina jugando con ventaja sobre el otro sin que este lo sepa del todo"
-      - "el que parecía el más prudente de los dos termina siendo el más peligroso al final"
-      - "alguien usa su ventaja temporal para quedar como el salvador de una situación violenta"
-      - "el desenlace sugiere que uno de ellos se lleva el invento a una escala mucho mayor, lejos del otro"
-      - "la amistad entre los dos inventores no sobrevive intacta a todo esto"
+      - "one of the two friends ends up playing with an advantage over the other without him fully knowing"
+      - "the one who seemed more cautious of the two ends up being the more dangerous one by the end"
+      - "someone uses their temporal advantage to come off as the savior of a violent situation"
+      - "the ending suggests one of them takes the invention to a much larger scale, far from the other"
+      - "the friendship between the two inventors doesn't survive all this intact"
 sources:
   - "https://en.wikipedia.org/wiki/Primer_(film)"
   - "https://www.thisisbarry.com/film/primer-2004-movie-plot-ending-explained/"

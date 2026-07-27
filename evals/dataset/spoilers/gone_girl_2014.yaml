@@ -1,29 +1,29 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: gone_girl_2014
 labels:
   - id: gg_amy_faked_disappearance
-    canonical: "Amy simuló su propia desaparición y montó pruebas falsas para incriminar a Nick por su asesinato."
+    canonical: "Amy faked her own disappearance and staged false evidence to frame Nick for her murder."
     severity: core
     paraphrases:
-      - "la mujer desaparecida está viva y orquestó todo desde el principio"
-      - "la víctima del caso es en realidad la autora del plan"
-      - "la sangre de la cocina fue puesta ahí a propósito por la propia 'víctima'"
-      - "el diario que incrimina al marido está lleno de mentiras escritas para la policía"
-      - "nadie secuestró a nadie, fue una actuación desde el minuto uno"
+      - "the missing woman is alive and orchestrated everything from the start"
+      - "the victim of the case is actually the author of the plan"
+      - "the blood in the kitchen was put there on purpose by the 'victim' herself"
+      - "the diary that incriminates the husband is full of lies written for the police"
+      - "no one kidnapped anyone, it was a performance from minute one"
   - id: gg_amy_kills_desi
-    canonical: "Amy mata a su exnovio Desi degollándolo durante el sexo para poder inventar una historia de secuestro y regresar a casa limpia."
+    canonical: "Amy kills her ex-boyfriend Desi by slitting his throat during sex so she can invent a kidnapping story and return home clean."
     severity: major
     paraphrases:
-      - "hay un asesinato real a mitad de la historia, no solo una farsa"
-      - "usa a un antiguo pretendiente como salida y luego lo elimina"
-      - "vuelve a casa cubierta de sangre de otra persona, no la suya"
+      - "there's a real murder halfway through the story, not just a hoax"
+      - "she uses a former suitor as an escape route and then eliminates him"
+      - "she comes home covered in someone else's blood, not her own"
   - id: gg_amy_pregnancy_trap
-    canonical: "Amy se inseminó con esperma congelado de Nick para quedar embarazada y obligarlo a quedarse con ella."
+    canonical: "Amy inseminated herself with Nick's frozen sperm to get pregnant and force him to stay with her."
     severity: major
     paraphrases:
-      - "usa un embarazo fabricado en una clínica como forma de retener a su esposo"
-      - "el bebé que anuncian en televisión no fue concebido de forma natural"
-      - "la manera en que ella lo ata a la relación para siempre es a través de un hijo planeado a la fuerza"
+      - "she uses a pregnancy engineered at a clinic as a way to keep her husband"
+      - "the baby announced on television wasn't conceived naturally"
+      - "the way she ties him to the relationship forever is through a forcibly planned child"
 sources:
   - "https://en.wikipedia.org/wiki/Gone_Girl_(film)"

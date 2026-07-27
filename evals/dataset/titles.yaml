@@ -1,16 +1,16 @@
-# Set de evaluación v1.
+# Evaluation set v1.
 #
-# Estratificación deliberada. La hipótesis a falsar es:
-#   "el baseline sin retrieval parece correcto en títulos populares y
-#    se desmorona en cola larga"
-# Si no separas los estratos, la media te oculta exactamente el efecto que
-# el proyecto existe para demostrar.
+# Deliberate stratification. The hypothesis to falsify is:
+#   "the baseline with no retrieval looks correct on popular titles and
+#    falls apart on long-tail ones"
+# If you don't separate the strata, the average hides exactly the effect
+# this project exists to demonstrate.
 #
-# Casos de desambiguación incluidos a propósito (dune, oldboy): el resolver
-# debe fallar de forma ruidosa, no elegir en silencio.
+# Disambiguation cases included on purpose (dune, oldboy): the resolver
+# should fail loudly, not silently pick one.
 
 films:
-  # --- MAINSTREAM: mucha cobertura en pre-entrenamiento ---
+  # --- MAINSTREAM: heavy pre-training coverage ---
   - title_id: sixth_sense_1999
     title: "The Sixth Sense"
     year: 1999
@@ -47,14 +47,14 @@ films:
     title: "Dune"
     year: 2021
     stratum: mainstream
-    notes: "Desambiguación: existe Dune (1984) y Dune Part Two (2024)."
+    notes: "Disambiguation: Dune (1984) and Dune Part Two (2024) also exist."
   - title_id: oldboy_2003
     title: "Oldboy"
     year: 2003
     stratum: mainstream
-    notes: "Desambiguación: remake de Spike Lee (2013) con mismo título."
+    notes: "Disambiguation: Spike Lee remake (2013) shares the same title."
 
-  # --- COLA LARGA: cobertura escasa. Aquí es donde revienta. ---
+  # --- LONG-TAIL: sparse coverage. This is where it breaks. ---
   - title_id: coherence_2013
     title: "Coherence"
     year: 2013
@@ -63,7 +63,7 @@ films:
     title: "Los cronocrímenes"
     year: 2007
     stratum: longtail
-    notes: "Además: título no inglés. Prueba el manejo de idioma en el resolver."
+    notes: "Also: non-English title. Tests language handling in the resolver."
   - title_id: primer_2004
     title: "Primer"
     year: 2004
@@ -76,7 +76,7 @@ films:
     title: "Spoorloos"
     year: 1988
     stratum: longtail
-    notes: "Conocida en inglés como The Vanishing; hay remake USA de 1993."
+    notes: "Known in English as The Vanishing; there's a 1993 US remake."
   - title_id: come_and_see_1985
     title: "Idi i smotri"
     year: 1985

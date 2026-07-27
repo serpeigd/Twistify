@@ -1,30 +1,30 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: se7en_1995
 labels:
   - id: s7_tracy_head_in_box
-    canonical: "La caja final contiene la cabeza cortada de Tracy, la esposa de Mills."
+    canonical: "The final box contains the severed head of Tracy, Mills' wife."
     severity: core
     paraphrases:
-      - "lo que hay dentro de la caja es lo peor que podría pasarle al detective joven"
-      - "el asesino se asegura de que el paquete final destruya la vida personal de uno de los policías"
-      - "hay un objeto que llega por mensajería al final y cambia todo"
-      - "el 'envidia' del asesino tiene que ver con la mujer del protagonista, no con él mismo"
-      - "lo que Somerset ve al abrir la caja lo deja sin palabras"
+      - "what's inside the box is the worst thing that could happen to the young detective"
+      - "the killer makes sure the final package destroys one of the cops' personal life"
+      - "there's an object that arrives by courier at the end and changes everything"
+      - "the killer's 'envy' has to do with the protagonist's wife, not himself"
+      - "what Somerset sees when he opens the box leaves him speechless"
   - id: s7_mills_becomes_wrath
-    canonical: "Mills mata a John Doe a sangre fría, completando sin saberlo el séptimo pecado (ira) del plan del asesino."
+    canonical: "Mills kills John Doe in cold blood, unknowingly completing the seventh sin (wrath) of the killer's plan."
     severity: core
     paraphrases:
-      - "el propio detective termina cometiendo el último pecado de la lista"
-      - "el asesino diseña su propia muerte para que la cause el policía"
-      - "el final no es una victoria policial, es la última pieza del plan del villano"
-      - "Mills cae exactamente en la trampa psicológica que Doe preparó"
+      - "the detective himself ends up committing the last sin on the list"
+      - "the killer designs his own death so the cop causes it"
+      - "the ending isn't a police victory, it's the final piece of the villain's plan"
+      - "Mills falls exactly into the psychological trap Doe prepared"
   - id: s7_doe_surrenders_early
-    canonical: "John Doe se entrega voluntariamente a la policía antes de que se resuelvan los dos últimos asesinatos."
+    canonical: "John Doe voluntarily surrenders to the police before the last two murders are resolved."
     severity: minor
     paraphrases:
-      - "el villano se rinde por su propia voluntad, no lo atrapan"
-      - "el criminal entra a la comisaría cubierto de sangre ajena"
-      - "todavía faltan dos crímenes cuando el asesino ya está detenido"
+      - "the villain surrenders of his own will, he isn't caught"
+      - "the criminal walks into the station covered in someone else's blood"
+      - "two crimes are still missing when the killer is already in custody"
 sources:
   - "https://en.wikipedia.org/wiki/Se7en"

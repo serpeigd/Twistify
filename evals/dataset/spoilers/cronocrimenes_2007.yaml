@@ -1,32 +1,32 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: cronocrimenes_2007
 labels:
   - id: tc_hector_becomes_his_own_attacker
-    canonical: "Héctor viaja una hora atrás en el tiempo por accidente y, para no alterar lo ya sucedido, termina convirtiéndose él mismo en el 'hombre vendado' que ataca a su propio yo pasado."
+    canonical: "Hector travels an hour back in time by accident and, to avoid altering what has already happened, ends up becoming the 'bandaged man' who attacks his own past self."
     severity: core
     paraphrases:
-      - "el misterioso agresor enmascarado del principio resulta ser el propio protagonista, solo que de más tarde"
-      - "Héctor acaba persiguiéndose y atacándose a sí mismo sin quererlo"
-      - "hay dos y hasta tres versiones del mismo hombre coexistiendo el mismo día"
-      - "el villano que da miedo al inicio no es un desconocido, es él mismo en otro punto del bucle"
-      - "cada vez que intenta arreglar algo, termina siendo la causa del problema original"
+      - "the mysterious masked attacker from the start turns out to be the protagonist himself, just from later on"
+      - "Hector ends up chasing and attacking himself without meaning to"
+      - "there are two, even three, versions of the same man coexisting on the same day"
+      - "the villain who's scary at the start isn't a stranger, it's himself at another point in the loop"
+      - "every time he tries to fix something, he ends up being the cause of the original problem"
   - id: tc_clara_saved_by_decoy_death
-    canonical: "Héctor logra salvar a su esposa Clara sustituyéndola por una desconocida (a la que corta el pelo y viste con su abrigo), que muere en su lugar."
+    canonical: "Hector manages to save his wife Clara by substituting her with a stranger (whose hair he cuts and dresses in her coat), who dies in her place."
     severity: major
     paraphrases:
-      - "la mujer que muere al final no es en realidad quien todos creían"
-      - "para proteger a su esposa, sacrifica sin querer a otra persona que se le parece"
-      - "hay un intercambio de identidad involuntario que le cuesta la vida a una inocente"
-      - "la esposa del protagonista sobrevive, pero a un coste moral que él tiene que cargar"
+      - "the woman who dies at the end isn't actually who everyone thought"
+      - "to protect his wife, he unknowingly sacrifices another person who resembles her"
+      - "there's an involuntary identity swap that costs an innocent woman her life"
+      - "the protagonist's wife survives, but at a moral cost he has to carry"
   - id: tc_deterministic_closed_loop
-    canonical: "La película termina con Héctor conduciendo de vuelta al laboratorio para convertirse en la próxima versión de sí mismo, cerrando el bucle sin escape posible ni explicación tranquilizadora."
+    canonical: "The film ends with Hector driving back to the lab to become the next version of himself, closing the loop with no possible escape or reassuring explanation."
     severity: minor
     paraphrases:
-      - "no hay una salida limpia del lío temporal, todo se cierra sobre sí mismo"
-      - "el final no es una explosión ni una huida, es la aceptación resignada de lo inevitable"
-      - "todo lo que ves al principio de la película ya estaba causado por el propio protagonista"
-      - "el ciclo se repite indefinidamente sin que nadie pueda romperlo del todo"
+      - "there's no clean way out of the time-travel mess, everything closes in on itself"
+      - "the ending isn't an explosion or an escape, it's the resigned acceptance of the inevitable"
+      - "everything you see at the start of the film was already caused by the protagonist himself"
+      - "the cycle repeats indefinitely and no one can fully break it"
 sources:
   - "https://en.wikipedia.org/wiki/Timecrimes"
   - "https://www.highonfilms.com/timecrimes-los-cronocrimenes-2007-movie-ending-explained-themes-analysed/"

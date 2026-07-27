@@ -1,31 +1,31 @@
-# Ground truth investigado por Claude con fuentes web citadas (no etiquetado
-# a mano por humano). Ver D7 en docs/DESIGN.md.
+# Ground truth researched by Claude with cited web sources (not hand-labeled
+# by a human). See D7 in docs/DESIGN.md.
 title_id: prestige_2006
 labels:
   - id: prestige_borden_twins
-    canonical: "Alfred Borden es en realidad dos hermanos gemelos idénticos que se turnan para vivir como una sola persona."
+    canonical: "Alfred Borden is actually two identical twin brothers who take turns living as a single person."
     severity: core
     paraphrases:
-      - "el mago protagonista nunca fue una sola persona"
-      - "hay dos hombres compartiendo una identidad, un nombre y hasta un matrimonio"
-      - "el truco de la 'Transported Man' no era un truco, era literal"
-      - "uno de los dos amaba a una mujer, el otro a otra, y nadie lo sabía"
-      - "el que muere ejecutado no es necesariamente el que sobrevive al final"
+      - "the protagonist magician was never a single person"
+      - "there are two men sharing an identity, a name, and even a marriage"
+      - "the 'Transported Man' trick wasn't a trick, it was literal"
+      - "one of the two loved one woman, the other loved another, and no one knew"
+      - "the one who dies by execution isn't necessarily the one who survives at the end"
   - id: prestige_teslamachine_clones
-    canonical: "La máquina de Tesla no teletransporta a Angier, sino que crea un clon exacto cada vez que se usa, mientras el original cae a una trampilla y se ahoga."
+    canonical: "Tesla's machine doesn't teleport Angier — it creates an exact clone every time it's used, while the original falls through a trapdoor and drowns."
     severity: core
     paraphrases:
-      - "cada función del espectáculo implica una muerte real que nadie sospecha"
-      - "el aparato no mueve a la persona de sitio, la duplica"
-      - "hay un tanque de agua escondido bajo el escenario lleno de versiones del mismo hombre"
-      - "el precio de ese truco final es morir todas las noches"
-      - "lo que Tesla construyó no hacía lo que Angier pensaba que hacía"
+      - "every show performance involves a real death no one suspects"
+      - "the device doesn't move the person elsewhere, it duplicates them"
+      - "there's a hidden water tank under the stage full of versions of the same man"
+      - "the price of that final trick is dying every single night"
+      - "what Tesla built didn't do what Angier thought it did"
   - id: prestige_angier_killed_by_borden
-    canonical: "Al final, el Borden superviviente dispara y mata a Angier, vengando a su hermano ejecutado."
+    canonical: "At the end, the surviving Borden shoots and kills Angier, avenging his executed brother."
     severity: major
     paraphrases:
-      - "la rivalidad termina con uno de los dos magos muerto a manos del otro"
-      - "el desenlace es literalmente un ajuste de cuentas con un arma"
-      - "la hija de Borden termina bajo la custodia del gemelo que quedó vivo"
+      - "the rivalry ends with one of the two magicians dead at the other's hands"
+      - "the ending is literally a reckoning settled with a gun"
+      - "Borden's daughter ends up in the custody of the twin who survived"
 sources:
   - "https://en.wikipedia.org/wiki/The_Prestige_(film)"

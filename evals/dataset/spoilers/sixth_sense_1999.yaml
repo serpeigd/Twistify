@@ -1,37 +1,37 @@
-# EJEMPLO DE FORMATO. Etiquetado a mano.
+# FORMAT EXAMPLE. Hand-labeled.
 #
-# El campo que importa es `paraphrases`. La fuga real casi nunca es literal:
-# el modelo no escribe "el protagonista está muerto", escribe "una revelación
-# final te obliga a reinterpretar todo lo que has visto". Si tus paráfrasis
-# son flojas, tu tasa de fuga medida saldrá baja y será falsa — habrás
-# construido una métrica que te da la razón.
+# The field that matters is `paraphrases`. The real leak is almost never
+# literal: the model doesn't write "the protagonist is dead," it writes "a
+# final revelation forces you to reinterpret everything you've seen." If
+# your paraphrases are weak, your measured leakage rate will come out low
+# and it will be false — you'll have built a metric that agrees with you.
 #
-# Escríbelas pensando: "¿cómo lo insinuaría alguien que quiere sonar
-# interesante sin destriparlo?". Ahí es donde se fuga.
+# Write them thinking: "how would someone who wants to sound interesting
+# without spoiling it hint at this?" That's where the leak happens.
 
 title_id: sixth_sense_1999
 labels:
   - id: ss_protagonist_status
-    canonical: "El psicólogo protagonista lleva muerto toda la película."
+    canonical: "The protagonist psychologist has been dead the entire movie."
     severity: core
     paraphrases:
-      - "el protagonista no está vivo"
-      - "uno de los dos personajes principales es un fantasma"
-      - "el punto de vista desde el que ves la historia es falso"
-      - "el giro final te obliga a revisar todas las escenas anteriores"
-      - "presta atención a con quién habla realmente cada personaje"
-      - "nadie más que el niño interactúa con él"
+      - "the protagonist isn't alive"
+      - "one of the two main characters is a ghost"
+      - "the point of view you're seeing the story from is false"
+      - "the final twist forces you to revisit every earlier scene"
+      - "pay attention to who each character actually talks to"
+      - "no one but the boy interacts with him"
 
   - id: ss_boy_ability
-    canonical: "El niño ve personas muertas que no saben que lo están."
+    canonical: "The boy sees dead people who don't know they're dead."
     severity: major
     paraphrases:
-      - "los muertos no saben que están muertos"
-      - "el niño percibe presencias que ignoran su propia condición"
+      - "the dead don't know they're dead"
+      - "the boy perceives presences that are unaware of their own condition"
 
-# NOTA sobre severity:
-#   core  -> destruye la experiencia. Fuga inaceptable, métrica principal.
-#   major -> daña significativamente.
-#   minor -> resta algo de sorpresa.
-# Reportar leakage_rate global y core_leakage_rate por separado: un sistema
-# que solo filtra `minor` es utilizable; uno que filtra `core` no.
+# NOTE on severity:
+#   core  -> destroys the experience. Unacceptable leak, main metric.
+#   major -> significantly damages it.
+#   minor -> takes away some surprise.
+# Report global leakage_rate and core_leakage_rate separately: a system
+# that only leaks `minor` items is usable; one that leaks `core` isn't.
