@@ -72,30 +72,28 @@
     border-color:var(--safe);color:var(--safe-soft)}
   .filter-chip.on .f-count{background:rgba(82,201,154,.24);color:var(--safe-soft)}
 
-  /* más filtros: desplegable con temática / director / orden */
-  .more-filters-toggle{width:100%;margin-top:10px;padding:8px 10px;border-radius:9px;
-    background:none;border:1px dashed var(--border);color:var(--text-mute);
-    font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer;
-    display:flex;align-items:center;justify-content:space-between;transition:all .15s}
-  .more-filters-toggle:hover{color:var(--text-dim);border-color:#333949}
-  .mf-arrow{transition:transform .25s;font-size:10px}
-  .more-filters-toggle.open .mf-arrow{transform:rotate(180deg)}
-  .more-filters{max-height:0;overflow:hidden;transition:max-height .32s ease}
-  .more-filters.open{max-height:420px}
-  .mf-block{padding-top:12px}
+  /* temática (colores propios por tema, con solape real entre películas)
+     + orden. Sin desplegable: con 6 temas + 2 modos de orden ya cabe bien. */
+  .mf-block{margin-top:14px}
   .mf-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
     color:var(--text-mute);margin-bottom:8px}
   .tag-row{display:flex;flex-wrap:wrap;gap:6px}
-  .tag-chip{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;
+  .theme-chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 6px;
+    border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;
     background:rgba(255,255,255,.03);border:1px solid var(--border);color:var(--text-dim);
     font-family:inherit;transition:all .15s}
-  .tag-chip:hover{border-color:#333949;color:var(--text)}
-  .tag-chip.theme-on{background:linear-gradient(135deg,rgba(183,155,240,.24),rgba(183,155,240,.08));
-    border-color:var(--violet);color:#e4dbfb}
-  .tag-chip.dir-on{background:linear-gradient(135deg,rgba(224,163,92,.24),rgba(224,163,92,.08));
+  .theme-chip:hover{border-color:#333949;color:var(--text)}
+  .theme-chip .t-ico{width:18px;height:18px;border-radius:50%;flex-shrink:0;
+    display:inline-flex;align-items:center;justify-content:center;font-size:10px;
+    background:var(--t-color);filter:saturate(1.1)}
+  .theme-chip.on{background:color-mix(in srgb, var(--t-color) 22%, transparent);
+    border-color:var(--t-color);color:var(--text)}
+  .sort-chip{padding:6px 12px;border-radius:9px;font-size:11px;font-weight:600;cursor:pointer;
+    background:var(--panel);border:1px solid var(--border);color:var(--text-dim);
+    font-family:inherit;transition:all .15s;flex:1;text-align:center}
+  .sort-chip:hover{color:var(--text);border-color:#333949}
+  .sort-chip.on{background:linear-gradient(135deg,rgba(224,163,92,.22),rgba(224,163,92,.07));
     border-color:var(--deep);color:var(--deep-soft)}
-  .tag-chip.sort-on{background:linear-gradient(135deg,rgba(82,201,154,.24),rgba(82,201,154,.08));
-    border-color:var(--safe);color:var(--safe-soft)}
   .catalogue{overflow-y:auto;padding:10px;flex:1;min-height:0}
   .group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.09em;
     color:var(--text-mute);margin:16px 10px 8px;font-weight:700}
@@ -110,6 +108,7 @@
   .film-btn .t{font-weight:550}
   .film-btn .meta{display:flex;align-items:center;gap:8px;margin-top:5px}
   .film-btn .yr{font-size:11.5px;color:var(--text-mute);font-variant-numeric:tabular-nums}
+  .film-btn .dir{display:block;font-size:11px;color:var(--text-mute);margin-top:2px}
   .bar{flex:1;height:3px;background:#1e222c;border-radius:3px;overflow:hidden}
   .bar i{display:block;height:100%;background:var(--safe);border-radius:3px;transition:width .4s}
   .tag-uncurated{font-size:10px;color:var(--text-mute);border:1px solid var(--border);
@@ -208,13 +207,22 @@
   .nosrc{color:var(--deep);background:rgba(224,163,92,.09)}
   .interp{color:var(--violet);background:rgba(183,155,240,.1)}
 
-  /* chips nav: riel horizontal de píldoras-icono que se abren al pasar/activarse */
+  /* barra de navegación: indicador de modo (fijo) + riel de chips (scroll) */
+  .nav-bar{display:flex;align-items:center;gap:8px;padding:8px;margin:2px 8px 8px;
+    position:sticky;top:6px;z-index:6;border-radius:16px;
+    background:rgba(20,15,9,.92);backdrop-filter:blur(14px);border:1px solid var(--deep-brd)}
+  .nav-mode{display:inline-flex;align-items:center;gap:6px;flex-shrink:0;padding:0 12px;
+    height:34px;border-radius:999px;font-size:10.5px;font-weight:800;letter-spacing:.03em;
+    color:var(--safe);background:rgba(82,201,154,.12);border:1px solid var(--safe-brd);
+    white-space:nowrap;transition:all .2s}
+  .nav-mode .pulse{width:6px;height:6px;border-radius:50%;background:currentColor;
+    animation:pulse 2.6s infinite;flex-shrink:0}
+  .nav-mode.spoiler{color:var(--deep-red);background:rgba(224,112,95,.14);
+    border-color:rgba(224,112,95,.4)}
   .chips{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
-    padding:11px 16px;margin:2px 8px 8px;position:sticky;top:6px;z-index:6;border-radius:16px;
-    background:rgba(20,15,9,.92);backdrop-filter:blur(14px);border:1px solid var(--deep-brd);
-    scroll-behavior:smooth;
-    -webkit-mask-image:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent);
-    mask-image:linear-gradient(90deg,transparent,#000 22px,#000 calc(100% - 22px),transparent)}
+    scroll-behavior:smooth;min-width:0;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
   .chips::-webkit-scrollbar{display:none}
   .chip{cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:600;flex-shrink:0;
     display:inline-flex;align-items:center;height:34px;padding:0 9px;border-radius:999px;
@@ -398,6 +406,18 @@
     color:#f8f6fd;margin-bottom:8px;letter-spacing:-.01em}
   .rewatch-lead::before{content:"↺ ";color:var(--violet)}
 
+  /* para pensar: mismo acento violeta que el rewatch, marcado como lectura pausada */
+  .think-zone{border:1px solid rgba(183,155,240,.35)!important;
+    background:linear-gradient(180deg,rgba(183,155,240,.1),rgba(183,155,240,0) 220px),var(--safe-bg)!important;
+    box-shadow:0 0 0 1px rgba(183,155,240,.06),0 30px 70px -46px rgba(183,155,240,.45)!important}
+  .think-zone .zone-badge{color:var(--violet)!important;background:rgba(183,155,240,.14)!important;
+    border-color:rgba(183,155,240,.4)!important}
+  .think-zone .card>h3{color:#e4dbfb!important;font-size:22px}
+  .think-zone .card>h3 .ico{font-size:24px}
+  .think-hint{margin:6px 0 4px;font-size:13px;font-family:var(--serif);font-style:italic;
+    color:var(--violet)}
+  .think-zone .q-list li{font-size:17px;font-family:var(--serif);line-height:1.55}
+
   /* telón: bloqueo/desbloqueo del deep-dive */
   #deepZone{position:relative;overflow:hidden;transition:min-height .4s}
   #deepZone.curtain-closed{min-height:360px}
@@ -497,22 +517,13 @@
     <div class="search-wrap">
       <input id="search" type="text" placeholder="Buscar película…" autocomplete="off">
       <div class="filters" id="filters"></div>
-      <button class="more-filters-toggle" id="moreFiltersToggle">
-        <span>Más filtros</span><span class="mf-arrow">▾</span>
-      </button>
-      <div class="more-filters" id="moreFilters">
-        <div class="mf-block">
-          <div class="mf-label">🎭 Temática</div>
-          <div class="tag-row" id="themeTags"></div>
-        </div>
-        <div class="mf-block">
-          <div class="mf-label">🎬 Director</div>
-          <div class="tag-row" id="directorTags"></div>
-        </div>
-        <div class="mf-block">
-          <div class="mf-label">↕ Ordenar por</div>
-          <div class="tag-row" id="sortRow"></div>
-        </div>
+      <div class="mf-block">
+        <div class="mf-label">Temática</div>
+        <div class="tag-row" id="themeTags"></div>
+      </div>
+      <div class="mf-block">
+        <div class="mf-label">Ordenar por</div>
+        <div class="tag-row" id="sortRow"></div>
       </div>
     </div>
     <div class="catalogue" id="catalogue"></div>
@@ -528,7 +539,19 @@
 
 <script>
 let CATALOGUE = [], CURRENT = null, FILTER = 'all', QUERY = '';
-let THEME_FILTER = new Set(), DIRECTOR_FILTER = null, SORT_MODE = 'default';
+let THEME_FILTER = new Set(), SORT_MODE = 'default';
+
+/* vocabulario fijo de temáticas: icono + color por tema, para que el filtro
+   sea visual y para que cada tema agrupe más de una película (antes eran
+   ~19 etiquetas casi únicas, una por película -- no servían para filtrar) */
+const THEME_META = {
+  'Identidad':              { ico: '🎭', color: '#b79bf0' },
+  'Duelo y pérdida':        { ico: '🕊️', color: '#8bb0b9' },
+  'Obsesión':               { ico: '🔥', color: '#e0705f' },
+  'Clase y poder':          { ico: '👑', color: '#e0a35c' },
+  'Moralidad y justicia':   { ico: '⚖️', color: '#52c99a' },
+  'Percepción':             { ico: '👁️', color: '#d47559' },
+};
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const host = u => { try { return new URL(u).hostname.replace('www.', ''); } catch { return u; } };
 
@@ -568,42 +591,30 @@ function renderFilters() {
   });
 }
 
-document.getElementById('moreFiltersToggle').onclick = () => {
-  document.getElementById('moreFiltersToggle').classList.toggle('open');
-  document.getElementById('moreFilters').classList.toggle('open');
-};
-
 function renderMoreFilters() {
-  const themes = [...new Set(CATALOGUE.flatMap(f => f.themes || []))].sort();
-  const directors = [...new Set(CATALOGUE.filter(f => f.director).map(f => f.director))].sort();
+  const themes = [...new Set(CATALOGUE.flatMap(f => f.themes || []))]
+    .sort((a, b) => (THEME_META[a] ? 0 : 1) - (THEME_META[b] ? 0 : 1) || a.localeCompare(b));
 
   const themeBox = document.getElementById('themeTags');
   themeBox.innerHTML = themes.length
-    ? themes.map(t => `<button class="tag-chip ${THEME_FILTER.has(t) ? 'theme-on' : ''}" data-theme="${esc(t)}">${esc(t)}</button>`).join('')
+    ? themes.map(t => {
+        const meta = THEME_META[t] || { ico: '🏷️', color: '#6a7284' };
+        return `<button class="theme-chip ${THEME_FILTER.has(t) ? 'on' : ''}" data-theme="${esc(t)}"
+          style="--t-color:${meta.color}"><span class="t-ico">${meta.ico}</span>${esc(t)}</button>`;
+      }).join('')
     : '<span class="empty-note" style="font-size:11px">Aún sin temáticas curadas</span>';
-  themeBox.querySelectorAll('.tag-chip').forEach(b => b.onclick = () => {
+  themeBox.querySelectorAll('.theme-chip').forEach(b => b.onclick = () => {
     const t = b.dataset.theme;
     THEME_FILTER.has(t) ? THEME_FILTER.delete(t) : THEME_FILTER.add(t);
     renderMoreFilters();
     renderCatalogue();
   });
 
-  const dirBox = document.getElementById('directorTags');
-  dirBox.innerHTML = directors.length
-    ? directors.map(d => `<button class="tag-chip ${DIRECTOR_FILTER === d ? 'dir-on' : ''}" data-director="${esc(d)}">${esc(d)}</button>`).join('')
-    : '<span class="empty-note" style="font-size:11px">Aún sin directores curados</span>';
-  dirBox.querySelectorAll('.tag-chip').forEach(b => b.onclick = () => {
-    const d = b.dataset.director;
-    DIRECTOR_FILTER = DIRECTOR_FILTER === d ? null : d;
-    renderMoreFilters();
-    renderCatalogue();
-  });
-
   const sortBox = document.getElementById('sortRow');
   sortBox.innerHTML = `
-    <button class="tag-chip ${SORT_MODE === 'default' ? 'sort-on' : ''}" data-sort="default">Relevancia</button>
-    <button class="tag-chip ${SORT_MODE === 'awards' ? 'sort-on' : ''}" data-sort="awards">🏆 Más premiadas</button>`;
-  sortBox.querySelectorAll('.tag-chip').forEach(b => b.onclick = () => {
+    <button class="sort-chip ${SORT_MODE === 'default' ? 'on' : ''}" data-sort="default">Relevancia</button>
+    <button class="sort-chip ${SORT_MODE === 'awards' ? 'on' : ''}" data-sort="awards">🏆 Más premiadas</button>`;
+  sortBox.querySelectorAll('.sort-chip').forEach(b => b.onclick = () => {
     SORT_MODE = b.dataset.sort;
     renderMoreFilters();
     renderCatalogue();
@@ -615,7 +626,6 @@ function renderCatalogue() {
   let items = CATALOGUE.filter(f =>
     matchesFilter(f) &&
     (!THEME_FILTER.size || (f.themes || []).some(t => THEME_FILTER.has(t))) &&
-    (!DIRECTOR_FILTER || f.director === DIRECTOR_FILTER) &&
     (!q || f.title.toLowerCase().includes(q) || String(f.year).includes(q)));
   if (SORT_MODE === 'awards') items = items.slice().sort((a, b) => (b.awards_count || 0) - (a.awards_count || 0));
   const groups = { mainstream: [], longtail: [] };
@@ -628,6 +638,7 @@ function renderCatalogue() {
     list.forEach(f => {
       html += `<button class="film-btn ${CURRENT === f.title_id ? 'active' : ''}" data-id="${f.title_id}">
         <div class="t">${esc(f.title)}</div>
+        ${f.director ? `<span class="dir">${esc(f.director)}</span>` : ''}
         <div class="meta"><span class="yr">${f.year}</span>
         ${SORT_MODE === 'awards' && f.awards_count ? `<span class="tag-uncurated">🏆 ${f.awards_count}</span>` : ''}
         ${f.curated ? `<span class="bar"><i style="width:${f.completeness}%"></i></span>`
@@ -644,6 +655,7 @@ document.getElementById('search').oninput = e => { QUERY = e.target.value; rende
 async function loadFilm() {
   NAV_SECTIONS = []; PRE_SECTIONS = []; CACHED_SECTIONS = []; LAST_ACTIVE_CHIP = null;
   const fab = document.getElementById('curtainFab'); if (fab) fab.classList.remove('show');
+  updateNavMode('safe');
   const main = document.getElementById('main');
   main.className = ''; main.innerHTML = '<div class="wrap"><p class="empty-note">Cargando…</p></div>';
   const d = await (await fetch(`/api/film/${CURRENT}?seen=false`)).json();
@@ -707,10 +719,8 @@ function centerChipInRail(chipEl) {
 
 function wireChipClicks(container) {
   container.querySelectorAll('.chip').forEach(ch => {
-    ch.onclick = async () => {
-      let t = document.getElementById(ch.dataset.go);
-      if (t && t.offsetParent === null) await unlockDeep(); // sección tras el telón: ábrelo primero
-      t = document.getElementById(ch.dataset.go);
+    ch.onclick = () => {
+      const t = document.getElementById(ch.dataset.go);
       const main = document.querySelector('main');
       if (t && main) {
         const top = main.scrollTop + t.getBoundingClientRect().top - main.getBoundingClientRect().top - 16;
@@ -718,6 +728,15 @@ function wireChipClicks(container) {
       }
     };
   });
+}
+
+function updateNavMode(state) {
+  const el = document.getElementById('navMode');
+  if (!el) return;
+  el.classList.toggle('spoiler', state === 'spoiler');
+  el.innerHTML = state === 'spoiler'
+    ? '<span class="pulse"></span> SPOILER MODE'
+    : '<span class="pulse"></span> Sin spoilers';
 }
 
 function onScroll() {
@@ -786,7 +805,10 @@ function renderFilm(d) {
       ${c.notes ? `<div class="note">${esc(c.notes)}</div>` : ''}
     </div>
 
-    <div class="chips" id="masterChips"></div>
+    <div class="nav-bar" id="navBar">
+      <span class="nav-mode" id="navMode"><span class="pulse"></span> Sin spoilers</span>
+      <div class="chips" id="masterChips"></div>
+    </div>
 
     <section class="zone zone-safe">
       <div class="zone-frame">
@@ -861,15 +883,16 @@ function renderFilm(d) {
 function renderPhase4(ct) {
   let h = '';
   if ((ct.questions || []).length)
-    h += `<div class="zone zone-safe" id="sec-pensar" style="margin-top:26px"><div class="zone-frame">
+    h += `<div class="zone zone-safe think-zone" id="sec-pensar" style="margin-top:26px"><div class="zone-frame">
       <span class="zone-badge"><span class="pulse"></span> Para pensar</span>
       <span class="zone-sub">Sin spoilers · deja la conversación abierta</span></div>
-      <div class="zone-body"><div class="card"><h3><span class="ico">❓</span> Preguntas que deja abiertas</h3>
+      <div class="zone-body"><div class="card"><h3><span class="ico">🧠</span> Preguntas que deja abiertas</h3>
+      <div class="think-hint">Sin prisa. Esto es lo que se queda dando vueltas cuando acaba.</div>
       <ul class="clean q-list">${ct.questions.map(q => `<li>${esc(q)}</li>`).join('')}</ul></div></div></div>`;
   document.getElementById('phase4').innerHTML = h;
 
   if ((ct.questions || []).length) {
-    const s = { id: 'sec-pensar', ico: '❓', title: 'Para pensar' };
+    const s = { id: 'sec-pensar', ico: '🧠', title: 'Para pensar' };
     PRE_SECTIONS = [...PRE_SECTIONS, s];
     NAV_SECTIONS = PRE_SECTIONS;
     const masterChips = document.getElementById('masterChips');
@@ -925,14 +948,23 @@ async function unlockDeep() {
   if (dc.dataset.loaded !== '1') {
     // un solo vuelo: si ya hay una carga en curso (doble clic, chip + botón a
     // la vez), todos esperan la MISMA promesa en vez de duplicar fetch/chips.
-    if (!dc._loading) dc._loading = loadDeepDive(dc, masterChips);
+    if (!dc._loading) dc._loading = loadDeepDive(dc);
     await dc._loading;
+  }
+
+  // los chips de las secciones con spoilers se quitan del nav al cerrar el
+  // telón (relockDeep) -- hay que devolverlos cada vez que se reabre, no solo
+  // la primera vez que se cargan.
+  if (CACHED_SECTIONS.length && !masterChips.querySelector(`.chip[data-go="${CACHED_SECTIONS[0].id}"]`)) {
+    masterChips.insertAdjacentHTML('beforeend', CACHED_SECTIONS.map(chipHtml).join(''));
+    wireChipClicks(masterChips);
   }
 
   NAV_SECTIONS = PRE_SECTIONS.concat(CACHED_SECTIONS);
   zone.classList.remove('curtain-closed');
   curtain.classList.add('open');
   updateCurtainFab('open');
+  updateNavMode('spoiler');
 }
 
 function updateCurtainFab(state) {
@@ -953,7 +985,7 @@ function updateCurtainFab(state) {
   }
 }
 
-async function loadDeepDive(dc, masterChips) {
+async function loadDeepDive(dc) {
   const btn = document.getElementById('unlockBtn');
   btn.disabled = true; btn.innerHTML = 'Abriendo el telón…';
   const d = await (await fetch(`/api/film/${CURRENT}?seen=true`)).json();
@@ -1017,8 +1049,6 @@ async function loadDeepDive(dc, masterChips) {
     }
 
     CACHED_SECTIONS = sections;
-    masterChips.insertAdjacentHTML('beforeend', sections.map(chipHtml).join(''));
-    wireChipClicks(masterChips);
 
     let inner = `<div class="zone-frame">
         <span class="zone-badge"><span class="pulse"></span> SPOILER MODE ON</span>
@@ -1058,7 +1088,15 @@ function relockDeep() {
   document.getElementById('curtain').classList.remove('open');
   document.getElementById('deepZone').classList.add('curtain-closed');
   document.querySelectorAll('.acc-item.open').forEach(el => el.classList.remove('open'));
+  // el nav solo debe mostrar lo que hay realmente en pantalla: los chips de
+  // las secciones con spoilers desaparecen del todo, no se quedan como
+  // "atajo oculto" para reabrir el telón desde la navegación.
+  const deepIds = new Set(CACHED_SECTIONS.map(s => s.id));
+  document.querySelectorAll('#masterChips .chip').forEach(ch => {
+    if (deepIds.has(ch.dataset.go)) ch.remove();
+  });
   updateCurtainFab('closed');
+  updateNavMode('safe');
   document.getElementById('deepZone').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
