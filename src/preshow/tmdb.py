@@ -107,6 +107,27 @@ def get_movie(tmdb_id: int) -> dict | None:
     return result
 
 
+def get_director(tmdb_id: int) -> str | None:
+    """Director's name via TMDB's credits endpoint -- the base /movie/{id}
+    response (used by get_movie) doesn't include crew. Cached separately
+    since it's a different endpoint, not part of _to_result's shape."""
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_path = CACHE_DIR / f"credits_{tmdb_id}.json"
+    if cache_path.exists():
+        cached = json.loads(cache_path.read_text(encoding="utf-8"))
+        return cached.get("director")
+
+    data = _get(f"/movie/{tmdb_id}/credits")
+    director = None
+    if data:
+        for c in data.get("crew", []):
+            if c.get("job") == "Director":
+                director = c.get("name")
+                break
+    cache_path.write_text(json.dumps({"director": director}, ensure_ascii=False), encoding="utf-8")
+    return director
+
+
 def best_match(title: str, year: int) -> dict | None:
     """Resolves a (title, year) pair -- e.g. from titles.yaml -- to a TMDB
     record. Exact-year match preferred; falls back to the top search hit
