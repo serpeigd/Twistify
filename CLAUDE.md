@@ -43,16 +43,18 @@ design decision.
   all English. CI (8 tests) on GitHub Actions. Release `v1.0.0` published.
 - Measurement track: 20/20 titles have ground truth (LLM-researched with cited
   sources — see D7, not hand-labeled). `SubstringJudge` calibrated offline
-  (recall=0.0 by design). Baseline generator (`src/preshow/baseline.py`) implemented,
-  never run. **Blocker**: needs a real `ANTHROPIC_API_KEY` to run
-  `evals/run_eval.py --generator baseline` and put real leakage/grounding/richness
-  numbers in the README. External judge calibration (TV Tropes/IMDB Spoiler Dataset)
-  still blocked — no direct public download. All 20 titles now have a resolved
-  `tmdb_id` in `titles.yaml` (D10) for browse-tier posters — cosmetic, doesn't
-  touch the stratified sample or its labels.
-- Demo track: 7/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
-  Prestige, Se7en, Arrival). Remaining 13 show a real TMDB poster/synopsis instead
-  of an empty placeholder (D10).
+  (recall=0.0 by design). Two baseline generators, same prompt/schema
+  (`src/preshow/baseline_prompts.py`): `AnthropicBaselineGenerator` (paid) and
+  `GroqBaselineGenerator` (`--generator baseline-groq`, free tier, no card).
+  Neither has been run yet. **Blocker**: needs a `GROQ_API_KEY` (or
+  `ANTHROPIC_API_KEY`) to actually run `evals/run_eval.py` and put real
+  leakage/grounding/richness numbers in the README. External judge calibration
+  (TV Tropes/IMDB Spoiler Dataset) still blocked — no direct public download.
+  All 20 titles now have a resolved `tmdb_id` in `titles.yaml` (D10) for
+  browse-tier posters — cosmetic, doesn't touch the stratified sample or labels.
+- Demo track: 8/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
+  Prestige, Se7en, Arrival, Gone Girl). Remaining 12 show a real TMDB
+  poster/synopsis instead of an empty placeholder (D10).
 
 ## Rules
 
@@ -70,16 +72,17 @@ design decision.
 
 ## Next task
 
-Get an API key for the baseline generator (a free-tier provider like Gemini/Groq
-means writing a new `Generator` against the same interface — see docs/DESIGN.md
-"Pending" — `ANTHROPIC_API_KEY` works too but isn't free), run the baseline over
-the 20 labeled titles, paste real numbers into the README, then calibrate the
-judge externally before trusting them. Don't start Milestone 1 (retrieval)
-before Milestone 0 has real numbers.
+Get a free `GROQ_API_KEY` (console.groq.com/keys, no card), run
+`python evals/run_eval.py --generator baseline-groq` over the 20 labeled
+titles, paste real leakage/grounding/richness numbers into the README, then
+calibrate the judge externally before trusting them. Don't start Milestone 1
+(retrieval) before Milestone 0 has real numbers.
 
-Also pending, not started (see docs/DESIGN.md "Pending"): a free-tier baseline
-generator, and automating the "+ Suggest a movie" pipeline (it now resolves a
-`tmdb_id` per suggestion, but still doesn't research or add anything).
+Also pending, not started (see docs/DESIGN.md "Pending"): automating the
+"+ Suggest a movie" pipeline (it now resolves a `tmdb_id` per suggestion,
+but still doesn't research or add anything), and researching the 12
+remaining measurement titles the same way Gone Girl was (D6/D7 — cited
+sources, no invented facts).
 
 ## Environment
 
@@ -89,8 +92,10 @@ python -m pytest tests/ -v                       # offline, must pass
 python webapp/app.py                             # http://127.0.0.1:8000
 python webapp/prewarm_translations.py            # pre-cache ES content, no API key needed
 python webapp/resolve_tmdb_ids.py                 # (re-)resolve tmdb_id for titles.yaml entries
-python evals/run_eval.py --generator baseline    # needs ANTHROPIC_API_KEY
+pip install groq && python evals/run_eval.py --generator baseline-groq  # needs free GROQ_API_KEY
+python evals/run_eval.py --generator baseline    # needs paid ANTHROPIC_API_KEY instead
 ```
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
 TMDB key/read token live in `.env` (gitignored) — used by `src/preshow/tmdb.py`
-(D10) for the browse tier and catalogue posters.
+(D10) for the browse tier and catalogue posters. `GROQ_API_KEY` also belongs
+in `.env` once obtained (same gitignored file, never commit it).

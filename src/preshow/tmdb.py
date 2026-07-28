@@ -12,14 +12,14 @@ re-fetch a search or a movie twice.
 from __future__ import annotations
 
 import json
-import os
 import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from .env import read_env
+
 ROOT = Path(__file__).resolve().parent.parent.parent
-_ENV_FILE = ROOT / ".env"
 CACHE_DIR = ROOT / "content" / "_tmdb_cache"
 
 _BASE_URL = "https://api.themoviedb.org/3"
@@ -28,26 +28,8 @@ _IMAGE_BASE = "https://image.tmdb.org/t/p/w342"
 ATTRIBUTION = "This product uses the TMDB API but is not endorsed or certified by TMDB."
 
 
-def _read_token() -> str | None:
-    """`TMDB_READ_ACCESS_TOKEN` from the environment, falling back to a
-    plain-text .env read (no python-dotenv dependency for one variable)."""
-    token = os.environ.get("TMDB_READ_ACCESS_TOKEN")
-    if token:
-        return token
-    if not _ENV_FILE.exists():
-        return None
-    for line in _ENV_FILE.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        if key.strip() == "TMDB_READ_ACCESS_TOKEN":
-            return value.strip()
-    return None
-
-
 def _get(path: str, params: dict | None = None) -> dict | None:
-    token = _read_token()
+    token = read_env("TMDB_READ_ACCESS_TOKEN")
     if not token:
         return None
     query = urllib.parse.urlencode(params or {})

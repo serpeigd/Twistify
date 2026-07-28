@@ -15,83 +15,24 @@ assumption.
 
 from __future__ import annotations
 
-import os
-
 import anthropic
 
+from .baseline_prompts import (
+    BRIEF_PROPERTIES,
+    BRIEF_REQUIRED,
+    SYSTEM_PROMPT,
+    TOOL_DESCRIPTION,
+    TOOL_NAME,
+)
 from .schemas import Claim, DeepDive, PreShowBrief, ScriptBlock, SourceDoc, TitleCase
 
-SYSTEM_PROMPT = """\
-You write PRE-VIEWING promotional material (spoiler-free) for a movie.
-Whoever reads this hasn't seen it yet.
-
-Rules:
-- Don't reveal the ending, plot twists, who the killer/villain is, or any
-  fact that only makes sense after seeing the movie.
-- context_bullets and author_voice: max 3 each. Each one is a Claim with
-  kind="fact" (verifiable, about production/cast/premise) or
-  kind="interpretation" (your reading, doesn't need a source). If it's
-  "fact", set source_id to null -- you have no real sources, this is a
-  baseline with no retrieval, don't invent a fake source identifier.
-- emotional_temperature: one sentence capturing the tone (a sensory
-  metaphor).
-- why_now: why watch it now, without spoiling anything.
-- script: 1-3 blocks with timings in seconds, on-screen text, voiceover,
-  and visual direction. The voiceover is also spoiler surface: the same
-  rules apply there.
-
-Call the emit_preshow_brief tool with the result. Don't write anything
-outside the tool call.
-"""
-
-_CLAIM_SCHEMA = {
-    "type": "object",
-    "properties": {
-        "text": {"type": "string"},
-        "kind": {"type": "string", "enum": ["fact", "interpretation"]},
-        "source_id": {"type": ["string", "null"]},
-    },
-    "required": ["text", "kind", "source_id"],
-}
-
 _TOOL = {
-    "name": "emit_preshow_brief",
-    "description": "Emits the pre-viewing brief in the required format.",
+    "name": TOOL_NAME,
+    "description": TOOL_DESCRIPTION,
     "input_schema": {
         "type": "object",
-        "properties": {
-            "context_bullets": {"type": "array", "maxItems": 3, "items": _CLAIM_SCHEMA},
-            "author_voice": {"type": "array", "maxItems": 3, "items": _CLAIM_SCHEMA},
-            "emotional_temperature": {"type": "string"},
-            "why_now": {"type": "string"},
-            "script": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "start_s": {"type": "integer"},
-                        "end_s": {"type": "integer"},
-                        "on_screen_text": {"type": "string"},
-                        "voiceover": {"type": "string"},
-                        "visual_direction": {"type": "string"},
-                    },
-                    "required": [
-                        "start_s",
-                        "end_s",
-                        "on_screen_text",
-                        "voiceover",
-                        "visual_direction",
-                    ],
-                },
-            },
-        },
-        "required": [
-            "context_bullets",
-            "author_voice",
-            "emotional_temperature",
-            "why_now",
-            "script",
-        ],
+        "properties": BRIEF_PROPERTIES,
+        "required": BRIEF_REQUIRED,
     },
 }
 
@@ -112,7 +53,7 @@ class AnthropicBaselineGenerator:
             max_tokens=1024,
             system=SYSTEM_PROMPT,
             tools=[_TOOL],
-            tool_choice={"type": "tool", "name": "emit_preshow_brief"},
+            tool_choice={"type": "tool", "name": TOOL_NAME},
             messages=[
                 {
                     "role": "user",

@@ -197,17 +197,21 @@ Concretely:
 
 ## Pending — free-tier constraint and scaling the catalogue
 
-The project is meant to run without a paid API key. Two follow-ups, not yet
-implemented (the TMDB browse tier described in D10 is done):
+The project is meant to run without a paid API key. One follow-up left
+(the TMDB browse tier from D10, and the free-tier baseline generator below,
+are both done):
 
-- **Free-tier baseline generator.** `AnthropicBaselineGenerator`
-  (`src/preshow/baseline.py`) is hardcoded to the `anthropic` SDK with a
-  forced tool call — that's a real cost to unblock Milestone 0. A
-  `Generator` implementation against a provider with a genuine free tier
-  (Google Gemini via AI Studio, or Groq) would remove that requirement
-  without changing the harness: same `pre_show`/`deep_dive` interface, same
-  fixture-first testing rule (see Rules in `CLAUDE.md`). Needs a decision on
-  which provider before writing it — not started.
+- **Free-tier baseline generator — implemented, blocked only on a key.**
+  `AnthropicBaselineGenerator` (`src/preshow/baseline.py`) needed a paid
+  `ANTHROPIC_API_KEY` to unblock Milestone 0. `GroqBaselineGenerator`
+  (`src/preshow/baseline_groq.py`, `--generator baseline-groq`) is the same
+  `Generator` — identical prompt and output schema, shared verbatim via
+  `baseline_prompts.py` so a leakage_rate difference between the two would
+  measure the model, not a prompt drift — against Groq's free tier (no
+  card required). Get a key at console.groq.com/keys, set `GROQ_API_KEY`,
+  then run `python evals/run_eval.py --generator baseline-groq` to get real
+  numbers into the README. Milestone 1 (retrieval) still shouldn't start
+  before those numbers exist.
 - **Automating the "+ Suggest a movie" pipeline.** The webapp captures
   suggestions (`POST /api/requests`, appended to
   `content/movie_requests.json`, gitignored) and now resolves the exact

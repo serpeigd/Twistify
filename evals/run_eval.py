@@ -29,6 +29,10 @@ def _load_generator(name: str):
         from preshow.baseline import AnthropicBaselineGenerator
 
         return AnthropicBaselineGenerator()
+    if name == "baseline-groq":
+        from preshow.baseline_groq import GroqBaselineGenerator
+
+        return GroqBaselineGenerator()
     return None
 
 DATA = ROOT / "evals" / "dataset"
