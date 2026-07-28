@@ -35,7 +35,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
 from judge import SubstringJudge  # noqa: E402
-from preshow import tmdb  # noqa: E402
+from preshow import kv_store, tmdb  # noqa: E402
 from preshow.content import ContentPack, load_all, strip_post_show  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 from preshow.translate import translate_pack_dump  # noqa: E402
@@ -136,16 +136,11 @@ def verify_pre_show(pack: ContentPack, labels: list[SpoilerLabel]) -> dict:
 
 
 def read_comments() -> dict[str, list[dict]]:
-    if COMMENTS_FILE.exists():
-        return json.loads(COMMENTS_FILE.read_text(encoding="utf-8"))
-    return {}
+    return kv_store.read_json_blob("twistify:comments", COMMENTS_FILE, {})
 
 
 def write_comments(data: dict) -> None:
-    COMMENTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    COMMENTS_FILE.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    kv_store.write_json_blob("twistify:comments", COMMENTS_FILE, data)
 
 
 # ------------------------------------------------------------------ endpoints
@@ -335,9 +330,7 @@ def api_post_movie_request(payload: dict = Body(...)):
     if not title:
         raise HTTPException(400, "Empty title")
 
-    requests_list = []
-    if MOVIE_REQUESTS_FILE.exists():
-        requests_list = json.loads(MOVIE_REQUESTS_FILE.read_text(encoding="utf-8"))
+    requests_list = kv_store.read_json_blob("twistify:movie_requests", MOVIE_REQUESTS_FILE, [])
     requests_list.append(
         {
             "title": title,
@@ -346,10 +339,7 @@ def api_post_movie_request(payload: dict = Body(...)):
             "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         }
     )
-    MOVIE_REQUESTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    MOVIE_REQUESTS_FILE.write_text(
-        json.dumps(requests_list, indent=2, ensure_ascii=False), encoding="utf-8"
-    )
+    kv_store.write_json_blob("twistify:movie_requests", MOVIE_REQUESTS_FILE, requests_list)
     return {"ok": True}
 
 

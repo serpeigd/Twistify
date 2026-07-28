@@ -32,9 +32,14 @@ an eval harness that proves it. Two tracks — don't conflate them:
   and marked `auto_translated` — see D9. A third, browse-only tier
   (`src/preshow/tmdb.py`) reaches effectively all of TMDB via live search
   (`GET /api/search`), cached in `content/_tmdb_cache/` (gitignored) — never
-  conflated with the researched tier's cited-claims bar. See D10.
+  conflated with the researched tier's cited-claims bar. See D10. Comments and
+  movie-request data persist through `src/preshow/kv_store.py` — Upstash Redis's
+  free REST API when `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` are set
+  in `.env`, else the same local-file behavior as before (no account needed for
+  local dev). See D11 — this is what makes comments survive a redeploy on a free
+  host with an ephemeral filesystem.
 
-Full design rationale (D1–D10) lives in `docs/DESIGN.md` — update it on any non-trivial
+Full design rationale (D1–D11) lives in `docs/DESIGN.md` — update it on any non-trivial
 design decision.
 
 ## Status
@@ -46,12 +51,18 @@ design decision.
   (recall=0.0 by design). Two baseline generators, same prompt/schema
   (`src/preshow/baseline_prompts.py`): `AnthropicBaselineGenerator` (paid) and
   `GroqBaselineGenerator` (`--generator baseline-groq`, free tier, no card).
-  Neither has been run yet. **Blocker**: needs a `GROQ_API_KEY` (or
-  `ANTHROPIC_API_KEY`) to actually run `evals/run_eval.py` and put real
-  leakage/grounding/richness numbers in the README. External judge calibration
-  (TV Tropes/IMDB Spoiler Dataset) still blocked — no direct public download.
-  All 20 titles now have a resolved `tmdb_id` in `titles.yaml` (D10) for
-  browse-tier posters — cosmetic, doesn't touch the stratified sample or labels.
+  **Milestone 0 run, real numbers in the README**: `leakage_rate` 0.0 (not
+  a safety result — the judge's known 0.0 recall, expect it to be blind to
+  real leaks), `grounded_fact_rate` 0.0 (real and expected — no retrieval
+  means no real sources, the quantitative case for Milestone 1),
+  `richness` 6.0 claims/case (confirms it's not gaming the other two by
+  going empty). Mainstream and long-tail came out identical, so the
+  original mainstream-vs-long-tail hypothesis is still **unconfirmed** —
+  needs the judge calibrated against a real benchmark first. External
+  judge calibration (TV Tropes/IMDB Spoiler Dataset) still blocked — no
+  direct public download. All 20 titles now have a resolved `tmdb_id` in
+  `titles.yaml` (D10) for browse-tier posters — cosmetic, doesn't touch
+  the stratified sample or labels.
 - Demo track: 8/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
   Prestige, Se7en, Arrival, Gone Girl). Remaining 12 show a real TMDB
   poster/synopsis instead of an empty placeholder (D10).
@@ -72,11 +83,14 @@ design decision.
 
 ## Next task
 
-Get a free `GROQ_API_KEY` (console.groq.com/keys, no card), run
-`python evals/run_eval.py --generator baseline-groq` over the 20 labeled
-titles, paste real leakage/grounding/richness numbers into the README, then
-calibrate the judge externally before trusting them. Don't start Milestone 1
-(retrieval) before Milestone 0 has real numbers.
+Milestone 0 has real numbers now (see Status above and the README). The
+number that actually needs work is judge calibration: `SubstringJudge`'s
+0.0 recall means the leakage_rate above proves nothing, and the
+mainstream/long-tail hypothesis can't be tested until the judge can see
+paraphrased leaks. That's still blocked on finding a public, directly
+downloadable benchmark (TV Tropes/IMDB Spoiler Dataset). Don't start
+Milestone 1 (retrieval) before the judge is trustworthy enough to measure
+whether Milestone 1 actually helps.
 
 Also pending, not started (see docs/DESIGN.md "Pending"): automating the
 "+ Suggest a movie" pipeline (it now resolves a `tmdb_id` per suggestion,
@@ -98,4 +112,7 @@ python evals/run_eval.py --generator baseline    # needs paid ANTHROPIC_API_KEY 
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
 TMDB key/read token live in `.env` (gitignored) — used by `src/preshow/tmdb.py`
 (D10) for the browse tier and catalogue posters. `GROQ_API_KEY` also belongs
-in `.env` once obtained (same gitignored file, never commit it).
+in `.env` once obtained (same gitignored file, never commit it). For a public
+deploy, add `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` (free, no card,
+console.upstash.com) so comments/movie-requests survive a redeploy — see D11;
+without them the app still runs fine locally on plain files.

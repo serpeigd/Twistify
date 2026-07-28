@@ -185,6 +185,35 @@ Concretely:
   pre-show text (same input it always had); showing a TMDB synopsis on
   the browse fallback is a display concern, not a new measurement claim.
 
+## D11 — User data survives a redeploy without adding a database
+
+Most free hosting tiers (the ones this project targets, per D-notes above)
+wipe the filesystem on every restart or redeploy. `content/comments.json`
+and `content/movie_requests.json` were plain local files — meaning any
+public deploy would silently reset both on the next redeploy, with no
+error and no warning.
+
+The fix (`src/preshow/kv_store.py`) is a single JSON-blob read/write pair
+backed by Upstash Redis's free REST API (no card; REST means no persistent
+connection to manage, which fits a small box that may spin down between
+requests) — not a database migration, not an ORM, just the same
+`read_comments()`/`write_comments()` shape the app already had, now able
+to point at a key that survives a restart instead of a file that doesn't.
+
+Two choices worth being explicit about:
+
+- **Local dev needs no Upstash account at all.** Without
+  `UPSTASH_REDIS_REST_URL`/`UPSTASH_REDIS_REST_TOKEN` in `.env`, `kv_store`
+  falls back to the exact local-file behavior the app always had. The
+  persistence layer is opt-in infrastructure for deployment, not a new
+  requirement for running the app locally.
+- **Reads degrade quietly; writes don't.** A failed read falls back to an
+  empty list/dict (a title with no comments yet looks the same as a title
+  whose comments failed to load — an acceptable, low-stakes degradation).
+  A failed write raises instead of returning success: a user who thinks
+  their comment posted, when it silently didn't persist, is a worse
+  failure mode than a visible error.
+
 ## Rejected
 
 - **Multi-agent (researcher / writer / critic).** No dynamic decision to

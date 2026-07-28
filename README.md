@@ -85,9 +85,9 @@ planted leaks.
 | Browse catalogue (TMDB posters, live search, ES/EN) | ✅ 20/20 have posters, search reaches all of TMDB |
 | Offline evals harness | ✅ 8 tests passing |
 | Spoiler ground truth (20 titles) | ✅ 20/20, researched with cited sources |
-| Baseline generator (no retrieval) | ✅ code ready |
+| Baseline generator (no retrieval) | ✅ two providers — Anthropic (paid) and Groq (free tier, no card) |
 | Judge calibration (offline) | ✅ recall=0.0 confirmed — the reason a better judge is needed |
-| Measure the baseline over the 20 titles | 🔴 pending a run |
+| Measure the baseline over the 20 titles | ✅ done — see numbers and caveats below |
 | Retrieval (TMDB/OMDb/Wikipedia) + verifier | ⬜ next milestone |
 
 ## Under the hood: the evaluation harness
@@ -102,9 +102,40 @@ a system that **measures**, instead of promising, three things per entry:
    this one)
 
 ```bash
-python -m pytest tests/ -q                      # 8/8, no network, no API key
-python evals/run_eval.py --generator baseline   # blocks below 15 labeled titles
+python -m pytest tests/ -q                            # 8/8, no network, no API key
+python evals/run_eval.py --generator baseline-groq    # free tier, no card
+python evals/run_eval.py --generator baseline         # or the paid Anthropic version
 ```
+
+### Milestone 0 results (no-retrieval baseline, Groq/Llama-3.3-70B, 20 titles)
+
+| Metric | Mainstream | Long-tail | Overall |
+|---|---|---|---|
+| `leakage_rate` | 0.0 | 0.0 | 0.0 |
+| `grounded_fact_rate` | 0.0 | 0.0 | 0.0 |
+| `richness` (claims/case) | 6.0 | 6.0 | 6.0 |
+
+**Read this table with its caveats, not instead of them:**
+
+- **`leakage_rate = 0.0` is not a safety result — it's the judge's blind spot.**
+  `SubstringJudge` was calibrated offline at **recall = 0.0**: it only catches
+  verbatim spoiler phrases, never a paraphrase. A 0.0 leakage rate here most
+  likely means the judge failed to see leaks that are actually there, not
+  that the baseline is safe. Trusting this number without the calibration
+  note next to it is exactly the mistake this project exists to avoid.
+- **`grounded_fact_rate = 0.0` is a real, expected finding.** The baseline is
+  given no retrieval corpus (`corpus=[]`) and is explicitly instructed never
+  to invent a source id. Zero real sources in, zero real sources out — this
+  is the quantitative baseline Milestone 1 (retrieval) needs to beat, not a
+  bug.
+- **`richness = 6.0`** confirms the generator isn't gaming the first two
+  metrics by returning an empty brief.
+- **Mainstream and long-tail are identical here**, which means this run
+  *cannot yet confirm or deny* the project's original hypothesis (that a
+  no-retrieval baseline degrades on long-tail titles) — a judge with 0.0
+  recall can't see a gap that might exist. That comparison needs the judge
+  calibrated against a real benchmark first (see Pending in `docs/DESIGN.md`),
+  which is still blocked on a public downloadable dataset.
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't
