@@ -80,6 +80,23 @@
     border-color:var(--safe);color:var(--safe-soft)}
   .filter-chip.on .f-count{background:rgba(82,201,154,.24);color:var(--safe-soft)}
 
+  /* more-filters drawer (themes + sort): collapsed by default so the
+     catalogue below always keeps visible room to browse. Themes alone can
+     wrap to 3 rows, which used to push the film list out of view on
+     smaller viewports -- collapsing it behind a toggle trades "always
+     visible" for "one click away", the catalogue never loses its space. */
+  .more-filters-toggle{width:100%;display:flex;align-items:center;justify-content:center;
+    gap:7px;margin-top:12px;padding:9px 10px;border-radius:11px;cursor:pointer;
+    background:var(--panel);border:1px solid var(--border);color:var(--text-dim);
+    font-family:inherit;font-size:12px;font-weight:600;transition:all .16s}
+  .more-filters-toggle:hover{border-color:#333949;color:var(--text)}
+  .more-filters-toggle .mft-count{font-size:10px;font-weight:700;padding:2px 6px;border-radius:999px;
+    background:rgba(82,201,154,.2);color:var(--safe-soft)}
+  .more-filters-toggle .mft-arrow{transition:transform .22s;font-size:10px;color:var(--text-mute)}
+  .more-filters-toggle.open .mft-arrow{transform:rotate(180deg)}
+  .more-filters{max-height:0;overflow:hidden;transition:max-height .3s ease}
+  .more-filters.open{max-height:420px}
+
   /* theme filter (own color per theme, with real overlap between films)
      + sort. No dropdown needed: 6 themes + 2 sort modes already fit well. */
   .mf-block{margin-top:14px}
@@ -611,13 +628,18 @@
     <div class="search-wrap">
       <input id="search" type="text" placeholder="Search for a movie…" autocomplete="off">
       <div class="filters" id="filters"></div>
-      <div class="mf-block">
-        <div class="mf-label" id="themeLabel"></div>
-        <div class="tag-row" id="themeTags"></div>
-      </div>
-      <div class="mf-block">
-        <div class="mf-label" id="sortLabel"></div>
-        <div class="tag-row" id="sortRow"></div>
+      <button class="more-filters-toggle" id="moreFiltersToggle">
+        <span id="moreFiltersToggleLabel"></span><span class="mft-arrow">▾</span>
+      </button>
+      <div class="more-filters" id="moreFiltersPanel">
+        <div class="mf-block">
+          <div class="mf-label" id="themeLabel"></div>
+          <div class="tag-row" id="themeTags"></div>
+        </div>
+        <div class="mf-block">
+          <div class="mf-label" id="sortLabel"></div>
+          <div class="tag-row" id="sortRow"></div>
+        </div>
       </div>
     </div>
     <div class="catalogue" id="catalogue"></div>
@@ -669,6 +691,7 @@ const STRINGS = {
     searchPlaceholder: 'Search for a movie…',
     filterAll: 'All', filterMainstream: 'Popular', filterLongtail: 'Long tail', filterResearched: 'Researched',
     themeLabel: 'Themes', sortLabel: 'Sort by', sortDefault: 'Relevance', sortAwards: '🏆 Most awarded',
+    moreFiltersLabel: 'Themes & sort',
     noThemesYet: 'No researched themes yet',
     groupMainstream: 'Popular', groupLongtail: 'Long tail',
     noResults: 'No results', unresearched: 'unresearched',
@@ -732,6 +755,7 @@ const STRINGS = {
     searchPlaceholder: 'Buscar película…',
     filterAll: 'Todas', filterMainstream: 'Populares', filterLongtail: 'Cola larga', filterResearched: 'Investigadas',
     themeLabel: 'Temática', sortLabel: 'Ordenar por', sortDefault: 'Relevancia', sortAwards: '🏆 Más premiadas',
+    moreFiltersLabel: 'Temática y orden',
     noThemesYet: 'Aún sin temáticas investigadas',
     groupMainstream: 'Populares', groupLongtail: 'Cola larga',
     noResults: 'Sin resultados', unresearched: 'sin investigar',
@@ -797,6 +821,13 @@ const t = key => (STRINGS[LANG] && STRINGS[LANG][key]) || STRINGS.en[key] || key
 
 let CATALOGUE = [], CURRENT = null, FILTER = 'all', QUERY = '';
 let THEME_FILTER = new Set(), SORT_MODE = 'default';
+let MORE_FILTERS_OPEN = false;
+
+document.getElementById('moreFiltersToggle').onclick = () => {
+  MORE_FILTERS_OPEN = !MORE_FILTERS_OPEN;
+  document.getElementById('moreFiltersPanel').classList.toggle('open', MORE_FILTERS_OPEN);
+  document.getElementById('moreFiltersToggle').classList.toggle('open', MORE_FILTERS_OPEN);
+};
 
 /* fixed theme vocabulary: icon + color per theme, so the filter is visual
    and so each theme groups more than one film (it used to be ~19 nearly
@@ -1020,6 +1051,10 @@ function renderFilters() {
 }
 
 function renderMoreFilters() {
+  const activeCount = THEME_FILTER.size + (SORT_MODE !== 'default' ? 1 : 0);
+  document.getElementById('moreFiltersToggleLabel').innerHTML =
+    `${esc(t('moreFiltersLabel'))}${activeCount ? ` <span class="mft-count">${activeCount}</span>` : ''}`;
+
   const themes = [...new Set(CATALOGUE.flatMap(f => f.themes || []))]
     .sort((a, b) => (THEME_META[a] ? 0 : 1) - (THEME_META[b] ? 0 : 1) || a.localeCompare(b));
 
@@ -1271,6 +1306,7 @@ function renderFilm(d) {
           <div class="browse-badge">📭 ${esc(t('notResearchedTitle'))}</div>
           ${b.overview ? `<p class="browse-overview">${esc(b.overview)}</p>` : ''}
           <p class="browse-note">${esc(t('notResearchedBody'))}</p>
+          ${b.auto_translated ? `<div class="auto-translated-tag">🌐 ${esc(t('autoTranslatedTag'))}</div>` : ''}
           <div class="tmdb-attr">${esc(t('tmdbAttribution'))}</div>
         </div>
       </div>` : `<div class="unlock"><div class="ic">📭</div>

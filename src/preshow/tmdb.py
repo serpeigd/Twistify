@@ -51,6 +51,7 @@ def _poster_url(poster_path: str | None) -> str | None:
 def _to_result(m: dict) -> dict:
     return {
         "tmdb_id": m.get("id"),
+        "imdb_id": m.get("imdb_id"),
         "title": m.get("title") or m.get("original_title") or "",
         "year": int(d[:4]) if (d := (m.get("release_date") or "")) and d[:4].isdigit() else None,
         "overview": m.get("overview") or "",
@@ -91,7 +92,11 @@ def get_movie(tmdb_id: int) -> dict | None:
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache_path = CACHE_DIR / f"movie_{tmdb_id}.json"
     if cache_path.exists():
-        return json.loads(cache_path.read_text(encoding="utf-8"))
+        cached = json.loads(cache_path.read_text(encoding="utf-8"))
+        if "imdb_id" in cached:
+            return cached
+        # Cache predates the imdb_id field (see D12) -- refetch once to
+        # migrate instead of returning a permanently incomplete record.
 
     data = _get(f"/movie/{tmdb_id}")
     if data is None:

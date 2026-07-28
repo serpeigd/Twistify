@@ -86,7 +86,7 @@ planted leaks.
 | Offline evals harness | ✅ 8 tests passing |
 | Spoiler ground truth (20 titles) | ✅ 20/20, researched with cited sources |
 | Baseline generator (no retrieval) | ✅ two providers — Anthropic (paid) and Groq (free tier, no card) |
-| Judge calibration (offline) | ✅ recall=0.0 confirmed — the reason a better judge is needed |
+| Judge calibration (offline + real spoiler reviews) | ✅ recall=0.0 confirmed twice — `SubstringJudge` needs replacing, not just calibrating |
 | Measure the baseline over the 20 titles | ✅ done — see numbers and caveats below |
 | Retrieval (TMDB/OMDb/Wikipedia) + verifier | ⬜ next milestone |
 
@@ -133,9 +133,32 @@ python evals/run_eval.py --generator baseline         # or the paid Anthropic ve
 - **Mainstream and long-tail are identical here**, which means this run
   *cannot yet confirm or deny* the project's original hypothesis (that a
   no-retrieval baseline degrades on long-tail titles) — a judge with 0.0
-  recall can't see a gap that might exist. That comparison needs the judge
-  calibrated against a real benchmark first (see Pending in `docs/DESIGN.md`),
-  which is still blocked on a public downloadable dataset.
+  recall can't see a gap that might exist. See below: this is no longer a
+  missing-dataset problem, it's a judge problem.
+
+### External judge calibration (IMDB Spoiler Dataset, real user reviews)
+
+The calibration above uses the project's own LLM-written paraphrases —
+useful, but it's an LLM checking an LLM. `evals/calibrate_substring_external.py`
+re-runs it against real IMDb user reviews (Misra's IMDB Spoiler Dataset,
+Kaggle, free), restricted to the 9 of our 20 titles the dataset covers
+(mostly mainstream — long-tail titles here barely have review coverage at
+all, a small real echo of the project's own mainstream/long-tail split):
+
+| | Value |
+|---|---|
+| Reviews evaluated | 2,197 real spoiler-tagged + 5,460 real non-spoiler-tagged |
+| **Recall** | **0.0** — caught 0 of 2,197 |
+| Precision | undefined (0 positive predictions made — not "wrong every time") |
+
+**Same conclusion, now independently confirmed**: `SubstringJudge` doesn't
+just fail on paraphrases it's never seen from itself — it fails on plain
+human language. See D12 in `docs/DESIGN.md` for the one caveat this
+comparison carries (a review can be a real spoiler for a plot point we
+didn't document, which the method above counts as a miss even though it
+isn't the judge's fault) and why this changes the next task from "find a
+benchmark" (done) to "replace the judge" (`LLMJudge` already exists,
+unused, in `evals/judge.py`).
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't

@@ -38,7 +38,7 @@ from judge import SubstringJudge  # noqa: E402
 from preshow import kv_store, tmdb  # noqa: E402
 from preshow.content import ContentPack, load_all, strip_post_show  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
-from preshow.translate import translate_pack_dump  # noqa: E402
+from preshow.translate import translate_pack_dump, translate_text  # noqa: E402
 
 DATA = ROOT / "evals" / "dataset"
 CONTENT_DIR = ROOT / "content" / "researched"
@@ -95,6 +95,32 @@ def load_translated_dump(title_id: str, pack: ContentPack) -> tuple[dict, bool]:
             json.dumps(translated, indent=2, ensure_ascii=False), encoding="utf-8"
         )
     return translated, ok
+
+
+def load_translated_browse(tmdb_id: int, browse: dict) -> dict:
+    """Spanish version of a browse-tier (TMDB) overview, same cache-first
+    shape as load_translated_dump above: `webapp/prewarm_translations.py`
+    pre-generates and commits `browse_{tmdb_id}.json` for the catalogue's
+    not-yet-researched titles, so this is a cache hit in production. Falls
+    back to a live (uncached, best-effort) translation for any tmdb_id the
+    prewarm script hasn't covered yet, e.g. a freshly-suggested title."""
+    cache_path = TRANSLATIONS_DIR / f"browse_{tmdb_id}.json"
+    if cache_path.exists():
+        overview_es = json.loads(cache_path.read_text(encoding="utf-8"))["overview_es"]
+        return {**browse, "overview": overview_es, "auto_translated": True}
+
+    overview = browse.get("overview")
+    if not overview:
+        return {**browse, "auto_translated": False}
+    translated = translate_text(overview)
+    ok = translated != overview
+    if ok:
+        TRANSLATIONS_DIR.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(
+            json.dumps({"overview_es": translated}, indent=2, ensure_ascii=False),
+            encoding="utf-8",
+        )
+    return {**browse, "overview": translated if ok else browse["overview"], "auto_translated": ok}
 
 
 def verify_pre_show(pack: ContentPack, labels: list[SpoilerLabel]) -> dict:
@@ -181,6 +207,14 @@ def api_film(title_id: str, seen: bool = False, lang: str = "en"):
     labels = load_labels(title_id)
 
     if pack is None:
+        # Browse-tier fallback (D10): no cited deep-dive exists yet, but if
+        # we know the TMDB id, show a real poster/synopsis instead of an
+        # empty placeholder. TMDB's overview is marketing copy, same
+        # spoiler-safety profile as the researched tier's own pre-show
+        # text -- it is NOT run through the leak detector.
+        browse = tmdb.get_movie(case.tmdb_id) if case.tmdb_id else None
+        if browse and lang == "es":
+            browse = load_translated_browse(case.tmdb_id, browse)
         return {
             "case": case.model_dump(),
             "researched": False,
@@ -190,12 +224,7 @@ def api_film(title_id: str, seen: bool = False, lang: str = "en"):
             "completeness": None,
             "seen": seen,
             "auto_translated": False,
-            # Browse-tier fallback (D10): no cited deep-dive exists yet, but
-            # if we know the TMDB id, show a real poster/synopsis instead of
-            # an empty placeholder. TMDB's overview is marketing copy, same
-            # spoiler-safety profile as the researched tier's own pre-show
-            # text -- it is NOT run through the leak detector.
-            "browse": tmdb.get_movie(case.tmdb_id) if case.tmdb_id else None,
+            "browse": browse,
         }
 
     needs, grounded = pack.grounding()

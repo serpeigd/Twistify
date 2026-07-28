@@ -214,6 +214,54 @@ Two choices worth being explicit about:
   their comment posted, when it silently didn't persist, is a worse
   failure mode than a visible error.
 
+## D12 — The judge is calibrated against real human spoiler reviews, not just its own paraphrases
+
+D7's internal calibration (`evals/calibrate_substring.py`) tests
+`SubstringJudge` against LLM-written paraphrases of LLM-written ground
+truth — the same self-coherence problem this project exists to catch,
+one level down. It gives a real number, but not an independent one.
+
+`evals/calibrate_substring_external.py` fixes that by testing against the
+IMDB Spoiler Dataset (Misra) — real IMDb users' own review text, tagged
+`is_spoiler` by other real users, never touched by any LLM in this
+project. Manually downloaded (Kaggle needs a free account, no API key;
+this script must not request or manage that credential — same reasoning
+as D11 for Upstash), gitignored under `evals/dataset/external/` (~570k
+reviews, not ours to redistribute), streamed line-by-line instead of
+loaded whole (~950MB).
+
+Named task mismatch, stated rather than hidden: the dataset labels a
+whole *review* as spoiler/not, not *which* plot point it reveals.
+`SubstringJudge` checks for one specific, documented `SpoilerLabel`. The
+script bridges this by testing "does the review contain ANY of this
+movie's documented labels" — which means a review correctly tagged
+`is_spoiler=true` that spoils something we didn't document (we only
+label headline twists, not every beat) scores as a false negative that
+isn't really the judge's fault. This inflates measured misses; it can't
+manufacture false hits. Recall is a floor on the judge's true blindness,
+not an exact number.
+
+**Result, restricted to the 9 of our 20 titles the dataset actually
+covers** (mainstream titles dominate — the dataset is old IMDb review
+data, and long-tail titles here mostly have no review coverage at all,
+itself a small real-world echo of the mainstream/long-tail split this
+project studies): **0 of 2,197 real spoiler-tagged reviews detected —
+recall = 0.0**, matching the internal calibration exactly, this time
+against text nobody in this pipeline wrote. `SubstringJudge`'s blindness
+is no longer a self-check; it's confirmed against an independent source.
+Precision is undefined (0 positive predictions made at all — not "made
+bad calls," see D4's empty-output caveat for the same shape of mistake),
+not "0.0" in the sense of being wrong on every guess.
+
+Consequence for the Next task: this closes "find an external benchmark"
+as an open question, and reframes what's actually blocking Milestone 1.
+It isn't finding calibration data anymore — it's that `SubstringJudge`
+is now proven, twice, unfit to report a trustworthy `leakage_rate` at
+all. `LLMJudge` already exists in `evals/judge.py` (unused, unwired) as
+the real next component to bring in before drawing any mainstream vs.
+long-tail conclusion, calibrated the same way against these same 2,197
+human labels.
+
 ## Rejected
 
 - **Multi-agent (researcher / writer / critic).** No dynamic decision to
@@ -258,3 +306,7 @@ are both done):
 - What does the judge cost per case? len(surface) x len(labels) calls.
   Probably the most expensive component of the pipeline. Measure before
   optimizing.
+- ~~Find a public, directly-downloadable spoiler benchmark to calibrate
+  the judge against.~~ Done — see D12. What's open now: wiring up
+  `LLMJudge` and re-running calibration against the same 2,197-review set
+  before trusting any `leakage_rate` this project reports.
