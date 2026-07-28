@@ -35,6 +35,7 @@ from fastapi import Body, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
 from judge import SubstringJudge  # noqa: E402
+from preshow import tmdb  # noqa: E402
 from preshow.content import ContentPack, load_all, strip_post_show  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 from preshow.translate import translate_pack_dump  # noqa: E402
@@ -155,6 +156,7 @@ def api_catalogue():
     out = []
     for tid, case in CASES.items():
         pack = PACKS.get(tid)
+        browse = tmdb.get_movie(case.tmdb_id) if case.tmdb_id else None
         out.append(
             {
                 "title_id": tid,
@@ -168,6 +170,7 @@ def api_catalogue():
                 "director": pack.director if pack else None,
                 "themes": pack.themes if pack else [],
                 "awards_count": len(pack.critical_consensus.awards) if pack else 0,
+                "poster_url": browse["poster_url"] if browse else None,
             }
         )
     return sorted(out, key=lambda x: (-x["completeness"], x["title"]))
@@ -192,6 +195,12 @@ def api_film(title_id: str, seen: bool = False, lang: str = "en"):
             "completeness": None,
             "seen": seen,
             "auto_translated": False,
+            # Browse-tier fallback (D10): no cited deep-dive exists yet, but
+            # if we know the TMDB id, show a real poster/synopsis instead of
+            # an empty placeholder. TMDB's overview is marketing copy, same
+            # spoiler-safety profile as the researched tier's own pre-show
+            # text -- it is NOT run through the leak detector.
+            "browse": tmdb.get_movie(case.tmdb_id) if case.tmdb_id else None,
         }
 
     needs, grounded = pack.grounding()
@@ -216,6 +225,15 @@ def api_film(title_id: str, seen: bool = False, lang: str = "en"):
         "n_comments": len(read_comments().get(title_id, [])),
         "auto_translated": auto_translated,
     }
+
+
+@app.get("/api/search")
+def api_search(q: str = ""):
+    """Live TMDB search (D10) -- the browse tier that lets the catalogue
+    reach effectively all of TMDB instead of only the 20 measurement-set
+    titles + 7 researched ones. Never raises: tmdb.search_movies() returns
+    an empty list if the query is blank or no TMDB token is configured."""
+    return tmdb.search_movies(q)
 
 
 def _public_comment(c: dict, owner_token: str) -> dict:
@@ -312,6 +330,8 @@ def api_post_movie_request(payload: dict = Body(...)):
     """
     title = (payload.get("title") or "").strip()[:200]
     note = (payload.get("note") or "").strip()[:300]
+    tmdb_id = payload.get("tmdb_id")
+    tmdb_id = int(tmdb_id) if isinstance(tmdb_id, (int, str)) and str(tmdb_id).isdigit() else None
     if not title:
         raise HTTPException(400, "Empty title")
 
@@ -322,6 +342,7 @@ def api_post_movie_request(payload: dict = Body(...)):
         {
             "title": title,
             "note": note,
+            "tmdb_id": tmdb_id,
             "at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         }
     )

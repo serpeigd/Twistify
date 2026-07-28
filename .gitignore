@@ -6,4 +6,5 @@ evals/results/
 content/comments.json
 content/movie_requests.json
 content/_translations/
+content/_tmdb_cache/
 .claude/launch.json

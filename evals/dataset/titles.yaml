@@ -15,43 +15,53 @@ films:
     title: "The Sixth Sense"
     year: 1999
     stratum: mainstream
+    tmdb_id: 745
   - title_id: fight_club_1999
     title: "Fight Club"
     year: 1999
     stratum: mainstream
+    tmdb_id: 550
   - title_id: parasite_2019
     title: "Parasite"
     year: 2019
     stratum: mainstream
+    tmdb_id: 496243
   - title_id: arrival_2016
     title: "Arrival"
     year: 2016
     stratum: mainstream
+    tmdb_id: 329865
   - title_id: get_out_2017
     title: "Get Out"
     year: 2017
     stratum: mainstream
+    tmdb_id: 419430
   - title_id: se7en_1995
     title: "Se7en"
     year: 1995
     stratum: mainstream
+    tmdb_id: 807
   - title_id: prestige_2006
     title: "The Prestige"
     year: 2006
     stratum: mainstream
+    tmdb_id: 1124
   - title_id: gone_girl_2014
     title: "Gone Girl"
     year: 2014
     stratum: mainstream
+    tmdb_id: 210577
   - title_id: dune_2021
     title: "Dune"
     year: 2021
     stratum: mainstream
+    tmdb_id: 438631
     notes: "Disambiguation: Dune (1984) and Dune Part Two (2024) also exist."
   - title_id: oldboy_2003
     title: "Oldboy"
     year: 2003
     stratum: mainstream
+    tmdb_id: 670
     notes: "Disambiguation: Spike Lee remake (2013) shares the same title."
 
   # --- LONG-TAIL: sparse coverage. This is where it breaks. ---
@@ -59,41 +69,51 @@ films:
     title: "Coherence"
     year: 2013
     stratum: longtail
+    tmdb_id: 220289
   - title_id: cronocrimenes_2007
     title: "Los cronocrímenes"
     year: 2007
     stratum: longtail
+    tmdb_id: 14139
     notes: "Also: non-English title. Tests language handling in the resolver."
   - title_id: primer_2004
     title: "Primer"
     year: 2004
     stratum: longtail
+    tmdb_id: 14337
   - title_id: under_the_skin_2013
     title: "Under the Skin"
     year: 2013
     stratum: longtail
+    tmdb_id: 698232
   - title_id: spoorloos_1988
     title: "Spoorloos"
     year: 1988
     stratum: longtail
+    tmdb_id: 8740
     notes: "Known in English as The Vanishing; there's a 1993 US remake."
   - title_id: come_and_see_1985
     title: "Idi i smotri"
     year: 1985
     stratum: longtail
+    tmdb_id: 25237
   - title_id: field_in_england_2013
     title: "A Field in England"
     year: 2013
     stratum: longtail
+    tmdb_id: 179111
   - title_id: tetsuo_1989
     title: "Tetsuo: The Iron Man"
     year: 1989
     stratum: longtail
+    tmdb_id: 41428
   - title_id: the_wailing_2016
     title: "The Wailing"
     year: 2016
     stratum: longtail
+    tmdb_id: 293670
   - title_id: hard_to_be_a_god_2013
     title: "Trudno byt bogom"
     year: 2013
     stratum: longtail
+    tmdb_id: 110402

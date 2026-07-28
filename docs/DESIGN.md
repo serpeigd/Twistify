@@ -138,6 +138,53 @@ while building it, not decided up front:
 are deliberately never translated — translating them would break matching
 or misattribute a source, not just read oddly.
 
+## D10 — TMDB is a third, browse-only tier, never conflated with the researched one
+
+Scaling "how many movies does the app know about" past the 20-title
+measurement set could have meant hand-writing more `content/researched/*.json`
+entries (doesn't scale — each one is real research work) or bulk-importing
+TMDB data as if it were curated content (would quietly dilute what
+"researched" means: cited claims, no invented facts, per D6/D7). Neither
+is right. Instead, TMDB is a **third tier**, structurally kept apart:
+
+| Tier | Source | Size | Has a curtain / cited claims? |
+|---|---|---|---|
+| Measurement | `evals/dataset/titles.yaml` | 20, fixed | N/A — it's the experiment |
+| Researched | `content/researched/*.json` | 7, hand-written | Yes |
+| **Browse (TMDB)** | `src/preshow/tmdb.py` | effectively all of TMDB | No — poster + synopsis only |
+
+Concretely:
+
+- **Live search, not a bulk import.** `GET /api/search` hits TMDB on
+  demand (cached per query in `content/_tmdb_cache/`, gitignored) instead
+  of downloading and committing a fixed list of "popular" titles. The
+  catalogue's real size stays 20 + whatever's been researched; TMDB just
+  fills the "search for anything" gap without bloating the repo or
+  pretending a bigger local dataset means more research got done.
+- **The 20 measurement titles get real posters too.** `TitleCase.tmdb_id`
+  existed in the schema unused; `webapp/resolve_tmdb_ids.py` resolves it
+  for all 20 (by title+year, falling back to the top search hit — a
+  handful land on TMDB's release-date year rather than the production
+  year, e.g. Coherence 2013→2014) and writes it back into `titles.yaml` as
+  a text edit, not a re-dump, so the file's stratification header/comments
+  survive untouched. `/api/film/{id}` uses it for a `browse` fallback
+  (poster + real overview) on the 13 not-yet-researched titles, instead of
+  the old bare "not researched yet" placeholder.
+- **The "+ Suggest a movie" button resolves against TMDB too.** Typing a
+  title autocompletes against `/api/search`; picking a result attaches its
+  `tmdb_id` to the saved suggestion (`content/movie_requests.json`) so
+  whoever researches it later doesn't have to re-identify the exact film,
+  release year, or check for a same-title remake.
+- **Attribution is non-negotiable.** TMDB's free-tier terms require
+  visible attribution wherever their data is shown. The browse card and
+  the not-yet-researched fallback both carry a fixed attribution line
+  (`tmdbAttribution` in the i18n dict) — not a maybe, a ToS condition of
+  using the API for free.
+- **TMDB's overview text is never run through the leak detector.**
+  `verify_pre_show()` only ever measures the researched tier's own
+  pre-show text (same input it always had); showing a TMDB synopsis on
+  the browse fallback is a display concern, not a new measurement claim.
+
 ## Rejected
 
 - **Multi-agent (researcher / writer / critic).** No dynamic decision to
@@ -150,8 +197,8 @@ or misattribute a source, not just read oddly.
 
 ## Pending — free-tier constraint and scaling the catalogue
 
-The project is meant to run without a paid API key. Three follow-ups, not yet
-implemented:
+The project is meant to run without a paid API key. Two follow-ups, not yet
+implemented (the TMDB browse tier described in D10 is done):
 
 - **Free-tier baseline generator.** `AnthropicBaselineGenerator`
   (`src/preshow/baseline.py`) is hardcoded to the `anthropic` SDK with a
@@ -161,23 +208,16 @@ implemented:
   without changing the harness: same `pre_show`/`deep_dive` interface, same
   fixture-first testing rule (see Rules in `CLAUDE.md`). Needs a decision on
   which provider before writing it — not started.
-- **TMDB-backed catalogue for scale.** TMDB's API is free for non-commercial
-  use with attribution (already an approved source per D6/D7's provenance
-  rule) and covers hundreds of thousands of titles. It could power a
-  browsable catalogue tier (poster, synopsis, year, genres) far larger than
-  the 20-title measurement set or the 7 hand-researched entries, while the
-  hand-researched, cited-source tier stays the authoritative layer on top —
-  not the same content, don't conflate them. A TMDB API key/read token is
-  already available locally (`.env`, gitignored — never commit it); the
-  integration itself is still not started.
 - **Automating the "+ Suggest a movie" pipeline.** The webapp captures
   suggestions (`POST /api/requests`, appended to
-  `content/movie_requests.json`, gitignored) but does **not** research or
-  add them automatically. Turning a suggestion into a
-  `content/researched/*.json` entry has to meet the same bar as the existing
-  7 — cited sources, no invented facts (D6/D7) — which is a real research
-  pipeline with a review step, not a one-request LLM call. Deliberately left
-  as a manual step until that pipeline is designed.
+  `content/movie_requests.json`, gitignored) and now resolves the exact
+  film via TMDB autocomplete (D10) so a suggestion carries a `tmdb_id`,
+  but it still does **not** research or add anything automatically. Turning
+  a suggestion into a `content/researched/*.json` entry has to meet the
+  same bar as the existing 7 — cited sources, no invented facts (D6/D7) —
+  which is a real research pipeline with a review step, not a one-request
+  LLM call. Deliberately left as a manual step until that pipeline is
+  designed.
 
 ## Open questions
 

@@ -82,6 +82,7 @@ planted leaks.
 | What | Status |
 |---|---|
 | Twistify app (catalogue, spoiler gate, filters, comments) | ✅ 7/20 entries researched |
+| Browse catalogue (TMDB posters, live search, ES/EN) | ✅ 20/20 have posters, search reaches all of TMDB |
 | Offline evals harness | ✅ 8 tests passing |
 | Spoiler ground truth (20 titles) | ✅ 20/20, researched with cited sources |
 | Baseline generator (no retrieval) | ✅ code ready |
@@ -112,9 +113,12 @@ generate its own ground truth) are documented in
 
 ## Sources and legal restrictions
 
-- **TMDB** — free for non-commercial use, requires attribution. Its terms
-  restrict using the content to *train* AI systems; inference with
-  attribution is the usual reading, but review it before scaling this up.
+- **TMDB** — free for non-commercial use, requires attribution (shown in the
+  app wherever TMDB data appears). Powers the browse tier (`src/preshow/tmdb.py`
+  — live search, catalogue posters), separate from the hand-researched,
+  cited-source tier (see D10 in `docs/DESIGN.md`). Its terms restrict using
+  the content to *train* AI systems; inference with attribution is the
+  usual reading, but review it before scaling this up further.
 - **OMDb** — a path to Rotten Tomatoes/Metascore scores, free tier is
   limited.
 - **Wikipedia** — CC BY-SA, already in use for researched entries.

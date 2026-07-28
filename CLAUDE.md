@@ -29,9 +29,12 @@ an eval harness that proves it. Two tracks — don't conflate them:
   filters, ES/EN UI toggle. Editorial content; doesn't use the baseline generator or judge.
   In Spanish, researched content is machine-translated on the fly (free MyMemory API,
   `src/preshow/translate.py`), cached per title in `content/_translations/` (gitignored),
-  and marked `auto_translated` — see D9.
+  and marked `auto_translated` — see D9. A third, browse-only tier
+  (`src/preshow/tmdb.py`) reaches effectively all of TMDB via live search
+  (`GET /api/search`), cached in `content/_tmdb_cache/` (gitignored) — never
+  conflated with the researched tier's cited-claims bar. See D10.
 
-Full design rationale (D1–D9) lives in `docs/DESIGN.md` — update it on any non-trivial
+Full design rationale (D1–D10) lives in `docs/DESIGN.md` — update it on any non-trivial
 design decision.
 
 ## Status
@@ -44,9 +47,12 @@ design decision.
   never run. **Blocker**: needs a real `ANTHROPIC_API_KEY` to run
   `evals/run_eval.py --generator baseline` and put real leakage/grounding/richness
   numbers in the README. External judge calibration (TV Tropes/IMDB Spoiler Dataset)
-  still blocked — no direct public download.
+  still blocked — no direct public download. All 20 titles now have a resolved
+  `tmdb_id` in `titles.yaml` (D10) for browse-tier posters — cosmetic, doesn't
+  touch the stratified sample or its labels.
 - Demo track: 7/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
-  Prestige, Se7en, Arrival).
+  Prestige, Se7en, Arrival). Remaining 13 show a real TMDB poster/synopsis instead
+  of an empty placeholder (D10).
 
 ## Rules
 
@@ -72,8 +78,8 @@ judge externally before trusting them. Don't start Milestone 1 (retrieval)
 before Milestone 0 has real numbers.
 
 Also pending, not started (see docs/DESIGN.md "Pending"): a free-tier baseline
-generator, a TMDB-backed catalogue for scale, and automating the "+ Suggest a
-movie" pipeline the webapp already captures requests for.
+generator, and automating the "+ Suggest a movie" pipeline (it now resolves a
+`tmdb_id` per suggestion, but still doesn't research or add anything).
 
 ## Environment
 
@@ -82,8 +88,9 @@ pip install pydantic pytest pyyaml fastapi "uvicorn[standard]"
 python -m pytest tests/ -v                       # offline, must pass
 python webapp/app.py                             # http://127.0.0.1:8000
 python webapp/prewarm_translations.py            # pre-cache ES content, no API key needed
+python webapp/resolve_tmdb_ids.py                 # (re-)resolve tmdb_id for titles.yaml entries
 python evals/run_eval.py --generator baseline    # needs ANTHROPIC_API_KEY
 ```
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
-TMDB key/read token live in `.env` (gitignored) — not used by any code yet, see
-docs/DESIGN.md "Pending".
+TMDB key/read token live in `.env` (gitignored) — used by `src/preshow/tmdb.py`
+(D10) for the browse tier and catalogue posters.
