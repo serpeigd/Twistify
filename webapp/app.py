@@ -40,7 +40,7 @@ from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 from preshow.translate import translate_pack_dump  # noqa: E402
 
 DATA = ROOT / "evals" / "dataset"
-CONTENT_DIR = ROOT / "content" / "curated"
+CONTENT_DIR = ROOT / "content" / "researched"
 COMMENTS_FILE = ROOT / "content" / "comments.json"
 MOVIE_REQUESTS_FILE = ROOT / "content" / "movie_requests.json"
 TRANSLATIONS_DIR = ROOT / "content" / "_translations"
@@ -75,7 +75,7 @@ CALIBRATION = load_calibration()
 
 
 def load_translated_dump(title_id: str, pack: ContentPack) -> tuple[dict, bool]:
-    """Spanish version of a curated pack, translated once and cached to
+    """Spanish version of a researched pack, translated once and cached to
     disk so the free MyMemory API is only ever hit the first time a title
     is viewed in Spanish. Returns (dump, fully_translated). Anything short
     of every field translating -- including a partial run where some
@@ -162,7 +162,7 @@ def api_catalogue():
                 "year": case.year,
                 "stratum": case.stratum,
                 "notes": case.notes,
-                "curated": pack is not None,
+                "researched": pack is not None,
                 "completeness": pack.completeness()["pct"] if pack else 0,
                 "n_spoilers": len(load_labels(tid)),
                 "director": pack.director if pack else None,
@@ -185,7 +185,7 @@ def api_film(title_id: str, seen: bool = False, lang: str = "en"):
     if pack is None:
         return {
             "case": case.model_dump(),
-            "curated": False,
+            "researched": False,
             "content": None,
             "verification": None,
             "grounding": None,
@@ -203,7 +203,7 @@ def api_film(title_id: str, seen: bool = False, lang: str = "en"):
         content = pack.public_dump(seen=seen)
     return {
         "case": case.model_dump(),
-        "curated": True,
+        "researched": True,
         "content": content,
         "verification": verify_pre_show(pack, labels),
         "grounding": {
@@ -306,7 +306,7 @@ def api_post_movie_request(payload: dict = Body(...)):
     """Captures a title someone couldn't find in the catalogue.
 
     Intentionally NOT wired to an LLM: turning this into "analyze and add to
-    content/curated/ automatically" is a real feature with a quality bar to
+    content/researched/ automatically" is a real feature with a quality bar to
     match the rest of the catalogue (cited sources, no hallucinated facts) --
     it's a pending milestone, not a one-request-handler job. See docs/DESIGN.md.
     """
@@ -336,9 +336,9 @@ def api_post_movie_request(payload: dict = Body(...)):
 def api_stats():
     """Global panel. The metric that matters isn't how many entries exist,
     but what fraction of the factual content is grounded."""
-    curated = list(PACKS.values())
+    researched = list(PACKS.values())
     total_needs = total_grounded = 0
-    for p in curated:
+    for p in researched:
         n, g = p.grounding()
         total_needs += n
         total_grounded += g
@@ -350,16 +350,16 @@ def api_stats():
 
     return {
         "n_titles": len(CASES),
-        "n_curated": len(curated),
+        "n_researched": len(researched),
         "n_spoiler_labelled": sum(1 for t in CASES if load_labels(t)),
         "grounded_fact_rate": round(total_grounded / total_needs, 3) if total_needs else None,
         "n_sourced_claims": total_needs,
-        "leakage_rate": round(leaked / len(curated), 3) if curated else None,
+        "leakage_rate": round(leaked / len(researched), 3) if researched else None,
         "calibration": CALIBRATION,
         "avg_completeness": round(
-            sum(p.completeness()["pct"] for p in curated) / len(curated)
+            sum(p.completeness()["pct"] for p in researched) / len(researched)
         )
-        if curated
+        if researched
         else 0,
     }
 

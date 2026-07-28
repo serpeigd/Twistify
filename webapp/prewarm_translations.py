@@ -1,10 +1,11 @@
-"""One-time helper: translate every curated title to Spanish and cache the
-result to content/_translations/, so nobody viewing the live demo has to
-wait on the free MyMemory API (see src/preshow/translate.py) -- it's slow
-and rate-limited on an uncached title, but only ever runs once per title.
+"""One-time helper: translate every researched title to Spanish and cache
+the result to content/_translations/, so nobody viewing the live demo has
+to wait on the free MyMemory API (see src/preshow/translate.py) -- it's
+slow and rate-limited on an uncached title, but only ever runs once per
+title.
 
 Safe to re-run: already-cached titles are skipped. Re-run after adding or
-editing a curated title, or after deleting its cache file to force a
+editing a researched title, or after deleting its cache file to force a
 re-translation.
 
     python webapp/prewarm_translations.py
@@ -23,14 +24,14 @@ sys.path.insert(0, str(ROOT / "src"))
 from preshow.content import load_all  # noqa: E402
 from preshow.translate import translate_pack_dump  # noqa: E402
 
-CONTENT_DIR = ROOT / "content" / "curated"
+CONTENT_DIR = ROOT / "content" / "researched"
 TRANSLATIONS_DIR = ROOT / "content" / "_translations"
 
 
 def main() -> None:
     packs = load_all(CONTENT_DIR)
     if not packs:
-        print(f"No curated titles found under {CONTENT_DIR}")
+        print(f"No researched titles found under {CONTENT_DIR}")
         return
 
     TRANSLATIONS_DIR.mkdir(parents=True, exist_ok=True)

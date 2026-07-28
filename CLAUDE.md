@@ -24,10 +24,10 @@ an eval harness that proves it. Two tracks — don't conflate them:
   `docs/DESIGN.md`) — the real experiment. Key design idea: spoiler safety is a
   server-side context-partition property (pre-show generator never sees the spoiler
   corpus), not an instruction the model could ignore.
-- **Demo track** (`webapp/`, `content/curated/*.json`, `src/preshow/content.py`) —
+- **Demo track** (`webapp/`, `content/researched/*.json`, `src/preshow/content.py`) —
   FastAPI + vanilla JS app, 7 hand-researched films with a spoiler curtain, comments,
   filters, ES/EN UI toggle. Editorial content; doesn't use the baseline generator or judge.
-  In Spanish, curated content is machine-translated on the fly (free MyMemory API,
+  In Spanish, researched content is machine-translated on the fly (free MyMemory API,
   `src/preshow/translate.py`), cached per title in `content/_translations/` (gitignored),
   and marked `auto_translated` — see D9.
 
@@ -45,7 +45,7 @@ design decision.
   `evals/run_eval.py --generator baseline` and put real leakage/grounding/richness
   numbers in the README. External judge calibration (TV Tropes/IMDB Spoiler Dataset)
   still blocked — no direct public download.
-- Demo track: 7/20 titles curated (Sixth Sense, Fight Club, Get Out, Parasite,
+- Demo track: 7/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
   Prestige, Se7en, Arrival).
 
 ## Rules

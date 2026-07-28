@@ -1,4 +1,4 @@
-"""Best-effort machine translation of curated content into Spanish.
+"""Best-effort machine translation of researched content into Spanish.
 
 NOT the same thing as the hand-researched English content (see docs/DESIGN.md
 "Pending" for why the two shouldn't be conflated): this is automatic,

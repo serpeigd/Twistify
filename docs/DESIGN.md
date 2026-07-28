@@ -106,10 +106,10 @@ carries the final reveal"). The D3 partition protects spoilers, not every
 post-viewing data point equally; a narrow, explicit exception for a
 non-narrative derivative doesn't reopen the problem D3 solves.
 
-## D9 — Curated content is machine-translated, cached, and honestly labeled
+## D9 — Researched content is machine-translated, cached, and honestly labeled
 
 The ES/EN toggle originally translated only the app chrome (labels, section
-titles) — the curated prose (`content/curated/*.json`) stayed English,
+titles) — the researched prose (`content/researched/*.json`) stayed English,
 since hand-writing a Spanish mirror of all 7 titles wasn't worth it for a
 portfolio demo. Once that gap was visible in the running app, the fix
 chosen was automatic translation (MyMemory's free API, no key, stdlib
@@ -128,7 +128,7 @@ while building it, not decided up front:
   returns `(dump, translated_anything)`; a run that translated nothing
   is never cached, so the next request retries instead of being stuck
   showing English while claiming otherwise.
-- **Say so in the UI.** A curated entry viewed in Spanish shows a small
+- **Say so in the UI.** A researched entry viewed in Spanish shows a small
   "machine-translated" tag (`auto_translated` in the API response). Same
   principle as D3/D6/D7: don't let the UI imply a guarantee (native-quality,
   cited translation) the pipeline doesn't back up.
@@ -165,17 +165,17 @@ implemented:
   use with attribution (already an approved source per D6/D7's provenance
   rule) and covers hundreds of thousands of titles. It could power a
   browsable catalogue tier (poster, synopsis, year, genres) far larger than
-  the 20-title measurement set or the 7 hand-curated entries, while the
-  hand-researched, cited-source tier stays the "verified" layer on top —
+  the 20-title measurement set or the 7 hand-researched entries, while the
+  hand-researched, cited-source tier stays the authoritative layer on top —
   not the same content, don't conflate them. A TMDB API key/read token is
   already available locally (`.env`, gitignored — never commit it); the
   integration itself is still not started.
 - **Automating the "+ Suggest a movie" pipeline.** The webapp captures
   suggestions (`POST /api/requests`, appended to
   `content/movie_requests.json`, gitignored) but does **not** research or
-  curate them automatically. Turning a suggestion into a
-  `content/curated/*.json` entry has to meet the same bar as the existing
-  7 — cited sources, no invented facts (D6/D7) — which is a real curation
+  add them automatically. Turning a suggestion into a
+  `content/researched/*.json` entry has to meet the same bar as the existing
+  7 — cited sources, no invented facts (D6/D7) — which is a real research
   pipeline with a review step, not a one-request LLM call. Deliberately left
   as a manual step until that pipeline is designed.
 

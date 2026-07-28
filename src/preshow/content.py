@@ -1,8 +1,8 @@
-"""Data contract for CURATED CONTENT (what the app shows).
+"""Data contract for RESEARCHED CONTENT (what the app shows).
 
 Distinct from `schemas.py`: that one models what a generator PRODUCES and
 the harness MEASURES. This one models what a human/research effort has
-curated and the app SERVES. Kept separate on purpose -- mixing them would
+researched and the app SERVES. Kept separate on purpose -- mixing them would
 make it impossible to tell "a model wrote this" apart from "this came from
 a source."
 
@@ -96,7 +96,7 @@ class CriticalConsensus(BaseModel):
 
 class ContentPack(BaseModel):
     """Full package for a work. Everything is optional except the id: a
-    half-curated entry is a legitimate state and the UI must be able to
+    half-researched entry is a legitimate state and the UI must be able to
     show it."""
 
     title_id: str
