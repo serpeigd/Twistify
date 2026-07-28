@@ -262,6 +262,102 @@ the real next component to bring in before drawing any mainstream vs.
 long-tail conclusion, calibrated the same way against these same 2,197
 human labels.
 
+## D13 — `LLMJudge`, calibrated the same way, beats the free floor but isn't trustworthy yet either
+
+`evals/calibrate_llm_external.py` wires `LLMJudge` to Groq's free tier
+(`llama-3.1-8b-instant` — a small model on purpose, matching `judge.py`'s
+own rationale that entailment is "a short binary call, doesn't justify a
+large model") and re-runs D12's exact method (real IMDb reviews, "entails
+ANY of this movie's documented labels", same labeling-coverage caveat) —
+the direct comparison the project's own next task called for.
+
+**Budget forced a smaller, different sample than D12's.** Groq's free
+tier caps this key at 1,000 requests/day, and each review costs
+`len(that movie's labels)` calls — the full 7,657-review set would be
+~20,000 calls, not possible for free in one day. Ran a fixed, seeded,
+stratified sample instead: 20 reviews/title (10 spoiler-tagged, 10 not)
+across the same 9 covered titles — 180 reviews, 480 actual LLM calls.
+Reviews were also truncated to 350 characters/call to stay under the
+~6,000 tokens/min cap.
+
+**Result:**
+
+| Judge | n | Recall | Precision |
+|---|---|---|---|
+| `SubstringJudge` (D12, full 7,657-review set) | 7,657 | 0.0 | undefined (0 positive predictions) |
+| `LLMJudge` / llama-3.1-8b-instant (this, 180-review sample) | 180 | **0.089** (8/90 caught) | 0.471 |
+
+**Read this straight, not rounded up or down:**
+
+- **A real, measured improvement over the free floor.** `LLMJudge` sees
+  paraphrases `SubstringJudge` structurally cannot (0.0 recall by
+  construction). Not nothing.
+- **Still not trustworthy on its own.** 8.9% recall means it misses ~91 of
+  every 100 real spoiler reveals in this sample. Precision 0.471 means
+  fewer than half its positive calls are right. Neither clears a bar
+  where this judge's `leakage_rate` could be reported as a safety claim.
+- **Two confounds this run can't separate**, worth resolving before
+  concluding "the model is the ceiling": (1) truncating reviews to 350
+  characters for TPM budget reasons may suppress recall independent of
+  the model's real ability — a fair test needs full review text; (2)
+  `llama-3.1-8b-instant` is the smallest, fastest model available, chosen
+  for the same reason `SubstringJudge` exists as a cheap floor — a
+  stronger model (`llama-3.3-70b-versatile`, or Claude) tested the same
+  way would show whether this is a model-capacity ceiling or a
+  budget/truncation artifact.
+- 180 reviews, one small model, one free-tier run is a smaller claim than
+  D12's full 7,657-review `SubstringJudge` result — reported at that
+  size, not silently generalized past it.
+
+Next task implication: neither judge is currently fit to report a
+trustworthy `leakage_rate`. The path forward isn't "ship `LLMJudge`
+instead of `SubstringJudge`" — it's resolving the two confounds above
+(full text, stronger model) or exploring genuinely different approaches
+(a lightweight NLI/entailment classifier run locally, no per-call cost or
+rate limit; or training a classifier directly on this project's own
+2,197-positive/5,460-negative external labels, held out properly) before
+trusting any leakage number this project reports.
+
+## D14 — Scaling the researched catalogue automates the labor, not the citation requirement
+
+The demo track's 8 hand-researched titles took ~15 min each. The user's goal is a much
+longer list of the most important films in cinema history, "de forma gratuita y veraz"
+(free and truthful) — which raised a real question: does scaling that mean relaxing D6/D7
+(every fact needs a real, checkable source)? Explicitly asked and explicitly answered: no.
+What gets automated is finding and reading sources and drafting from them, not the citation
+bar itself, and not the human review before anything is published.
+
+`webapp/research_assist.py` implements this:
+
+- **Real retrieval, not memory.** `src/preshow/wikipedia.py` (new, stdlib-only, same
+  pattern as `tmdb.py`) fetches a film's Wikipedia article and splits out
+  plot/production/reception/accolades text. `tmdb.get_director()` (new) adds the director
+  via TMDB's credits endpoint. The LLM (Groq, free) drafts a `ContentPack` using ONLY this
+  retrieved text — the prompt forbids grounding a claim in anything else, matching the
+  no-fabricated-source rule already established for the baseline generator.
+- **A code-level safety net, not just a prompt instruction.** `sanitize_grounding()` walks
+  every `source_id`/`url` in the draft and nulls out anything that isn't exactly one of the
+  URLs this run actually retrieved. This isn't hypothetical: the first test run had the
+  model cite a specific-looking `rottentomatoes.com` URL for a score, despite never being
+  given that source — Rotten Tomatoes/Metacritic aren't fetched at all (no simple free API
+  for either), so any score they're credited with in the draft must trace back to
+  Wikipedia's own reporting of it, url `null`. Same lesson as D3: don't trust the generating
+  model to police its own citations; enforce it in code that runs after generation.
+- **Output goes to `content/_drafts/` (gitignored), never straight to `content/researched/`.**
+  A human review pass is still the actual quality gate — what's automated is turning
+  "write from scratch" into "review and edit," not eliminating the check.
+
+**Honestly reported limitation, found by testing on one real title (Citizen Kane) across
+three prompt iterations**: a single generation call from a small free model is
+*inconsistent* — the same prompt against the same retrieved text produced anywhere from 4
+to 15 grounded claims run to run, with no temperature pinned. Two concrete prompt bugs were
+found and fixed this way (a fabricated-looking "score" entry with no real source behind it;
+`questions` and `debate_prompts` coming back as literal duplicates) — both confirmed fixed
+by direct comparison of successive drafts. What's still open, not yet built: run-to-run
+depth/quality variance is real and unresolved. The likely fix is generating 2-3 drafts per
+title and picking the most complete one programmatically (e.g. by grounded-claim count),
+rather than trusting a single call — not implemented yet, left for a follow-up session.
+
 ## Rejected
 
 - **Multi-agent (researcher / writer / critic).** No dynamic decision to
@@ -307,6 +403,11 @@ are both done):
   Probably the most expensive component of the pipeline. Measure before
   optimizing.
 - ~~Find a public, directly-downloadable spoiler benchmark to calibrate
-  the judge against.~~ Done — see D12. What's open now: wiring up
-  `LLMJudge` and re-running calibration against the same 2,197-review set
-  before trusting any `leakage_rate` this project reports.
+  the judge against.~~ Done — see D12. ~~Wire up `LLMJudge` and calibrate
+  it the same way.~~ Done — see D13: recall 0.089, precision 0.471 on a
+  180-review sample, better than the floor but not trustworthy yet. Open
+  now: re-test with full (untruncated) review text and/or a stronger
+  model to separate a real capability ceiling from a budget/truncation
+  artifact, or evaluate a local NLI classifier / a classifier trained on
+  this project's own 2,197/5,460 external labels as a genuinely different
+  approach — before trusting any `leakage_rate` this project reports.

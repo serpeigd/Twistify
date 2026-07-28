@@ -156,9 +156,30 @@ just fail on paraphrases it's never seen from itself — it fails on plain
 human language. See D12 in `docs/DESIGN.md` for the one caveat this
 comparison carries (a review can be a real spoiler for a plot point we
 didn't document, which the method above counts as a miss even though it
-isn't the judge's fault) and why this changes the next task from "find a
-benchmark" (done) to "replace the judge" (`LLMJudge` already exists,
-unused, in `evals/judge.py`).
+isn't the judge's fault).
+
+### `LLMJudge`, calibrated the same way (Groq free tier)
+
+`evals/calibrate_llm_external.py` re-runs the exact same method against
+`LLMJudge` (`llama-3.1-8b-instant`, Groq's free tier) instead of
+`SubstringJudge`. Free-tier limits (1,000 requests/day, and every review
+costs `len(that movie's labels)` calls) meant a smaller, seeded, stratified
+sample — 180 reviews (20/title, balanced spoiler/not) instead of the full
+7,657 — and review text truncated to 350 characters/call to stay under
+the tokens/min cap:
+
+| Judge | n | Recall | Precision |
+|---|---|---|---|
+| `SubstringJudge` | 7,657 | 0.0 | undefined |
+| `LLMJudge` (llama-3.1-8b-instant) | 180 | **0.089** | 0.471 |
+
+A real improvement over the free floor — it sees paraphrases the substring
+judge structurally cannot — but not yet trustworthy: it misses ~91 of every
+100 real spoiler reveals in this sample, and fewer than half its positive
+calls are right. Two things this run can't separate (see D13 in
+`docs/DESIGN.md`): whether that ceiling is the small model or the 350-char
+truncation forced by the token budget. Neither judge currently clears the
+bar to report a trustworthy `leakage_rate`.
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't
