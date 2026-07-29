@@ -135,22 +135,27 @@ Tested on one title (Citizen Kane) across 3 prompt iterations; two real
 bugs found and fixed (a fake "score" entry, `questions`/`debate_prompts`
 coming back as literal duplicates). Single-call output quality was
 inconsistent run to run (4 to 15 grounded claims from the same prompt
-against the same text) — `draft_best_of()` now generates 3 independent
+against the same text) — `draft_best_of()` generates 3 independent
 candidates per title (shared retrieval, `temperature=0.8`) and keeps the
-one with the most grounded claims after sanitizing each. **Not yet
-confirmed working live**: committed on the user's explicit instruction
-while Groq's API was returning a network-level 403 ("Access denied,
-check your network settings") for every request from this session's
-Bash execution environment specifically — the user confirmed it works
-fine from their own browser/terminal without their VPN on, but the same
-403 persisted from this tool's execution context even after they turned
-their VPN off, suggesting this environment may egress through a
-different (possibly Cloudflare-flagged) IP than the user's own machine.
-**Verify `python webapp/research_assist.py "<title>" <year> 3` actually
-runs end-to-end before trusting or scaling this further** — the refactor
-reuses the exact call path proven twice before, but that's not the same
-as a live confirmation, which hasn't happened yet for `draft_best_of`
-specifically.
+one with the most grounded claims after sanitizing each. **Confirmed
+working live** (Citizen Kane, 3/3 candidates succeeded: 4, 4, 5 grounded
+claims, correctly picked the 5, zero fabricated citations). The earlier
+Groq 403 ("Access denied, check your network settings") that blocked
+this session's Bash environment specifically resolved on its own within
+the same session — cause still not identified (see below), but no longer
+blocking.
+One real, minor quality issue seen in this run worth a future prompt
+fix: `author_voice` came back as the model's own generic critical
+opinion ("As a film-literate critic, I approach...") rather than an
+actual quote/statement from someone who made the film (director,
+screenwriter), which is what that field is for (see Gone Girl's
+Fincher/Flynn quotes) — not a grounding violation (it does cite the
+retrieved Wikipedia URL) but a category mismatch, worth tightening the
+prompt for next time.
+Still open: why the Bash environment's 403 happened and later cleared
+(possibly a temporary Cloudflare IP flag, per the community reports
+cited when this was first hit) — no reproduction steps, not chased
+further since it resolved on its own.
 
 Also pending, not started (see docs/DESIGN.md "Pending"): automating the
 "+ Suggest a movie" pipeline (it now resolves a `tmdb_id` per suggestion,
