@@ -125,21 +125,32 @@ https://twistify.onrender.com will keep resetting every ~15 min idle
 redeploys). Known, accepted trade-off, not a bug to chase — D11's code
 already handles it gracefully (empty state, not an error).
 
-**Research-assist tool started, paused mid-iteration (D14, user's call).**
-`webapp/research_assist.py` drafts a `ContentPack` from real Wikipedia +
-TMDB retrieval (never LLM memory), writes to `content/_drafts/` (gitignored,
-human review gate before anything reaches `content/researched/`), and has
-a code-level safety net (`sanitize_grounding()`) that strips any citation
-the model invents — already caught one real fabricated Rotten Tomatoes URL
-in testing. Tested on one title (Citizen Kane) across 3 prompt iterations;
-two real bugs found and fixed (a fake "score" entry, `questions`/
-`debate_prompts` coming back as literal duplicates). **Open, unresolved**:
-single-call output quality is inconsistent run to run (4 to 15 grounded
-claims from the same prompt against the same text, no temperature pinned)
-— likely needs generating 2-3 drafts/title and picking the most complete
-one, not implemented yet. Don't scale this to many titles before that's
-addressed, or you'll get a pile of inconsistent drafts to hand-fix instead
-of a real time savings.
+**Research-assist tool, D14.** `webapp/research_assist.py` drafts a
+`ContentPack` from real Wikipedia + TMDB retrieval (never LLM memory),
+writes to `content/_drafts/` (gitignored, human review gate before
+anything reaches `content/researched/`), and has a code-level safety net
+(`sanitize_grounding()`) that strips any citation the model invents —
+already caught one real fabricated Rotten Tomatoes URL in testing.
+Tested on one title (Citizen Kane) across 3 prompt iterations; two real
+bugs found and fixed (a fake "score" entry, `questions`/`debate_prompts`
+coming back as literal duplicates). Single-call output quality was
+inconsistent run to run (4 to 15 grounded claims from the same prompt
+against the same text) — `draft_best_of()` now generates 3 independent
+candidates per title (shared retrieval, `temperature=0.8`) and keeps the
+one with the most grounded claims after sanitizing each. **Not yet
+confirmed working live**: committed on the user's explicit instruction
+while Groq's API was returning a network-level 403 ("Access denied,
+check your network settings") for every request from this session's
+Bash execution environment specifically — the user confirmed it works
+fine from their own browser/terminal without their VPN on, but the same
+403 persisted from this tool's execution context even after they turned
+their VPN off, suggesting this environment may egress through a
+different (possibly Cloudflare-flagged) IP than the user's own machine.
+**Verify `python webapp/research_assist.py "<title>" <year> 3` actually
+runs end-to-end before trusting or scaling this further** — the refactor
+reuses the exact call path proven twice before, but that's not the same
+as a live confirmation, which hasn't happened yet for `draft_best_of`
+specifically.
 
 Also pending, not started (see docs/DESIGN.md "Pending"): automating the
 "+ Suggest a movie" pipeline (it now resolves a `tmdb_id` per suggestion,

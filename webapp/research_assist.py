@@ -24,7 +24,12 @@ against the 8 hand-researched entries (which do cite RT/Metacritic
 directly) -- said plainly, not hidden.
 
 Usage:
-    python webapp/research_assist.py "Citizen Kane" 1941
+    python webapp/research_assist.py "Citizen Kane" 1941 [n_candidates=3]
+
+Generates `n_candidates` independent drafts from the same retrieved text
+and keeps the one with the most grounded claims (see draft_best_of) --
+added after testing showed a single call from this free model is
+inconsistent run to run (D14 in docs/DESIGN.md).
 
 Needs a free GROQ_API_KEY in .env (same as evals/run_eval.py --generator
 baseline-groq).
@@ -305,35 +310,30 @@ def build_user_prompt(title: str, year: int, chunks: list[dict], meta: dict) -> 
     return "\n".join(parts)
 
 
-def draft(title: str, year: int) -> dict:
-    chunks, meta = retrieve(title, year)
-    print(f"retrieved {len(chunks)} source chunk(s): {[c['label'] for c in chunks]}")
-    if meta.get("director"):
-        print(f"director (TMDB): {meta['director']}")
-
-    client = Groq(api_key=read_env("GROQ_API_KEY"))
+def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dict) -> dict:
+    """One generation call, with the existing schema-validation retry.
+    Returns the raw tool-call arguments (not yet assembled into a pack)."""
     user_prompt = build_user_prompt(title, year, chunks, meta)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_prompt},
     ]
-    data = None
     for attempt in range(3):
         try:
             resp = client.chat.completions.create(
                 model=MODEL,
                 max_tokens=4096,
+                temperature=0.8,
                 messages=messages,
                 tools=[_TOOL],
                 tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
             )
             call = resp.choices[0].message.tool_calls[0]
-            data = json.loads(call.function.arguments)
-            break
+            return json.loads(call.function.arguments)
         except BadRequestError as e:
             if attempt == 2:
                 raise
-            print(f"schema validation failed (attempt {attempt + 1}/3), retrying: {e}")
+            print(f"  schema validation failed (attempt {attempt + 1}/3), retrying: {e}")
             messages.append(
                 {
                     "role": "user",
@@ -343,9 +343,12 @@ def draft(title: str, year: int) -> dict:
                     "Retry, filling in every required field on every item.",
                 }
             )
+    raise RuntimeError("unreachable")
 
+
+def _assemble_pack(title: str, year: int, data: dict, chunks: list[dict], meta: dict) -> dict:
     title_id = slugify(title, year)
-    pack = {
+    return {
         "title_id": title_id,
         "story": data["story"],
         "context_bullets": data["context_bullets"],
@@ -374,18 +377,14 @@ def draft(title: str, year: int) -> dict:
         "director": meta.get("director"),
         "themes": data["themes"],
     }
-    allowed_urls = {c["url"] for c in chunks}
-    stripped = sanitize_grounding(pack, allowed_urls)
-    if stripped:
-        print(f"WARNING: stripped {stripped} citation(s) the model invented "
-              f"(not among the {len(allowed_urls)} URL(s) actually retrieved)")
-    return pack
 
 
-def grounding_summary(pack: dict) -> str:
-    """Quick sanity check before handing the draft to a human: how much
-    of it is actually grounded, same accounting ContentPack.grounding()
-    does. Not a substitute for reading the draft, just a first signal."""
+def grounded_count(pack: dict) -> tuple[int, int]:
+    """(claims that need a source, how many have one) -- same accounting
+    as ContentPack.grounding(). Used both to report to a human and, in
+    draft_best_of, as the score to rank candidates by: more real grounded
+    claims is a reasonable, cheap proxy for "richer, more useful draft",
+    same spirit as the eval harness's own richness metric."""
     needs = grounded = 0
     for field in ("author_voice", "metaphors", "intertextual_refs", "production_trivia"):
         for item in pack.get(field, []):
@@ -399,17 +398,76 @@ def grounding_summary(pack: dict) -> str:
             needs += 1
             if item.get("source_id"):
                 grounded += 1
+    return needs, grounded
+
+
+def grounding_summary(pack: dict) -> str:
+    needs, grounded = grounded_count(pack)
     pct = round(100 * grounded / needs) if needs else 0
     return f"{grounded}/{needs} sourced claims grounded ({pct}%)"
 
 
+def draft(title: str, year: int) -> dict:
+    """Single-candidate draft (kept for scripts/tests that want exactly
+    one call). draft_best_of below is what main() actually uses."""
+    chunks, meta = retrieve(title, year)
+    client = Groq(api_key=read_env("GROQ_API_KEY"))
+    data = _call_llm(client, title, year, chunks, meta)
+    pack = _assemble_pack(title, year, data, chunks, meta)
+    allowed_urls = {c["url"] for c in chunks}
+    stripped = sanitize_grounding(pack, allowed_urls)
+    if stripped:
+        print(f"WARNING: stripped {stripped} citation(s) the model invented "
+              f"(not among the {len(allowed_urls)} URL(s) actually retrieved)")
+    return pack
+
+
+def draft_best_of(title: str, year: int, n: int = 3) -> dict:
+    """Generates `n` independent candidates from the SAME retrieved text
+    and picks the one with the most grounded claims (after sanitizing
+    each candidate's citations first, so a candidate can't win by
+    fabricating extra ones). Exists because a single call from this free
+    model is inconsistent run to run -- see D14 in docs/DESIGN.md: the
+    same prompt against the same text produced anywhere from 4 to 15
+    grounded claims across manual test runs. Retrieval happens once and
+    is shared across all n candidates -- only the generation call varies."""
+    chunks, meta = retrieve(title, year)
+    print(f"retrieved {len(chunks)} source chunk(s): {[c['label'] for c in chunks]}")
+    if meta.get("director"):
+        print(f"director (TMDB): {meta['director']}")
+
+    client = Groq(api_key=read_env("GROQ_API_KEY"))
+    allowed_urls = {c["url"] for c in chunks}
+
+    candidates = []
+    for i in range(n):
+        print(f"generating candidate {i + 1}/{n}...")
+        data = _call_llm(client, title, year, chunks, meta)
+        pack = _assemble_pack(title, year, data, chunks, meta)
+        stripped = sanitize_grounding(pack, allowed_urls)
+        needs, grounded = grounded_count(pack)
+        print(f"  candidate {i + 1}: {grounded}/{needs} grounded claims"
+              + (f", {stripped} fabricated citation(s) stripped" if stripped else ""))
+        candidates.append((grounded, stripped, pack))
+
+    # Rank by most grounded claims; break ties by fewest citations that
+    # had to be stripped (a candidate that tried to cite something it
+    # wasn't given is less trustworthy than one that didn't, even at
+    # equal grounded-claim counts).
+    best_grounded, best_stripped, best_pack = max(candidates, key=lambda c: (c[0], -c[1]))
+    print(f"selected the candidate with {best_grounded} grounded claims"
+          + (f" ({best_stripped} stripped citations)" if best_stripped else ""))
+    return best_pack
+
+
 def main() -> int:
     if len(sys.argv) < 3:
-        print("usage: python webapp/research_assist.py \"<title>\" <year>", file=sys.stderr)
+        print("usage: python webapp/research_assist.py \"<title>\" <year> [n_candidates=3]", file=sys.stderr)
         return 1
     title, year = sys.argv[1], int(sys.argv[2])
+    n = int(sys.argv[3]) if len(sys.argv) > 3 else 3
 
-    pack = draft(title, year)
+    pack = draft_best_of(title, year, n=n)
     print(grounding_summary(pack))
 
     DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
