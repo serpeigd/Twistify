@@ -25,7 +25,7 @@ an eval harness that proves it. Two tracks — don't conflate them:
   server-side context-partition property (pre-show generator never sees the spoiler
   corpus), not an instruction the model could ignore.
 - **Demo track** (`webapp/`, `content/researched/*.json`, `src/preshow/content.py`) —
-  FastAPI + vanilla JS app, 7 hand-researched films with a spoiler curtain, comments,
+  FastAPI + vanilla JS app, 8 hand-researched films with a spoiler curtain, comments,
   filters, ES/EN UI toggle. Editorial content; doesn't use the baseline generator or judge.
   In Spanish, researched content is machine-translated on the fly (free MyMemory API,
   `src/preshow/translate.py`), cached per title in `content/_translations/` (committed
@@ -96,6 +96,18 @@ design decision.
   Argue from a concrete need first.
 - Sources: TMDB free non-commercial w/ attribution (no fine-tuning); IMDb scraping
   prohibited by ToS; Goodreads API gone since 2020 (Milestone 3 concern).
+- **Scheduled documentation-sync runs (added 2026-08-07, explicit decision in
+  chat): standing authorization to merge doc-only PRs from that recurring task
+  yourself, without waiting for approval, once CI (`tests.yml`) is green —
+  same bar as any other merge, just no confirmation step for this specific,
+  narrow case (README/`docs/` changes only, never product/measurement-track
+  code).** That scheduled run lands on a fresh randomly-named branch every
+  time, so an unmerged PR from a previous run is never reused automatically.
+  Before opening a new one, check for another open PR titled starting
+  "docs: sync" — if found, fold any still-valid unique content from it into
+  the new one, merge the more complete/accurate PR once CI is green, and
+  close the other with a comment linking to the merged one. Don't leave two
+  open at once.
 
 ## Next task
 
