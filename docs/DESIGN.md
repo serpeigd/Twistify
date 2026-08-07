@@ -391,7 +391,7 @@ are both done):
   film via TMDB autocomplete (D10) so a suggestion carries a `tmdb_id`,
   but it still does **not** research or add anything automatically. Turning
   a suggestion into a `content/researched/*.json` entry has to meet the
-  same bar as the existing 7 — cited sources, no invented facts (D6/D7) —
+  same bar as the existing 8 — cited sources, no invented facts (D6/D7) —
   which is a real research pipeline with a review step, not a one-request
   LLM call. Deliberately left as a manual step until that pipeline is
   designed.
