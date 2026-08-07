@@ -3,6 +3,7 @@
 **Spoiler-free before. Every twist after.**
 
 [![tests](https://github.com/serpeigd/Twistify/actions/workflows/tests.yml/badge.svg)](https://github.com/serpeigd/Twistify/actions/workflows/tests.yml)
+[![release](https://img.shields.io/github/v/release/serpeigd/Twistify)](https://github.com/serpeigd/Twistify/releases/tag/v1.0.0)
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
 ![Pydantic](https://img.shields.io/badge/Pydantic-E92063?logo=pydantic&logoColor=white)
@@ -115,12 +116,25 @@ on a redeploy; falls back to local files without it).
 | Twistify app (catalogue, spoiler gate, filters, comments) | ✅ 8/20 entries researched |
 | Browse catalogue (TMDB posters, live search, ES/EN) | ✅ 20/20 have posters, search reaches all of TMDB |
 | Offline evals harness | ✅ 8 tests passing |
-| Spoiler ground truth (20 titles) | ✅ 20/20, researched with cited sources |
+| Spoiler ground truth (20 titles) | ✅ 20/20, LLM-researched with cited sources (never hand-labeled — see [Ground truth, precisely](#ground-truth-precisely) below) |
 | Baseline generator (no retrieval) | ✅ two providers — Anthropic (paid) and Groq (free tier, no card) |
 | Judge calibration (offline + real spoiler reviews) | ✅ both judges calibrated against the same external human data — `SubstringJudge` recall=0.0, `LLMJudge` recall=0.089/precision=0.471 — **neither clears the bar to trust a `leakage_rate` yet** (see [Limitations](#limitations)) |
 | Measure the baseline over the 20 titles | ✅ done — see numbers and caveats below |
 | Research-assist tool (D14) | ✅ drafts a researched entry from Wikipedia + TMDB; tested end-to-end on one title (Citizen Kane) |
 | Retrieval (TMDB/OMDb/Wikipedia) + verifier | ⬜ next milestone — blocked on judge trust, see [Roadmap](#roadmap) |
+
+## Ground truth, precisely
+
+The 20-title measurement set's spoiler labels are **LLM-researched with
+cited sources** — an LLM reads real sources (Wikipedia, reviews, cast
+interviews) and drafts what counts as a spoiler and how severe it is, with
+every claim traceable to a citation. That is a different, weaker claim
+than **"hand-labeled"**, and this README (like `docs/DESIGN.md`'s D7)
+deliberately never uses the second phrase for the first thing: conflating
+them would quietly reintroduce the same self-coherence risk the project's
+judge-calibration work exists to catch. See D6/D7 in
+[`docs/DESIGN.md`](docs/DESIGN.md) for the full reasoning and the
+trade-off that was made explicitly, not by default.
 
 ## Under the hood: the evaluation harness
 
