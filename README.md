@@ -81,10 +81,10 @@ small enough that a framework would be cost without benefit, not "doesn't
 know how to use one."
 
 **AI / evaluation:** Anthropic Claude (tool use / structured output for the
-paid baseline generator + research-assist drafting) · Groq/Llama (free-tier
-alternative for the same baseline generator, the `LLMJudge`, and
-research-assist's default model, so nothing in this project *requires* a
-paid key) · a custom evals harness design (leakage / grounding / richness)
+paid baseline generator) · Groq/Llama (free-tier alternative for the same
+baseline generator, the `LLMJudge`, and the only model `research_assist.py`
+uses — no Anthropic path exists there, so nothing in this project *requires*
+a paid key) · a custom evals harness design (leakage / grounding / richness)
 with a calibrated judge, verified against planted leaks and real human
 spoiler reviews.
 
