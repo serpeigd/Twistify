@@ -10,3 +10,8 @@ content/_wikipedia_cache/
 content/_drafts/
 .claude/launch.json
 evals/dataset/external/
+evals/models/
+*.log
+
+# FluencyLoop: calibration is per-developer and never committed
+.fluencyloop/**/calibration.md

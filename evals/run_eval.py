@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 
-from judge import SubstringJudge  # noqa: E402
+from judge import HybridJudge, LLMJudge, SubstringJudge, TrainedClassifierJudge  # noqa: E402
 from metrics import aggregate, evaluate_case  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 
@@ -33,7 +33,81 @@ def _load_generator(name: str):
         from preshow.baseline_groq import GroqBaselineGenerator
 
         return GroqBaselineGenerator()
+    if name == "retrieval-groq":
+        # Milestone 1 (see docs/DESIGN.md D3): real GREEN-tier retrieval
+        # instead of an empty corpus. Same measurement code as
+        # baseline-groq -- the comparison between the two IS Milestone 1's
+        # result. Needs network access to en.wikipedia.org in addition to
+        # GROQ_API_KEY.
+        from preshow.retrieval_groq import GroqRetrievalGenerator
+
+        return GroqRetrievalGenerator()
     return None
+
+
+def _load_judge(name: str, threshold: float | None):
+    if name == "substring":
+        return SubstringJudge()
+    if name == "trained-classifier":
+        # KNOWN BROKEN on this project's actual generator output as of the
+        # day this was wired in -- see D15's correction in docs/DESIGN.md.
+        # It's well-calibrated on full sentences (IMDb reviews, this
+        # project's own SpoilerLabel paraphrases) but the baseline
+        # generators write short, terse text in EVERY field, not just
+        # script[] fragments -- a register this judge was never trained
+        # or validated on. A live run scored leakage_rate=0.95 on
+        # completely benign text (cast credits, stage directions,
+        # production trivia) -- confirmed via --show-leaks it's not a
+        # threshold problem, every flagged phrase landed in a narrow
+        # 0.30-0.47 band regardless of content. DO NOT use this to report
+        # a real leakage_rate -- use --judge hybrid instead.
+        print(
+            "WARNING: --judge trained-classifier misfires on this project's "
+            "generator output (leakage_rate=0.95 in testing, confirmed to be "
+            "judge noise, not real leaks -- see D15's correction in "
+            "docs/DESIGN.md). Use --judge hybrid instead for a usable reading.",
+            file=sys.stderr,
+        )
+        kwargs = {} if threshold is None else {"threshold": threshold}
+        return TrainedClassifierJudge.from_artifact(**kwargs)
+    if name == "hybrid":
+        # ALSO NOT GOOD ENOUGH, confirmed live -- see D15's second
+        # correction in docs/DESIGN.md. Routing short text (< 15 words)
+        # to SubstringJudge cut leakage_rate from 0.95 to 0.6, but the
+        # remaining flagged text is STILL essentially all false positives
+        # (mood/theme/production sentences, not real spoilers) -- e.g. a
+        # neutral CONTROL sentence invented for this check scored 0.252,
+        # barely below the flagged ones. The classifier has no real
+        # discriminating signal on this generator's writing style at ANY
+        # length; routing by word count only changes how OFTEN it fires,
+        # not whether its verdicts mean anything. Kept available for
+        # comparison, not for reporting.
+        print(
+            "WARNING: --judge hybrid reduces but does NOT fix "
+            "trained-classifier's misfiring (leakage_rate=0.6 in testing was "
+            "still mostly false positives on mood/theme/production text, not "
+            "real leaks -- see D15's second correction in docs/DESIGN.md). "
+            "Try --judge llm instead.",
+            file=sys.stderr,
+        )
+        kwargs = {} if threshold is None else {"threshold": threshold}
+        return HybridJudge(SubstringJudge(), TrainedClassifierJudge.from_artifact(**kwargs))
+    if name == "llm":
+        # The one calibrated alternative never tested against this
+        # project's actual generator output. D13's external calibration
+        # (real IMDb reviews) found recall~=0.35-0.4 with generous
+        # truncation -- modest, but from genuine language understanding,
+        # not bag-of-words, so it's a real question whether it
+        # generalizes to short fragments better than TrainedClassifierJudge
+        # did (it might not -- untested, that's the point of trying it).
+        # Needs GROQ_API_KEY in .env. Paced/retried the same way
+        # evals/calibrate_llm_external.py is, including its
+        # DailyQuotaExhausted/ServiceUnavailable safety nets -- see
+        # main()'s try/except around the per-case loop below.
+        from calibrate_llm_external import DEFAULT_INTERVAL_S, DEFAULT_MODEL, make_groq_client_fn
+
+        return LLMJudge(client_fn=make_groq_client_fn(DEFAULT_MODEL, DEFAULT_INTERVAL_S))
+    raise ValueError(f"unknown judge: {name}")
 
 DATA = ROOT / "evals" / "dataset"
 
@@ -55,6 +129,41 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--generator", default="fake")
     ap.add_argument("--out", default="evals/results/latest.json")
+    ap.add_argument(
+        "--judge",
+        default="substring",
+        choices=["substring", "trained-classifier", "hybrid", "llm"],
+        help="substring (default, offline, known recall=0.0 -- see D12); "
+        "trained-classifier and hybrid (both KNOWN NOT GOOD ENOUGH on this "
+        "project's actual generator output -- see D15's corrections in "
+        "docs/DESIGN.md, do not use either for a real leakage_rate); llm "
+        "(Groq-backed LLMJudge, needs GROQ_API_KEY -- calibrated at "
+        "recall~=0.35-0.4 on IMDb reviews, D13, but never tested against "
+        "this project's actual generator output until now)",
+    )
+    ap.add_argument(
+        "--judge-threshold",
+        type=float,
+        default=None,
+        help="decision threshold for --judge trained-classifier (default: "
+        "TrainedClassifierJudge's own default, 0.3 -- see D15)",
+    )
+    ap.add_argument(
+        "--show-leaks",
+        action="store_true",
+        help="print each detected leak's location and evidence text to stderr -- "
+        "without this, a high leakage_rate can't be diagnosed (which field, what "
+        "text) from this script's output alone",
+    )
+    ap.add_argument(
+        "--save-briefs",
+        default=None,
+        help="write every generated PreShowBrief in full to this JSON path, keyed by "
+        "title_id -- a leakage_rate of 0.0 from a judge with a known blind spot "
+        "(e.g. --judge substring, recall=0.0 by construction, D12) proves nothing "
+        "on its own; this is what lets a human actually read the text and check "
+        "for a leak no judge here can reliably see",
+    )
     args = ap.parse_args()
 
     cases = load_cases()
@@ -80,15 +189,47 @@ def main() -> int:
         print(f"Unknown generator: {args.generator}", file=sys.stderr)
         return 1
 
-    judge = SubstringJudge()
+    judge = _load_judge(args.judge, args.judge_threshold)
     results = []
+    briefs: dict[str, dict] = {}
+    stopped_early = False
     for case in labelled:
-        labels = load_labels(case.title_id)
-        brief = generator.pre_show(case, corpus=[])
-        results.append(evaluate_case(brief, labels, case.stratum, judge))
+        try:
+            labels = load_labels(case.title_id)
+            brief = generator.pre_show(case, corpus=[])
+            if args.save_briefs:
+                briefs[case.title_id] = brief.model_dump()
+            results.append(evaluate_case(brief, labels, case.stratum, judge))
+        except Exception as e:  # noqa: BLE001 -- --judge llm can raise
+            # calibrate_llm_external.EvaluationAborted (DailyQuotaExhausted/
+            # ServiceUnavailable) mid-case; stop cleanly and aggregate
+            # whatever completed instead of losing the whole run to a
+            # crash with no output. Broad except is deliberate: this is
+            # the harness's outermost loop, and ANY judge/generator
+            # failure here should stop the run cleanly rather than lose
+            # already-computed results, not just the two named exceptions.
+            print(
+                f"\nStopped after {len(results)}/{len(labelled)} cases: {type(e).__name__}: {e}\n"
+                "Aggregating what completed instead of losing it to a crash.",
+                file=sys.stderr,
+            )
+            stopped_early = True
+            break
         print(f"  {case.title_id}: {'LEAK' if results[-1].leaked else 'ok'}", file=sys.stderr)
+        if args.show_leaks:
+            for hit in results[-1].leaks:
+                print(f"    [{hit.severity}] {hit.where}: {hit.evidence!r}", file=sys.stderr)
 
     agg = aggregate(results)
+    agg["judge"] = {"name": getattr(judge, "name", args.judge), "threshold": getattr(judge, "threshold", None)}
+    agg["partial"] = stopped_early
+    agg["n_cases_completed"] = len(results)
+
+    if args.save_briefs:
+        briefs_path = ROOT / args.save_briefs
+        briefs_path.parent.mkdir(parents=True, exist_ok=True)
+        briefs_path.write_text(json.dumps(briefs, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"wrote {len(briefs)} briefs to {briefs_path}", file=sys.stderr)
 
     out_path = ROOT / args.out
     out_path.parent.mkdir(parents=True, exist_ok=True)

@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import json
 
-from groq import Groq
+from groq import BadRequestError, Groq
 
 from .baseline_prompts import (
     BRIEF_PROPERTIES,
@@ -55,18 +55,7 @@ class GroqBaselineGenerator:
         self._model = model
 
     def pre_show(self, case: TitleCase, corpus: list[SourceDoc]) -> PreShowBrief:
-        resp = self._client.chat.completions.create(
-            model=self._model,
-            max_tokens=1024,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": f"Title: {case.title} ({case.year})"},
-            ],
-            tools=[_TOOL],
-            tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
-        )
-        call = resp.choices[0].message.tool_calls[0]
-        data = json.loads(call.function.arguments)
+        data = self._call_with_retry(case)
         return PreShowBrief(
             title_id=case.title_id,
             context_bullets=[Claim(**c) for c in data["context_bullets"]],
@@ -78,3 +67,47 @@ class GroqBaselineGenerator:
 
     def deep_dive(self, case: TitleCase, corpus: list[SourceDoc]) -> DeepDive:
         raise NotImplementedError("Milestone 0 only covers pre_show; deep_dive lands in a later milestone")
+
+    def _call_with_retry(self, case: TitleCase) -> dict:
+        """Groq's tool-calling occasionally emits a call missing a
+        required field (e.g. a script block skipping visual_direction)
+        and the API rejects it with BadRequestError before this code ever
+        sees a response -- observed live losing an entire run_eval.py run
+        partway through (see docs/DESIGN.md D15's llm-judge section).
+        Same corrective-retry pattern already used in
+        webapp/research_assist.py's _call_llm: append what was wrong and
+        ask again, instead of crashing the whole harness run on one bad
+        generation. This changes retry BEHAVIOR only, not the shared
+        SYSTEM_PROMPT/schema baseline_prompts.py deliberately keeps
+        identical across providers (see that module's docstring) --
+        Anthropic's tool-calling hasn't shown this failure mode, so it
+        doesn't have this retry loop."""
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": f"Title: {case.title} ({case.year})"},
+        ]
+        for attempt in range(3):
+            try:
+                resp = self._client.chat.completions.create(
+                    model=self._model,
+                    max_tokens=1024,
+                    messages=messages,
+                    tools=[_TOOL],
+                    tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
+                )
+                call = resp.choices[0].message.tool_calls[0]
+                return json.loads(call.function.arguments)
+            except BadRequestError as e:
+                if attempt == 2:
+                    raise
+                messages.append(
+                    {
+                        "role": "user",
+                        "content": "That call was rejected: every object in an array must include "
+                        "ALL of its required properties (context_bullets/author_voice items need "
+                        "text, kind, AND source_id; script blocks need start_s, end_s, "
+                        "on_screen_text, voiceover, AND visual_direction). Retry, filling in every "
+                        "required field on every item.",
+                    }
+                )
+        raise RuntimeError("unreachable")
