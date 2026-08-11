@@ -63,6 +63,10 @@ those placeholders to real posters.
 - **Filters that actually mean something.** Themes (identity, obsession,
   class and power…) that group several movies for real, not a one-off tag
   per title.
+- **Actually usable on a phone.** Below 760px the catalogue sidebar
+  (search, filters, film list) is a hamburger-triggered off-canvas
+  drawer — not the old `display:none` that forced "desktop site" mode to
+  browse at all.
 - **Scaling the researched catalogue automates the labor, not the
   citation bar.** `webapp/research_assist.py` (see
   [Research-assist tool](#research-assist-tool-scaling-the-researched-catalogue))
@@ -100,7 +104,7 @@ on a redeploy; falls back to local files without it).
 
 | Piece | What it is |
 |---|---|
-| `webapp/app.py` | FastAPI + vanilla JS. Serves the catalogue, runs the spoiler gate, comments (edit/delete with no accounts, anonymous per-browser token). |
+| `webapp/app.py` | FastAPI + vanilla JS. Serves the catalogue, runs the spoiler gate, comments (edit/delete with no accounts, anonymous per-browser token). `GET /api/stats` exposes the same grounding/leakage numbers for auditing — deliberately *not* rendered on the page itself (an earlier "no leaks detected" badge was removed for the same reason `SubstringJudge`'s 0.0 recall is disclosed everywhere else: a green seal the measurement can't back up). |
 | `webapp/research_assist.py` | Drafts a new researched entry from real Wikipedia + TMDB retrieval (never LLM memory) — see [Research-assist tool](#research-assist-tool-scaling-the-researched-catalogue). |
 | `webapp/prewarm_translations.py` | One-time build step: caches Spanish translations of researched + browse-tier content so the live deploy never calls the translation API on a visitor's request. |
 | `webapp/resolve_tmdb_ids.py` | One-time helper: resolves a `tmdb_id` for every title in `evals/dataset/titles.yaml` so the browse tier can show a poster for all 20. |
@@ -297,7 +301,7 @@ root (`src/preshow/env.py`, falls back to the real environment too — no
 Full install, including the optional pieces:
 
 ```bash
-pip install fastapi "uvicorn[standard]" pydantic pyyaml   # core app + harness
+pip install fastapi "uvicorn[standard]" pydantic pyyaml pytest   # core app + harness + tests
 pip install groq                                          # optional: baseline-groq, LLMJudge calibration, research_assist.py
 pip install anthropic                                     # optional: paid baseline generator only
 ```
@@ -335,6 +339,7 @@ content/
   _translations/            cached ES translations (committed — see D9)
   _drafts/                    research_assist.py output (gitignored, pre-review)
   _tmdb_cache/                 (gitignored)
+  _wikipedia_cache/            research_assist.py's fetched articles (gitignored)
 
 tests/                   offline pytest suite (8 tests), no network, no API key
 docs/DESIGN.md            every design decision (D1–D14) with its trade-off
