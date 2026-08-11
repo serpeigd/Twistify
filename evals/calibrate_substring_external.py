@@ -47,6 +47,7 @@ sys.path.insert(0, str(ROOT / "evals"))
 from judge import SubstringJudge  # noqa: E402
 from preshow import tmdb  # noqa: E402
 from preshow.schemas import SpoilerLabel  # noqa: E402
+from stats import wilson_interval  # noqa: E402
 
 ZIP_PATH = ROOT / "evals" / "dataset" / "external" / "imbd_spoiler_dataset.zip"
 TITLES_PATH = ROOT / "evals" / "dataset" / "titles.yaml"
@@ -130,6 +131,8 @@ def main() -> int:
     n = tp + fp + tn + fn
     precision = tp / (tp + fp) if (tp + fp) else 0.0
     recall = tp / (tp + fn) if (tp + fn) else 0.0
+    precision_ci = wilson_interval(tp, tp + fp)
+    recall_ci = wilson_interval(tp, tp + fn)
 
     result = {
         "judge": judge.name,
@@ -143,7 +146,9 @@ def main() -> int:
         "tn": tn,
         "fn": fn,
         "precision": round(precision, 3),
+        "precision_ci_95": [round(v, 3) for v in precision_ci] if precision_ci else None,
         "recall": round(recall, 3),
+        "recall_ci_95": [round(v, 3) for v in recall_ci] if recall_ci else None,
         "reviews_per_title": n_by_title,
         "note": (
             "Positive = review tagged is_spoiler=true by a real IMDb user; "
@@ -155,7 +160,10 @@ def main() -> int:
             "spoiler we actually track. This likely understates true "
             "recall on our documented labels specifically. Independent of "
             "that caveat, this is real human-written text the judge, "
-            "generator, and ground-truth researcher never saw."
+            "generator, and ground-truth researcher never saw. "
+            "recall_ci_95 is the 95% Wilson score interval (Wilson, 1927); "
+            "precision_ci_95 is null because precision is undefined here "
+            "(tp+fp=0)."
         ),
     }
     print(json.dumps(result, indent=2, ensure_ascii=False))
