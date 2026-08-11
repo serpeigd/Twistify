@@ -150,7 +150,7 @@ is right. Instead, TMDB is a **third tier**, structurally kept apart:
 | Tier | Source | Size | Has a curtain / cited claims? |
 |---|---|---|---|
 | Measurement | `evals/dataset/titles.yaml` | 20, fixed | N/A — it's the experiment |
-| Researched | `content/researched/*.json` | 7, hand-written | Yes |
+| Researched | `content/researched/*.json` | 8, hand-written | Yes |
 | **Browse (TMDB)** | `src/preshow/tmdb.py` | effectively all of TMDB | No — poster + synopsis only |
 
 Concretely:
@@ -898,10 +898,28 @@ three prompt iterations**: a single generation call from a small free model is
 to 15 grounded claims run to run, with no temperature pinned. Two concrete prompt bugs were
 found and fixed this way (a fabricated-looking "score" entry with no real source behind it;
 `questions` and `debate_prompts` coming back as literal duplicates) — both confirmed fixed
-by direct comparison of successive drafts. What's still open, not yet built: run-to-run
-depth/quality variance is real and unresolved. The likely fix is generating 2-3 drafts per
-title and picking the most complete one programmatically (e.g. by grounded-claim count),
-rather than trusting a single call — not implemented yet, left for a follow-up session.
+by direct comparison of successive drafts.
+
+**Fix implemented and confirmed working live.** `draft_best_of()` generates 3 independent
+candidates per title from the same shared retrieval (`temperature=0.8` for real diversity),
+sanitizes each candidate's citations first (so a candidate can't win by fabricating extra
+ones), and keeps the one with the most grounded claims; `main()` now defaults to this
+instead of a single `draft()` call. First committed without a live end-to-end run — Groq's
+API returned a network-level 403 ("Access denied, check your network settings") for every
+request from that session's execution environment specifically (a bare `curl` to
+`/v1/models` failed the same way; the user confirmed it worked from their own
+browser/terminal, with or without their VPN, the whole time). The 403 resolved on its own
+in a later session with no code change and no identified root cause (possibly a temporary
+Cloudflare IP flag) — `python webapp/research_assist.py "Citizen Kane" 1941 3` then ran
+end-to-end for real: all 3 candidates succeeded (4, 4, 5 grounded claims), the 5-claim one
+was correctly selected, zero fabricated citations reached the output.
+
+One real, minor quality issue surfaced by that live run, left as a future prompt fix, not a
+grounding violation: `author_voice` came back as the model's own generic critical
+commentary ("As a film-literate critic, I approach...") rather than an actual quote or
+statement from someone who made the film (director, screenwriter) — the field's intended
+content, as seen in Gone Girl's Fincher/Flynn quotes. It still cites the retrieved
+Wikipedia source correctly; it's a category mismatch, not a fabrication.
 
 ## Rejected
 
@@ -937,7 +955,7 @@ are both done):
   film via TMDB autocomplete (D10) so a suggestion carries a `tmdb_id`,
   but it still does **not** research or add anything automatically. Turning
   a suggestion into a `content/researched/*.json` entry has to meet the
-  same bar as the existing 7 — cited sources, no invented facts (D6/D7) —
+  same bar as the existing 8 — cited sources, no invented facts (D6/D7) —
   which is a real research pipeline with a review step, not a one-request
   LLM call. Deliberately left as a manual step until that pipeline is
   designed.
@@ -959,8 +977,10 @@ are both done):
   for the first time in the same section) — decision made to stop
   iterating on judges and test D15's own hypothesis instead (a
   no-retrieval generator's vague prose may be what's actually
-  undermining every judge, not the judges themselves). Open now: run
-  Milestone 1 (D16, built, not yet run) to test that hypothesis directly
-  — does `grounded_fact_rate` go up and `leakage_rate` come down with a
-  real GREEN-tier corpus, across whichever judge ends up used to measure
-  it?
+  undermining every judge, not the judges themselves). ~~Run Milestone 1
+  to test that hypothesis.~~ Done, partially — see D16:
+  `grounded_fact_rate` confirmed 0.0 → 1.0 live (19/20 titles). Open now:
+  finish the human spot-check of `--save-briefs` output (does the model
+  leak from parametric memory despite a clean corpus?) once Groq's daily
+  quota resets, then decide whether `leakage_rate` under any tested
+  judge is trustworthy enough to report for Milestone 1.

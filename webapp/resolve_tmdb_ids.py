@@ -1,6 +1,6 @@
 """One-time helper: resolve every title in evals/dataset/titles.yaml to a
 TMDB id and write it back into the file, so the demo can show a real
-poster/synopsis for all 20 measurement-set titles, not just the 7
+poster/synopsis for all 20 measurement-set titles, not just the
 hand-researched ones (see D10 in docs/DESIGN.md).
 
 Edits the YAML as text (insert one `tmdb_id:` line per entry) instead of
