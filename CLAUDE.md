@@ -68,11 +68,152 @@ design decision.
   going empty). Mainstream and long-tail came out identical, so the
   original mainstream-vs-long-tail hypothesis is still **unconfirmed**.
   Both judges are now calibrated against the same 7,657-review external
-  human set (D12/D13): `SubstringJudge` recall=0.0 (0/2,197, full set),
-  `LLMJudge`/llama-3.1-8b-instant recall=0.089, precision=0.471 (180-review
-  sample, Groq free-tier daily budget forced the smaller n and 350-char
-  truncation per review). `LLMJudge` beats the floor but isn't trustworthy
-  yet either — next task below. All 20 titles now have a resolved
+  human set (D12/D13): `SubstringJudge` recall=0.0 (0/2,197, full set,
+  95% CI 0.0-0.002 -- tight, not sample noise). `LLMJudge`/llama-3.1-8b-instant
+  started at recall=0.089/precision=0.471 (350-char truncation, forced by
+  the original token budget), but a follow-up isolating that confound
+  (same model, same 180-review sample, truncation raised to 1,500 chars)
+  found recall=**0.356** (95% CI 0.264-0.459), precision=**0.64** (95% CI
+  0.501-0.759) -- non-overlapping CIs vs. the 350-char run, so truncation
+  was genuinely suppressing most of the model's real recall, not just
+  adding noise. Still not trustworthy enough to report a `leakage_rate`
+  (misses ~64/100 real spoilers). The other confound -- does a stronger
+  model close more of the gap -- is now **resolved: barely at all**.
+  After 3 free-tier failures (a `llama-3.3-70b-versatile` daily token
+  quota that turned out to be a rolling window, plus a transient Groq
+  503) a 4th attempt completed cleanly at the original 350-char
+  truncation: recall=0.093 (95% CI 0.04-0.199, n=108) vs. the 8B model's
+  0.089 (95% CI 0.046-0.166, n=180) -- essentially identical, heavily
+  overlapping CIs. A ~9x larger model does not meaningfully improve
+  recall. Precision looked better (0.714 vs 0.471) but both CIs are wide
+  and overlap. Combined conclusion: truncation was the real lever, model
+  size wasn't -- `llama-3.1-8b-instant` is the better default going
+  forward (no daily token cap, survived all 4 attempts without a single
+  free-tier failure). `LLMJudge`'s ceiling at reasonable settings looks
+  to be recall~=0.35-0.4 (see `evals/stats.py` for the Wilson score
+  interval helper all these runs use).
+  **D15: two more approaches tried, one failed, one is now the best
+  judge calibrated.** A local NLI classifier (`NLIJudge`) failed on two
+  fronts -- impractically slow on this dev machine (antivirus-related,
+  not fixed by an exclusion) and, where it did run, recall ~0 (formal
+  NLI entailment is stricter than "could a viewer infer this", a real
+  task mismatch). But `evals/train_spoiler_classifier.py` (TF-IDF +
+  Logistic Regression, trained directly on this project's own
+  2,197-positive/5,460-negative external labels, evaluated with grouped
+  k-fold by title so every prediction is out-of-fold) beats every prior
+  judge: recall=0.889 at threshold 0.3 (95% CI 0.876-0.902), or
+  recall=0.445/precision=0.571 at threshold 0.5 -- on the FULL
+  7,657-review set, no sample-size limit, confirmed not to be a
+  single-title artifact (per-title recall 0.285-0.668 across all 9
+  titles, Fight Club -- 32% of the data -- has the *lowest* per-title
+  recall). **Now wired in**: `TrainedClassifierJudge` in `evals/judge.py`
+  loads a persisted model (`joblib`, built by
+  `python evals/train_spoiler_classifier.py`) and implements the same
+  `.entails(text, label)` interface as the other judges (ignores `label`
+  -- see its docstring for why); `run_eval.py --judge trained-classifier
+  [--judge-threshold N]` opts into it (default judge stays `substring`,
+  since that needs nothing but the stdlib and always works offline).
+  Threshold defaults to 0.3 (recall-favoring, per D15). Sanity-checked
+  live on 3 example texts (spoiler-y text -> 0.576/0.857 spoiler_prob,
+  generic praise -> 0.14) -- confirmed working correctly, not yet run
+  through an actual `--generator` end to end (needs live Groq/Anthropic
+  access this session's Bash environment doesn't reliably have).
+  **In-domain validation done** (`evals/calibrate_trained_classifier_internal.py`,
+  since D15's calibration was on IMDb reviews, not the brief-style text
+  this judge actually scores): first attempt reused the wrong dataset
+  (calibrate_substring.py's cross-label negatives are real spoilers for
+  a DIFFERENT movie -- valid negatives for a per-label judge, not for
+  this one) and made the judge look worse than it is. Corrected version
+  (277 real spoiler sentences vs. 62 real spoiler-free sentences from
+  the 8 researched titles) shows it's actually BETTER in-domain:
+  recall=0.838 (95% CI 0.79-0.876), precision=0.928 (95% CI
+  0.889-0.954) at threshold 0.3 -- on COMPLETE sentences.
+  **CONFIRMED BROKEN on the actual generator output, the same day it was
+  wired in.** The first live `run_eval.py --generator baseline-groq
+  --judge trained-classifier --show-leaks` run scored
+  **leakage_rate=0.95**, flagging a stage direction ("Black screen"), a
+  cast credit, and an award fact as spoilers. Root cause: baseline
+  generators write SHORT FRAGMENTS (`on_screen_text`/`voiceover` lines,
+  often 3-8 words) -- a third register, different from both this judge's
+  IMDb-review training data and its own complete-sentence validation
+  set. Scored the exact flagged phrases directly: all landed in a
+  narrow 0.30-0.47 band with no separation between real fragments and
+  benign ones -- not a threshold problem, the model has no signal left
+  on text this short. `run_eval.py` now prints a warning when
+  `--judge trained-classifier` is selected.
+  **Fix attempt: `HybridJudge`** (`evals/judge.py`) routes by word count
+  (< 15 words -- the cutoff sits just above the highest confirmed false
+  positive, 14 words -- goes to `SubstringJudge`; >= 15 goes to
+  `TrainedClassifierJudge`), not by field name (rejected: false
+  positives hit `author_voice`/`context_bullets` as often as `script[]`
+  lines, this generator writes short text everywhere). Regression-tested
+  offline (`tests/test_hybrid_judge.py`, no scikit-learn needed, runs in
+  CI): all 18 confirmed false positives route away from the classifier,
+  a real literal leak is still caught.
+  **Live run: reduced but did not fix it.** leakage_rate=0.6 (down from
+  0.95), but `--show-leaks` showed every remaining flagged sentence is
+  STILL a false positive (mood/theme/production text, no actual plot
+  reveal) -- a hand-invented, genuinely neutral control sentence scored
+  0.252, in the same noise band as the real false positives. This
+  classifier has no real signal on this generator's writing style at any
+  length; `hybrid` only changes how often the noise fires. `run_eval.py`
+  now warns about `--judge hybrid` too.
+  **`--judge llm` wired into `run_eval.py`** for the first time --
+  `LLMJudge` was calibrated (D13) but never tested against this
+  project's actual generator output before. First live attempt got 3/20
+  cases in with a genuinely mixed signal (not the blatant false
+  positives `TrainedClassifierJudge` gave -- but `parasite_2019` flagged
+  "In a world where social classes collide", pure generic intrigue the
+  judge's own prompt says shouldn't count), then hit a SEPARATE
+  pre-existing bug: `GroqBaselineGenerator` had no retry on a malformed
+  tool call (same `tool_use_failed` error hit once before with
+  `prestige_2006`), losing the rest of the run. **Fixed**: added the
+  same corrective-retry pattern `research_assist.py` already uses
+  (`baseline_groq.py`'s new `_call_with_retry`, verified with a fake
+  client that fails twice then succeeds) -- doesn't touch the shared
+  SYSTEM_PROMPT/schema, retry behavior only. `run_eval.py`'s main loop
+  also now catches any mid-run failure and aggregates whatever completed
+  (`"partial"`/`"n_cases_completed"`) instead of losing the run.
+  **Complete 20-title `--judge llm` run: leakage_rate=0.8, same pattern
+  as every prior judge** -- release-year facts, director credits, and
+  pure marketing hooks ("Are you ready to have your mind blown?") all
+  flagged "core", though one catch (`sixth_sense_1999`'s "living are
+  unaware of the dead") looked genuinely plausible. **Decision made**
+  (D15's conclusion): stop iterating on judges. `SubstringJudge` stays
+  the default (honest recall=0.0 floor); `trained-classifier`/`hybrid`/
+  `llm` all stay available for comparison, none fit to report a real
+  `leakage_rate`. Working hypothesis instead: Milestone 0's `corpus=[]`
+  generator has nothing real to write from, so it defaults to vague
+  "hints at something" prose that fools any recall-favoring judge --
+  not a judge problem, a grounding problem.
+  **D16: Milestone 1 built to test that hypothesis.**
+  `src/preshow/retrieval.py`'s `build_green_corpus()` wires up the
+  GREEN/AMBER/RED mechanism D3 designed but Milestone 0 never used
+  (`PreShowBrief`'s own docstring already said "Generated with GREEN
+  context only") -- fetches Wikipedia, returns only
+  overview/production/accolades as GREEN `SourceDoc`s, never even
+  constructs a `SourceDoc` for the Plot section, drops
+  reception/critical-response too (AMBER treated as RED, D3's default).
+  Verified live against real Wikipedia (Parasite) and with tests
+  specifically trying to leak plot text through
+  (`tests/test_retrieval.py`). New generator
+  `GroqRetrievalGenerator`/`--generator retrieval-groq`
+  (`retrieval_groq.py` + `retrieval_prompts.py`, a genuinely different
+  prompt from Milestone 0's, not a shared variant -- see D16) uses it.
+  **First live run: real signal.** 19/20 cases (hit the daily token
+  quota on the last one -- larger, grounded prompt costs more/call than
+  Milestone 0's) -- `grounded_fact_rate` **0.0 -> 1.0** vs. Milestone 0,
+  a judge-independent structural result (just checks `source_id` is
+  populated). `leakage_rate` stayed 0.0 under `--judge substring`, but
+  that's *not* proof of zero leaks -- substring's recall=0.0 (D12) can't
+  see a leak pulled from the model's own memory rather than the corpus.
+  What IS proven independent of any judge: the `plot` section is never
+  even constructed as a source (retrieval.py), so nothing the model
+  draws FROM THE CORPUS can be a plot spoiler -- that's an input fact,
+  not a judge verdict. Added `run_eval.py --save-briefs PATH` so a human
+  can read the actual generated text directly instead of trusting a
+  judge either way -- not yet used (quota-blocked, see Next task).
+  All 20 titles now have a resolved
   `tmdb_id` in `titles.yaml` (D10) for browse-tier posters — cosmetic,
   doesn't touch the stratified sample or labels.
 - Demo track: 8/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
@@ -99,24 +240,76 @@ design decision.
 
 ## Next task
 
-Judge calibration is done for both judges against the same external
-human data (D12/D13), and neither clears the bar to trust a
-`leakage_rate`: `SubstringJudge` recall=0.0, `LLMJudge` recall=0.089 /
-precision=0.471. Don't start Milestone 1 (retrieval) before this is
-resolved — no point measuring whether retrieval helps with a judge that
-can't reliably see leaks either way. Concretely, next:
+**Judge search is closed (decision made, not defaulted into -- see D15's
+conclusion in docs/DESIGN.md).** Five judges tried against this
+project's actual `baseline-groq` generator output: `SubstringJudge`
+(recall=0.0, an honest floor), `TrainedClassifierJudge` (leakage_rate
+0.95 -- cast credits and stage directions flagged as spoilers),
+`HybridJudge` (0.6, still all false positives once inspected),
+`LLMJudge` (0.8, same pattern -- release-year facts, director credits,
+marketing hooks like "Are you ready to have your mind blown?" all
+flagged "core"). None fit to report a real `leakage_rate`.
+`SubstringJudge` stays `run_eval.py`'s default; the other three stay
+available for comparison, all clearly marked not for reporting.
 
-- Re-run `evals/calibrate_llm_external.py` with full (untruncated) review
-  text and/or a stronger model (`llama-3.3-70b-versatile` — mind Groq's
-  free daily request cap, budget the sample size accordingly) to find out
-  whether 0.089 recall is a real model-capacity ceiling or an artifact of
-  the 350-char truncation forced by this run's token budget.
-- If that still isn't good enough, the two genuinely different
-  alternatives worth trying (discussed with the user, not started):
-  a lightweight local NLI/entailment classifier (no per-call cost or rate
-  limit), or training a classifier directly on this project's own
-  2,197-positive/5,460-negative external labels with a proper held-out
-  split.
+**Working hypothesis instead of another judge attempt**: Milestone 0's
+`corpus=[]` generator has nothing real to write from, so it defaults to
+vague, evocative "hints at something" prose -- and `JUDGE_PROMPT`
+deliberately asks judges to flag hints (this project's own
+recall-favoring principle), so ungrounded text fools any judge built
+that way, more or less regardless of which judge. If true, no more
+judge-tuning fixes this; giving the generator something real to write
+from might.
+
+**D16: Milestone 1 built to test that hypothesis, not yet run live.**
+`src/preshow/retrieval.py`'s `build_green_corpus(title, year)` wires up
+the GREEN/AMBER/RED corpus-tagging mechanism D3 designed back in this
+project's early decisions but Milestone 0 never used
+(`schemas.py`'s `PreShowBrief` docstring already said "Generated with
+GREEN context only" -- the schema was ready, the code wasn't). Fetches
+Wikipedia (`preshow/wikipedia.py`, reused from `research_assist.py`),
+returns ONLY `overview`/`production`/`accolades` sections as GREEN
+`SourceDoc`s -- the `plot` section is never even constructed as a
+`SourceDoc` (not filtered after the fact -- never built), and
+`reception`/critical-response is dropped too (AMBER treated as RED, D3's
+stated default, since real reviews discuss plot points). Verified live
+against real Wikipedia (Parasite: premise/cast/awards, nothing
+resembling the actual plot turns) and offline with tests specifically
+trying to leak plot/reception text through a fabricated article
+(`tests/test_retrieval.py`). New generator `GroqRetrievalGenerator`
+(`retrieval_groq.py` + `retrieval_prompts.py` -- a genuinely different
+prompt from Milestone 0's `baseline_prompts.py`, not a shared variant,
+since M0's premise is "you have nothing to cite" and M1's is the
+opposite) wired into `run_eval.py --generator retrieval-groq`.
+
+Concretely, next:
+
+- **Confirmed live: `grounded_fact_rate` 0.0 -> 1.0** (19/20 cases, hit
+  the daily token quota on the 20th -- see Status above). This is the
+  first, real, judge-independent Milestone 1 result. `leakage_rate`
+  stayed 0.0 under `--judge substring`, but that number alone doesn't
+  prove zero leaks (substring's recall=0.0, D12) -- what's actually
+  proven is that the corpus itself is spoiler-free by construction,
+  which is a different, stronger, judge-independent claim.
+- **Human-verify the remaining question**: does the model leak anything
+  from its own parametric memory despite a clean corpus? Re-run once the
+  daily quota resets (rolling window, likely longer than the "~13 min"
+  Groq's own message quoted -- see D13's earlier findings on this) with
+  `--save-briefs evals/results/retrieval_briefs.json` (new flag, writes
+  every full generated brief), then hand-read a few famous-twist titles
+  (Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl) directly.
+  Worth trying `--judge llm` on the same run too, now that there's real
+  grounded text for it to check claims against.
+- If a human read finds a real leak despite the clean corpus, that's
+  useful too -- it would mean the leak came from parametric memory, not
+  grounding, and the deeper judge-fix options from D15 (retrain on short
+  fragments, embedding similarity, tighten `JUDGE_PROMPT`'s hint
+  criterion) come back into play for THAT specific failure mode.
+- Also still open, low priority: the long-form `why_now`-paragraph
+  false-positive pattern found during `TrainedClassifierJudge`'s
+  in-domain validation (D15) -- try scoring long fields
+  sentence-by-sentence instead of as one block, if that judge is ever
+  revisited.
 
 Upstash on the live Render deploy: deliberately deferred, user's call —
 no Upstash account yet. Comments/movie-requests on
@@ -144,18 +337,32 @@ Groq 403 ("Access denied, check your network settings") that blocked
 this session's Bash environment specifically resolved on its own within
 the same session — cause still not identified (see below), but no longer
 blocking.
-One real, minor quality issue seen in this run worth a future prompt
-fix: `author_voice` came back as the model's own generic critical
-opinion ("As a film-literate critic, I approach...") rather than an
-actual quote/statement from someone who made the film (director,
+**Fixed**: `author_voice` used to come back as the model's own generic
+critical opinion ("As a film-literate critic, I approach...") rather
+than an actual quote/statement from someone who made the film (director,
 screenwriter), which is what that field is for (see Gone Girl's
-Fincher/Flynn quotes) — not a grounding violation (it does cite the
-retrieved Wikipedia URL) but a category mismatch, worth tightening the
-prompt for next time.
-Still open: why the Bash environment's 403 happened and later cleared
-(possibly a temporary Cloudflare IP flag, per the community reports
-cited when this was first hit) — no reproduction steps, not chased
-further since it resolved on its own.
+Fincher/Flynn quotes). Added rule 11 to `SYSTEM_PROMPT` plus a GOOD/BAD
+few-shot pair and a tool-schema `description` on the `author_voice`
+property, all saying the same thing three ways: it's an attributed
+quote or it's empty, never the drafter's own opinion. Not yet re-tested
+live (see the 403 note below) — re-run `research_assist.py` on Citizen
+Kane again once Groq access is confirmed, to check this actually changed
+the output and didn't just move the problem.
+
+**Still open, blocking live re-verification**: the Groq 403 ("Access
+denied, check your network settings") that this session first hit and
+then saw clear on its own **recurred** when re-tested from this same
+Bash execution environment while investigating item 2 of the next task
+below (calling the API directly, no SDK, same 403). This confirms it's
+tied to this environment's outbound network path specifically, not a
+one-off — the user's own machine works fine once their VPN is off. Any
+task in this repo that needs a live Groq call (`research_assist.py`,
+`calibrate_llm_external.py`, `run_eval.py --generator baseline-groq`)
+may need to be run from the user's own machine, not assumed to work from
+whatever shell is executing Claude Code. No reproduction steps beyond
+"sometimes this specific egress blocks, sometimes it doesn't" — not
+chased further, per the user's own earlier instruction to not block on
+this.
 
 Also pending, not started (see docs/DESIGN.md "Pending"): automating the
 "+ Suggest a movie" pipeline (it now resolves a `tmdb_id` per suggestion,
@@ -177,6 +384,15 @@ python evals/run_eval.py --generator baseline    # needs paid ANTHROPIC_API_KEY 
 python evals/calibrate_substring.py               # internal calibration, no download needed
 python evals/calibrate_substring_external.py      # needs evals/dataset/external/ (see D12)
 python evals/calibrate_llm_external.py            # same, vs LLMJudge -- needs free GROQ_API_KEY (see D13)
+python evals/calibrate_llm_external.py --truncate-chars 1500 --interval 4.2       # isolate the truncation confound
+python evals/calibrate_llm_external.py --model llama-3.3-70b-versatile --sample-per-title 12  # isolate the model confound
+python webapp/research_assist.py "<Title>" <year> [n_candidates=3]  # needs free GROQ_API_KEY (see D14)
+pip install sentence-transformers && python evals/calibrate_nli_external.py --sample-per-title 20  # failed judge, see D15
+pip install scikit-learn && python evals/train_spoiler_classifier.py       # best judge so far, see D15
+python evals/calibrate_trained_classifier_internal.py             # validates it in-domain, not just IMDb reviews
+python evals/run_eval.py --generator baseline-groq --judge substring  # Milestone 0 (default judge), needs GROQ_API_KEY
+python evals/run_eval.py --generator baseline-groq --judge llm --show-leaks    # judges tested, none good enough -- see D15
+python evals/run_eval.py --generator retrieval-groq --judge substring --show-leaks  # Milestone 1 (D16), not yet run live
 ```
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
 TMDB key/read token live in `.env` (gitignored) — used by `src/preshow/tmdb.py`

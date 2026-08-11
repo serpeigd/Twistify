@@ -116,6 +116,15 @@ Rules, none negotiable:
    near-verbatim (with its source_id) instead of paraphrasing it into a vague generality.
    Generic film-criticism platitudes with no specific detail behind them are the failure
    mode this rule exists to prevent.
+11. "author_voice" is a QUOTE, not your opinion. Each item must be something an actual
+   person who made the film (director, screenwriter, cinematographer, composer, a lead
+   actor) is reported as having SAID or WRITTEN about it, attributed by name in the
+   retrieved text -- e.g. "Welles later said...", "In a 1941 interview, [name] explained...".
+   Never write your own critical assessment here ("this film's cinematography is
+   groundbreaking") even if it's true and even if it cites a source_id -- that belongs in
+   critical_consensus_summary or scene_analysis instead. If the retrieved text contains no
+   attributed quote from someone who made the film, leave author_voice EMPTY -- an empty
+   list is correct and expected here (see rule 3), a critic-voice paraphrase is not.
 
 EXAMPLE OF THE TARGET DEPTH (illustrative only -- about a different, unnamed film, not the
 one you're drafting -- match this level of specificity, not this content):
@@ -135,6 +144,14 @@ one you're drafting -- match this level of specificity, not this content):
   GOOD (specific): "production_trivia": [{{"text": "Budgeted at $6.2 million, it went
         $1.4 million over after a hurricane delayed exterior shooting by eleven days.",
         "source_id": "..."}}]
+
+  BAD  (this is YOUR opinion wearing a citation, not a quote -- rejected by rule 11):
+        "author_voice": [{{"text": "As a film-literate critic, I approach this film with a
+        deep appreciation for its groundbreaking cinematography.", "source_id": "..."}}]
+
+  GOOD (an attributed quote from someone who made the film): "author_voice": [{{"text":
+        "The director later said the ending was rewritten twice because test audiences
+        found the original too bleak.", "source_id": "..."}}]
 
 Every item you write should look like the GOOD examples: a real number, name, date, or
 quote from the retrieved text -- not a paraphrase that could apply to almost any film.
@@ -173,7 +190,14 @@ CONTENT_PROPERTIES = {
     "story": {"type": "string", "description": "Spoiler-free narrative hook, 3-5 short paragraphs."},
     "context_bullets": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
     "before_watching": {"type": "array", "items": _FACT_BULLET, "maxItems": 3},
-    "author_voice": {"type": "array", "items": _SOURCED, "maxItems": 3},
+    "author_voice": {
+        "type": "array",
+        "items": _SOURCED,
+        "maxItems": 3,
+        "description": "Attributed quotes from someone who made the film (director, "
+        "writer, cast), never the drafter's own critical opinion. Empty list if the "
+        "retrieved text has no such quote -- see rule 11.",
+    },
     "emotional_temperature": {"type": "string"},
     "why_now": {"type": "string"},
     "metaphors": {"type": "array", "items": _SOURCED_KIND},

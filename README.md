@@ -88,7 +88,7 @@ planted leaks.
 | Baseline generator (no retrieval) | ✅ two providers — Anthropic (paid) and Groq (free tier, no card) |
 | Judge calibration (offline + real spoiler reviews) | ✅ recall=0.0 confirmed twice — `SubstringJudge` needs replacing, not just calibrating |
 | Measure the baseline over the 20 titles | ✅ done — see numbers and caveats below |
-| Retrieval (TMDB/OMDb/Wikipedia) + verifier | ⬜ next milestone |
+| Retrieval (Wikipedia, GREEN-only corpus) + `--generator retrieval-groq` | ✅ `grounded_fact_rate` 0.0→1.0 confirmed live (19/20, D16) |
 
 ## Under the hood: the evaluation harness
 
@@ -148,12 +148,14 @@ all, a small real echo of the project's own mainstream/long-tail split):
 | | Value |
 |---|---|
 | Reviews evaluated | 2,197 real spoiler-tagged + 5,460 real non-spoiler-tagged |
-| **Recall** | **0.0** — caught 0 of 2,197 |
+| **Recall** | **0.0** — caught 0 of 2,197 (95% CI: 0.0–0.002) |
 | Precision | undefined (0 positive predictions made — not "wrong every time") |
 
 **Same conclusion, now independently confirmed**: `SubstringJudge` doesn't
 just fail on paraphrases it's never seen from itself — it fails on plain
-human language. See D12 in `docs/DESIGN.md` for the one caveat this
+human language, and with n=2,197 the 95% confidence interval (Wilson score,
+`evals/stats.py`) is tight enough (0.0–0.002) that this isn't sample noise —
+it's a structural miss. See D12 in `docs/DESIGN.md` for the one caveat this
 comparison carries (a review can be a real spoiler for a plot point we
 didn't document, which the method above counts as a miss even though it
 isn't the judge's fault).
@@ -168,18 +170,159 @@ sample — 180 reviews (20/title, balanced spoiler/not) instead of the full
 7,657 — and review text truncated to 350 characters/call to stay under
 the tokens/min cap:
 
-| Judge | n | Recall | Precision |
+| Judge | n | Recall (95% CI) | Precision (95% CI) |
 |---|---|---|---|
-| `SubstringJudge` | 7,657 | 0.0 | undefined |
-| `LLMJudge` (llama-3.1-8b-instant) | 180 | **0.089** | 0.471 |
+| `SubstringJudge` | 7,657 | 0.0 (0.0–0.002) | undefined |
+| `LLMJudge` (llama-3.1-8b-instant) | 180 | **0.089** (0.046–0.166) | 0.471 (0.262–0.69) |
 
 A real improvement over the free floor — it sees paraphrases the substring
 judge structurally cannot — but not yet trustworthy: it misses ~91 of every
 100 real spoiler reveals in this sample, and fewer than half its positive
-calls are right. Two things this run can't separate (see D13 in
-`docs/DESIGN.md`): whether that ceiling is the small model or the 350-char
-truncation forced by the token budget. Neither judge currently clears the
-bar to report a trustworthy `leakage_rate`.
+calls are right. The 95% confidence intervals (Wilson score interval,
+`evals/stats.py`) matter here more than the point estimates: with only
+n=180 (forced by Groq's free daily request cap), true recall could
+plausibly be anywhere from 0.046 to 0.166 and true precision from 0.262 to
+0.69 — a much bigger error bar than `SubstringJudge`'s, which had 42x more
+data. Two things this run couldn't separate: whether that ceiling was the
+small model or the 350-char truncation forced by the token budget.
+
+**Follow-up: it was mostly the truncation.** Same model, same 180-review
+sample, truncation raised from 350 to 1,500 characters:
+
+| Truncation | n | Recall (95% CI) | Precision (95% CI) |
+|---|---|---|---|
+| 350 chars | 180 | 0.089 (0.046–0.166) | 0.471 (0.262–0.69) |
+| 1,500 chars | 180 | **0.356** (0.264–0.459) | **0.64** (0.501–0.759) |
+
+Non-overlapping confidence intervals — a real, large effect. Truncating
+reviews to 350 characters was hiding most of the model's actual recall.
+Still not good enough to trust a `leakage_rate` on (0.356 recall still
+misses ~64 of every 100 real spoilers), but meaningfully better than the
+first run suggested.
+
+**The remaining confound — does a stronger model help — is resolved: no,
+barely at all.** After three free-tier failures (a daily token quota that
+turned out to be a rolling window, and a transient Groq outage — see
+D13's follow-up in `docs/DESIGN.md` for the full account), a complete run
+of `llama-3.3-70b-versatile` at the same 350-char truncation as the
+original baseline finished cleanly:
+
+| Model | n | Recall (95% CI) | Precision (95% CI) |
+|---|---|---|---|
+| llama-3.1-8b-instant | 180 | 0.089 (0.046–0.166) | 0.471 (0.262–0.69) |
+| llama-3.3-70b-versatile | 108 | **0.093** (0.04–0.199) | 0.714 (0.359–0.918) |
+
+Recall is essentially flat — a model roughly 9x larger doesn't catch
+meaningfully more real spoiler reveals. Precision looks better but the
+CIs still overlap substantially. **Combined with the truncation result
+above, this is a clean answer**: giving the judge more text mattered a
+lot; paying for a bigger model didn't. `llama-3.1-8b-instant` is the
+better default going forward — no documented daily token cap, and it's
+what survived four attempts of testing without a single free-tier
+failure. `LLMJudge`'s ceiling at reasonable free-tier settings looks to
+be around recall≈0.35–0.4.
+
+### A trained classifier beats every judge above
+
+Two more approaches were tried (D15 in `docs/DESIGN.md`). A local NLI
+(entailment) classifier failed outright — impractically slow on this
+project's dev hardware, and even where it ran, its recall was ~0
+(formal NLI entailment is a stricter bar than "could a viewer infer
+this", a real task mismatch, not a bug). But training a small classifier
+directly on this project's own external labels worked, and it's the
+best judge calibrated so far:
+
+| Threshold | Recall (95% CI) | Precision (95% CI) |
+|---|---|---|
+| 0.3 | **0.889** (0.876–0.902) | 0.357 (0.345–0.37) |
+| 0.4 | 0.685 (0.665–0.704) | 0.45 (0.433–0.467) |
+| 0.5 | 0.445 (0.424–0.466) | 0.571 (0.547–0.594) |
+
+TF-IDF + Logistic Regression, trained on the **full** 7,657-review
+external set (no free-tier sample-size limit), evaluated with grouped
+k-fold by title (leave-one-title-out) so every reported prediction comes
+from a model that never saw its own title during training — a genuine
+held-out estimate, not a fit-and-report number. It beats `LLMJudge`'s
+best result at every threshold from 0.4 down, with a far tighter
+confidence interval. Per-title recall (0.285–0.668 across the 9 titles)
+confirms it isn't just memorizing Fight Club, which is 32% of the
+dataset. Caveats: trained only on the 9 mostly-mainstream titles with
+review coverage, and it answers a different question than the other
+three judges ("is this text spoiler-revealing" vs. "does it entail this
+specific documented spoiler").
+
+**Wired in**: `python evals/train_spoiler_classifier.py` persists the
+trained model, and `python evals/run_eval.py --generator baseline-groq
+--judge trained-classifier` uses it (default judge stays `substring`,
+which needs nothing but the stdlib — this one needs the persisted model
+plus `scikit-learn`). See D15 in `docs/DESIGN.md`.
+
+**Validated in-domain, not just on IMDb reviews it was trained on**:
+`evals/calibrate_trained_classifier_internal.py` tests it against real
+spoiler-free pre-viewing text from the 8 hand-researched titles plus
+this project's own 277 documented spoiler sentences — recall=0.838
+(95% CI 0.79–0.876), precision=0.928 (95% CI 0.889–0.954) at the
+shipped threshold, actually better than the external number.
+
+**But it does NOT work on this project's actual generator output —
+confirmed, not a theoretical risk.** The first live run
+(`--generator baseline-groq --judge trained-classifier --show-leaks`)
+scored **leakage_rate=0.95**, flagging things like a stage direction
+("Black screen"), a cast credit ("The film stars Daniel Kaluuya..."),
+and an award fact ("...won the Palme d'Or") as spoilers. The baseline
+generators write short, fragmentary `on_screen_text`/`voiceover` lines —
+a third register this judge was never trained or validated on (its
+training data and validation set are both full sentences). Scoring the
+flagged phrases directly showed every one landed in a narrow 0.30–0.47
+band regardless of content — not a threshold problem, the model has no
+real signal on fragments this short. `run_eval.py` now prints a warning
+when `--judge trained-classifier` is selected; **don't report a
+`leakage_rate` from it** until this is fixed. Full account in D15.
+
+**Fix attempted, reduced but didn't solve it**: `--judge hybrid` routes
+short text (< 15 words) to `SubstringJudge`, longer text to the trained
+classifier. Live result: leakage_rate=0.6 (down from 0.95), but every
+remaining flagged sentence was still a false positive — mood/theme/
+production text, no real plot reveal — confirmed by scoring a
+hand-invented neutral control sentence, which landed in the same noise
+band. This classifier has no real signal on this generator's writing
+register at any length tested.
+
+**`--judge llm` tried too — same pattern.** A complete 20-title run
+scored leakage_rate=0.8: release-year facts, director credits, and
+marketing hooks ("Are you ready to have your mind blown?") all flagged
+as core leaks. One catch looked genuinely plausible
+(`sixth_sense_1999`), but it was a small signal in a lot of noise.
+
+**Decision: stop iterating on judges.** `SubstringJudge` (recall=0.0, an
+honest floor) stays the default; the others stay available for
+comparison, none fit to report a real `leakage_rate`. Working hypothesis
+instead: a `corpus=[]` generator has nothing real to write from, so it
+defaults to vague "hints at something" prose that fools any
+recall-favoring judge — not a judge problem, a grounding problem.
+Milestone 1 (below) tests that directly.
+
+### Milestone 1: real retrieval, GREEN-tier only (D16)
+
+`src/preshow/retrieval.py` wires up the GREEN/AMBER/RED corpus-tagging
+mechanism this project's schema was built for (`SourceDoc.tier`,
+`PreShowBrief`'s own docstring: "Generated with GREEN context only") but
+Milestone 0 never used. Fetches Wikipedia, returns only
+`overview`/`production`/`accolades` as GREEN — the `plot` section is
+never even constructed as a source, and `reception`/critical-response is
+dropped too (real reviews discuss plot points). `--generator
+retrieval-groq` uses it.
+
+**First live result**: `grounded_fact_rate` went from 0.0 (Milestone 0)
+to **1.0** (19/20 titles, hit a daily API quota on the 20th) — a
+judge-independent, purely structural result (every fact-kind claim now
+cites a real source_id). `leakage_rate` measured 0.0 under
+`--judge substring`, but that alone doesn't prove zero leaks (substring
+can't see a leak pulled from the model's own memory rather than the
+corpus) — what IS proven independent of any judge is that the corpus
+itself never contains plot spoilers to begin with. `run_eval.py
+--save-briefs` (new) writes the full generated text so a human can check
+the remaining question directly. Full account in D16, `docs/DESIGN.md`.
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't
