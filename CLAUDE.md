@@ -212,8 +212,21 @@ design decision.
   draws FROM THE CORPUS can be a plot spoiler -- that's an input fact,
   not a judge verdict. Added `run_eval.py --save-briefs PATH` so a human
   can read the actual generated text directly instead of trusting a
-  judge either way -- not yet used (quota-blocked, see Next task).
-  All 20 titles now have a resolved
+  judge either way.
+  **Human spot-check done (13/20 titles, second run hit the same
+  quota): mostly excellent, one real leak found.** Sixth Sense, Fight
+  Club, Se7en, The Prestige, Gone Girl -- the 5 highest-risk
+  famous-twist titles -- all came back clean on direct human reading (no
+  judge involved). But Los cronocrímenes' generated script said "One man
+  must stop his other selves" -- this project's own documented ground
+  truth lists "there are two, even three, versions of the same man
+  coexisting on the same day" as a **core**-severity paraphrase of that
+  film's core spoiler. The GREEN corpus for that title never mentions
+  multiple selves, so this reveal came from the model's own memory, not
+  the corpus -- confirms the exact risk D16 flagged as still open, with
+  a concrete example instead of just a caveat. `SubstringJudge` didn't
+  catch it either (not a literal string match) -- consistent with its
+  known recall=0.0, not a new problem. All 20 titles now have a resolved
   `tmdb_id` in `titles.yaml` (D10) for browse-tier posters — cosmetic,
   doesn't touch the stratified sample or labels.
 - Demo track: 8/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
@@ -296,27 +309,39 @@ opposite) wired into `run_eval.py --generator retrieval-groq`.
 
 Concretely, next:
 
-- **Confirmed live: `grounded_fact_rate` 0.0 -> 1.0** (19/20 cases, hit
-  the daily token quota on the 20th -- see Status above). This is the
-  first, real, judge-independent Milestone 1 result. `leakage_rate`
-  stayed 0.0 under `--judge substring`, but that number alone doesn't
-  prove zero leaks (substring's recall=0.0, D12) -- what's actually
-  proven is that the corpus itself is spoiler-free by construction,
-  which is a different, stronger, judge-independent claim.
-- **Human-verify the remaining question**: does the model leak anything
-  from its own parametric memory despite a clean corpus? Re-run once the
-  daily quota resets (rolling window, likely longer than the "~13 min"
-  Groq's own message quoted -- see D13's earlier findings on this) with
-  `--save-briefs evals/results/retrieval_briefs.json` (new flag, writes
-  every full generated brief), then hand-read a few famous-twist titles
-  (Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl) directly.
-  Worth trying `--judge llm` on the same run too, now that there's real
-  grounded text for it to check claims against.
-- If a human read finds a real leak despite the clean corpus, that's
-  useful too -- it would mean the leak came from parametric memory, not
-  grounding, and the deeper judge-fix options from D15 (retrain on short
-  fragments, embedding similarity, tighten `JUDGE_PROMPT`'s hint
-  criterion) come back into play for THAT specific failure mode.
+- **Confirmed live: `grounded_fact_rate` 0.0 -> 1.0**, and **confirmed by
+  direct human reading** (not a judge) that retrieval gets the highest-risk
+  cases right: Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl all
+  came back clean. **But a real leak was found too**: Los cronocrímenes'
+  script revealed "his other selves," matching this project's own
+  documented core spoiler paraphrase almost exactly -- and it came from
+  the model's memory, not the (clean) corpus, since the retrieved GREEN
+  text never mentions multiple selves. See Status above and D16's second
+  update in docs/DESIGN.md for the full account. Milestone 1 measurably
+  improved things, it didn't solve them -- don't report a Milestone 1
+  `leakage_rate` as a safety claim yet either.
+- **Finish the remaining 7 titles** once the daily quota clears (rolling
+  window, took over a day to clear enough for a second 13-case run --
+  budget accordingly) with the same `--save-briefs` command, and hand-read
+  those too for the same kind of leak.
+- **The parametric-memory leak is a different failure mode than D15's
+  judge-noise problem, and needs a different fix**: it's not about the
+  judge misfiring, it's about the corpus being clean but the model
+  answering from its own training data anyway despite being told not to
+  (SYSTEM_PROMPT in retrieval_prompts.py already says "even if something
+  in the retrieved text hints at one, leave it out" -- this is closer to
+  "the model didn't even need a hint from the text, it already knew").
+  Worth trying: an explicit denylist of the title's own documented
+  SpoilerLabel canonicals/paraphrases as a final code-level check on the
+  generated output (same "don't trust the model to police itself"
+  principle as D3/sanitize_grounding() in D14). Note `SubstringJudge`
+  DID check this exact text against this exact title's labels and still
+  missed it -- expected, not a new mystery: "his other selves" vs. "two,
+  even three, versions of the same man" share no literal substring, the
+  same paraphrase blindness D12 already established. A real fix here
+  needs paraphrase-level matching (LLMJudge, or the denylist idea above
+  scored by similarity rather than exact match), not just "run substring
+  again."
 - Also still open, low priority: the long-form `why_now`-paragraph
   false-positive pattern found during `TrainedClassifierJudge`'s
   in-domain validation (D15) -- try scoring long fields

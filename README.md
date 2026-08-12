@@ -372,7 +372,17 @@ can't see a leak pulled from the model's own memory rather than the
 corpus) — what IS proven independent of any judge is that the corpus
 itself never contains plot spoilers to begin with. `run_eval.py
 --save-briefs` (new) writes the full generated text so a human can check
-the remaining question directly. Full account in D16, `docs/DESIGN.md`.
+the remaining question directly.
+
+**Human spot-check, no judge involved**: read all 5 highest-risk titles
+directly (Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl) —
+clean, no twist revealed in any of them. But one real leak turned up in
+a longtail title: Los cronocrímenes' script said "his other selves,"
+matching this project's own documented core-spoiler paraphrase almost
+exactly — and the retrieved corpus for that title never mentions
+multiple selves, so it came from the model's memory, not the corpus.
+Milestone 1 is a real, measurable improvement — it isn't a solved
+problem. Full account in D16, `docs/DESIGN.md`.
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't

@@ -856,12 +856,45 @@ judge tested in this project has reliably answered.
 
 Added `run_eval.py --save-briefs PATH` to make that question checkable
 by a human instead of trusting a judge either way: writes every
-generated `PreShowBrief` in full, keyed by `title_id`. Next step: re-run
-with `--save-briefs` once the daily quota resets (the message said
-"~13 minutes" but this project's own rolling-window findings, D13,
-suggest that's an underestimate) and hand-read a few famous-twist titles
-(Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl) directly for
-any leak substring can't see.
+generated `PreShowBrief` in full, keyed by `title_id`.
+
+**Human spot-check done -- mostly excellent, one real leak found by
+hand-reading, not by any judge.** A second live run (`--save-briefs`)
+got 13/20 titles before hitting the same daily quota (the 100k/day
+window hadn't meaningfully cleared from the first run -- consistent with
+the rolling-window behavior D13 already documented), but it included all
+5 target famous-twist titles. Read directly, ignoring every judge:
+
+- **Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl: clean.** No
+  mention of Malcolm being dead, Tyler Durden being the narrator, the
+  head in the box, Borden's twin/Angier's clones, or Amy's plan. Sixth
+  Sense's script does use "I see dead people" -- the film's own official
+  marketing tagline, not the actual twist -- correctly not a leak.
+- **Los cronocrímenes (a longtail title): a real leak.** The generated
+  script includes "One man must stop his other selves." This project's
+  own documented ground truth (`evals/dataset/spoilers/cronocrimenes_2007.yaml`)
+  lists, as a **core**-severity paraphrase of its own core spoiler label:
+  *"there are two, even three, versions of the same man coexisting on
+  the same day."* These say the same thing. The retrieved GREEN corpus
+  for this title contains no mention of multiple selves (its
+  `context_bullets`/`author_voice` cite only genre/director/cast facts)
+  -- this reveal isn't grounded in anything the model was given, which
+  points at exactly the risk D16 flagged as still open: the model's own
+  parametric memory, not the corpus, producing a leak a clean corpus
+  can't prevent.
+
+Read plainly: retrieval got the vast majority of cases genuinely right
+(5/5 on the highest-profile, highest-risk titles), which is real
+progress no judge in this project could have credibly claimed on its
+own -- but "the corpus is clean" and "the output is clean" are not the
+same guarantee, confirmed with a concrete counterexample, not just a
+theoretical caveat. `SubstringJudge` didn't catch this one either
+("other selves" isn't a literal match to any stored paraphrase) --
+another data point for D12's recall=0.0 floor, not a contradiction of it.
+Next: finish the remaining 7 titles once the quota clears, and treat
+this as a second reason (D15's judge-noise problem was the first) that
+this project isn't ready to publish a `leakage_rate` as a safety claim
+yet -- Milestone 1 measurably improved things, it didn't solve them.
 
 ## D14 — Scaling the researched catalogue automates the labor, not the citation requirement
 
