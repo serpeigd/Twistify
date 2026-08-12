@@ -993,6 +993,105 @@ forward is what already caught the one confirmed real leak in this
 project: `--save-briefs` + a human reading the generated text directly
 -- not a better automated judge.
 
+**Finishing the remaining 7 titles: three infrastructure fixes needed
+before the daily quota stopped being the bottleneck.** Switching to
+`--model llama-3.1-8b-instant` (500K TPD vs. `llama-3.3-70b-versatile`'s
+100K, confirmed live on Groq's own rate-limits page) fixed the daily
+quota problem but immediately exposed two more, each requiring a
+different fix, diagnosed from the actual error rather than guessed at:
+
+1. `APIStatusError` 413 "Request too large" -- a single request exceeded
+   the 8B model's tighter 6,000 TPM cap outright, not recoverable by
+   retrying the same request. Fixed by adding
+   `DEFAULT_MAX_CHARS_PER_SECTION = 2500` truncation to
+   `build_green_corpus()` (`tests/test_retrieval.py::test_long_sections_are_truncated`
+   is the regression test).
+2. `RateLimitError` 429 on TPM (recoverable with a short wait, unlike
+   the daily TPD quota) -- `retrieval_groq.py` had no retry logic for
+   this at all. Fixed with `MIN_CALL_INTERVAL_S = 40.0` pacing before
+   every call plus a dedicated `RateLimitError` except-clause that backs
+   off and retries.
+3. A persistent `BadRequestError` on one title (Come and See) dropped
+   the same field (`end_s`) from every script block across all 3 retry
+   attempts -- not a fluke a 4th identical retry would fix. Fixed by
+   raising `max_attempts` to 5 and making the corrective message name
+   that specific field after the first failure, instead of repeating the
+   same generic reminder that had already failed once.
+
+`run_eval.py --titles a,b,c` was also added, to re-run only the
+still-missing title_ids without re-spending quota on titles that had
+already succeeded -- checked against the full labelled set for the
+>=15-titles gate, same as always, just scoped for the actual generator
+loop.
+
+**All 20/20 titles now complete.** Full aggregate (`SubstringJudge`,
+the only judge this project trusts for this number, see above):
+
+| | Milestone 0 | Milestone 1, all 20/20 |
+|---|---|---|
+| `grounded_fact_rate` | 0.0 | **1.0** |
+| `leakage_rate` (`substring`, recall=0.0 -- not a safety claim) | 0.0 | 0.0 |
+| `richness_claims_per_case` (mainstream / longtail) | 6.0 / 6.0 | 5.2 / 4.9 |
+
+Mainstream vs. longtail richness stayed close (5.2 vs 4.9, same as
+Milestone 0's identical numbers) -- the original mainstream-vs-longtail
+hypothesis is still **unconfirmed** across both milestones.
+
+**Hand-reading the final 5 titles found two more real leaks -- with a
+different, more diagnosable mechanism than Los cronocrímenes.**
+Cronocrímenes' leak came from the model's own parametric memory: the
+retrieved GREEN corpus never mentioned "other selves," so nothing in the
+input explains the output. These two are the opposite -- the leak is
+**already present, verbatim, in the GREEN-tagged corpus itself**:
+
+- **Tetsuo: The Iron Man** -- generated `author_voice`/`why_now`/script
+  all say "human-machine transformation." The documented `core` spoiler
+  is exactly that: "the protagonist progressively transforms into a
+  being of metal." Checked the retained `overview` section directly: *"As
+  the man steadily becomes a hybrid of man and machine"* -- Wikipedia's
+  own lead paragraph, not Plot.
+- **Hard to Be a God** -- generated script: *"Their mission is to
+  observe and not interfere. But one of them cannot resist the urge to
+  take a stand."* The documented `major` spoiler: Rumata breaks his
+  non-interference directive. The retained `overview` section: *"ordered
+  not to interfere... but one of them... must eventually pick a side."*
+  Same source, same section.
+- **Come and See** -- no leak in this run's output, but a latent one
+  found in the corpus: the retained `production` section includes the
+  director's own quote describing, almost verbatim, the barn-church
+  burning that is this film's `core` spoiler. It happened not to surface
+  in this generation, but the corpus classification would hand it to any
+  future run.
+
+**Root cause: `overview`/`production` are not universally safe
+sections, and D3's classification treated them as if they were.** For
+Sixth Sense/Fight Club/Se7en/Prestige/Gone Girl the lead paragraph is
+setup (premise, cast, marketing hook) without the twist -- that's the
+assumption D3 was built on, and it held for those 5. It does not hold
+for films whose public premise already *is* the spoiler (body-horror
+films, and films whose entire dramatic arc is summarized in one
+sentence, as Wikipedia's own lead paragraphs tend to do for them) --
+found in at least 3/20 titles here. This is a corpus-tagging gap, not a
+generator or model failure: the model correctly, faithfully reported
+what a "safe" source handed it.
+
+**Decision, made explicitly with the user: document this as a known
+limit of Milestone 1 and close it here, rather than attempt a
+per-section content filter.** The same reasoning that closed judge
+iteration applies again -- a keyword/heuristic filter over
+overview/production text would carry the same false-negative risk every
+judge attempt already demonstrated (D15/D16 above), for a problem
+confirmed in 3/20 titles, not a systemic failure of the mechanism.
+Milestone 1's real, confirmed result stands: retrieval genuinely
+improved grounding (`grounded_fact_rate` 0.0->1.0, judge-independent)
+and got every one of the 5 highest-risk famous-twist titles right. It is
+**not** a leak-proof guarantee -- two independent failure mechanisms are
+now confirmed (model memory bypassing a clean corpus, and a corpus
+section that isn't actually clean for some titles) -- and this project
+does not claim `leakage_rate` as a safety number for either reason.
+`--save-briefs` + a human reading the text is still the only practice in
+this project that has ever caught a real leak, by either mechanism.
+
 ## D14 — Scaling the researched catalogue automates the labor, not the citation requirement
 
 The demo track's 8 hand-researched titles took ~15 min each. The user's goal is a much

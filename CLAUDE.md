@@ -229,6 +229,27 @@ design decision.
   known recall=0.0, not a new problem. All 20 titles now have a resolved
   `tmdb_id` in `titles.yaml` (D10) for browse-tier posters — cosmetic,
   doesn't touch the stratified sample or labels.
+  **Milestone 1: all 20/20 titles now complete and hand-read.** Three
+  infrastructure fixes (`llama-3.1-8b-instant` for its 500K TPD budget,
+  `DEFAULT_MAX_CHARS_PER_SECTION` truncation to fix a 413 "request too
+  large", `MIN_CALL_INTERVAL_S` pacing + retry for TPM 429s — see D16)
+  cleared the remaining 7 titles. Full aggregate: `grounded_fact_rate`
+  0.0 -> **1.0**, `leakage_rate` (substring) 0.0, `richness` 5.2/4.9
+  mainstream/longtail (still not confirming the original hypothesis).
+  **Hand-reading the final 5 found 2 more real leaks — Tetsuo and Hard
+  to Be a God — both traced to Wikipedia's own `overview` section
+  containing the film's core/major spoiler verbatim** (unlike
+  Cronocrímenes, this wasn't the model's memory — the "safe" GREEN
+  corpus itself wasn't safe for these titles). A third, Come and See,
+  has the same risk latent in its `production` section though it didn't
+  surface this run. **Explicit decision with the user: document as a
+  known limit of M1 and close it (same reasoning as closing judge
+  iteration — a content filter would carry the same false-negative risk
+  every judge attempt already showed).** Milestone 1's real result
+  stands (grounding genuinely improved, all 5 highest-risk titles
+  clean) but is not a leak-proof guarantee — two independent leak
+  mechanisms are now confirmed. Full account in D16's final section,
+  docs/DESIGN.md.
 - Demo track: 8/20 titles researched (Sixth Sense, Fight Club, Get Out, Parasite,
   Prestige, Se7en, Arrival, Gone Girl). Remaining 12 show a real TMDB
   poster/synopsis instead of an empty placeholder (D10), translated to ES
@@ -345,11 +366,18 @@ Concretely, next:
   actually caught the one confirmed real leak in this project so far, not
   any automated judge. Full account in D16's final correction,
   docs/DESIGN.md.
-- **Milestone 1 next step, now that judges are settled**: finish the
-  remaining 7 titles from the live `retrieval-groq` run (rolling daily
-  quota took over a day to clear enough for a 13-case run last time --
-  budget accordingly) with `--judge substring --save-briefs`, and
-  hand-read each for the same kind of leak Los cronocrímenes had.
+- **Milestone 1 is now complete: all 20/20 titles run and hand-read.**
+  The remaining 7 titles finished after three infrastructure fixes
+  (`--model llama-3.1-8b-instant`, GREEN corpus truncation, call pacing
+  + retry -- D16's final section). Hand-reading the last 5 found 2 more
+  real leaks (Tetsuo, Hard to Be a God) plus one latent risk (Come and
+  See) -- all three traced to Wikipedia's `overview`/`production`
+  sections containing the spoiler verbatim, a different mechanism from
+  Los cronocrímenes' model-memory leak. **Explicit decision with the
+  user: document this as a known limit of M1 and close it (same
+  reasoning as closing judge iteration -- see D16).** Milestone 1's next
+  task is now whatever Sergio wants to tackle next, not more leak-fixing
+  on this milestone.
 - Groq's Dev Tier (paid, would remove the daily-quota bottleneck this
   project has repeatedly hit) is temporarily not accepting upgrades
   ("high demand", per Groq's own billing page, checked live). Cheaper/
@@ -448,9 +476,9 @@ pip install scikit-learn && python evals/train_spoiler_classifier.py       # bes
 python evals/calibrate_trained_classifier_internal.py             # validates it in-domain, not just IMDb reviews
 python evals/run_eval.py --generator baseline-groq --judge substring  # Milestone 0 (default judge), needs GROQ_API_KEY
 python evals/run_eval.py --generator baseline-groq --judge llm --show-leaks    # judges tested, none good enough -- see D15
-python evals/run_eval.py --generator retrieval-groq --judge substring --show-leaks  # Milestone 1 (D16), confirmed live
-python evals/calibrate_similarity.py                               # calibrates SimilarityJudge, see D16
-python evals/run_eval.py --generator retrieval-groq --judge similarity --show-leaks --save-briefs evals/results/similarity_briefs.json  # not yet run live
+python evals/run_eval.py --generator retrieval-groq --model llama-3.1-8b-instant --judge substring --show-leaks --save-briefs evals/results/retrieval_briefs.json  # Milestone 1 (D16), complete 20/20
+python evals/run_eval.py --generator retrieval-groq --titles come_and_see_1985,tetsuo_1989  # re-run only specific titles, doesn't affect the >=15 gate
+python evals/calibrate_similarity.py                               # calibrates SimilarityJudge, see D16 -- judge iteration is closed, kept for comparison only
 ```
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
 TMDB key/read token live in `.env` (gitignored) — used by `src/preshow/tmdb.py`

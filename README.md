@@ -125,7 +125,7 @@ on a redeploy; falls back to local files without it).
 | Judge calibration (offline + real spoiler reviews) | ✅ both judges calibrated against the same external human data — `SubstringJudge` recall=0.0, `LLMJudge` recall=0.089/precision=0.471 — **neither clears the bar to trust a `leakage_rate` yet** (see [Limitations](#limitations)) |
 | Measure the baseline over the 20 titles | ✅ done — see numbers and caveats below |
 | Research-assist tool (D14) | ✅ drafts a researched entry from Wikipedia + TMDB; tested end-to-end on one title (Citizen Kane) |
-| Retrieval (Wikipedia, GREEN-only corpus) + `--generator retrieval-groq` | ✅ `grounded_fact_rate` 0.0→1.0 confirmed live (19/20, D16) |
+| Retrieval (Wikipedia, GREEN-only corpus) + `--generator retrieval-groq` | ✅ `grounded_fact_rate` 0.0→1.0 confirmed live, all 20/20 titles hand-read (D16) |
 
 ## Ground truth, precisely
 
@@ -363,26 +363,48 @@ never even constructed as a source, and `reception`/critical-response is
 dropped too (real reviews discuss plot points). `--generator
 retrieval-groq` uses it.
 
-**First live result**: `grounded_fact_rate` went from 0.0 (Milestone 0)
-to **1.0** (19/20 titles, hit a daily API quota on the 20th) — a
+**Full 20/20-title result** (three infrastructure fixes were needed to
+finish live on the free tier: `llama-3.1-8b-instant` for its larger
+daily token budget, corpus truncation to stay under its tighter
+per-minute cap, and call pacing + retry — see D16 in `docs/DESIGN.md`):
+`grounded_fact_rate` went from 0.0 (Milestone 0) to **1.0** — a
 judge-independent, purely structural result (every fact-kind claim now
 cites a real source_id). `leakage_rate` measured 0.0 under
 `--judge substring`, but that alone doesn't prove zero leaks (substring
 can't see a leak pulled from the model's own memory rather than the
 corpus) — what IS proven independent of any judge is that the corpus
-itself never contains plot spoilers to begin with. `run_eval.py
---save-briefs` (new) writes the full generated text so a human can check
-the remaining question directly.
+itself never *constructs* a plot-section source to begin with.
+`run_eval.py --save-briefs` writes the full generated text so a human
+can check the remaining question directly, which is what found both
+leaks below.
 
-**Human spot-check, no judge involved**: read all 5 highest-risk titles
-directly (Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl) —
-clean, no twist revealed in any of them. But one real leak turned up in
-a longtail title: Los cronocrímenes' script said "his other selves,"
-matching this project's own documented core-spoiler paraphrase almost
-exactly — and the retrieved corpus for that title never mentions
-multiple selves, so it came from the model's memory, not the corpus.
-Milestone 1 is a real, measurable improvement — it isn't a solved
-problem.
+**Human spot-check, no judge involved, all 20 titles read: two
+independent leak mechanisms found, both real.** All 5 highest-risk
+titles (Sixth Sense, Fight Club, Se7en, The Prestige, Gone Girl) came
+back clean — no twist revealed in any of them. But:
+
+- **Los cronocrímenes** (longtail): the script said "his other selves,"
+  matching this project's own documented core-spoiler paraphrase almost
+  exactly. The retrieved corpus never mentions multiple selves — this
+  came from the model's own memory, not the corpus.
+- **Tetsuo: The Iron Man and Hard to Be a God**: both generated briefs
+  stated their film's documented core/major spoiler almost verbatim
+  ("human-machine transformation"; "cannot resist the urge to take a
+  stand" against a non-interference order). This time the leak was
+  **already present in the retrieved GREEN corpus itself** — Wikipedia's
+  own `overview` paragraph, for films whose public premise already *is*
+  the twist. A third title, Come and See, has the same risk sitting
+  unused in its `production` section.
+
+Two different failure mechanisms (model memory bypassing a clean
+corpus; a "safe" corpus section that isn't actually safe for some
+films), confirmed independently. Milestone 1 is a real, measurable
+improvement — it isn't a solved problem, and this project explicitly
+decided not to chase a per-section content filter for the second
+mechanism, for the same reason judge iteration was closed below: a
+heuristic filter would carry the same false-negative risk every judge
+attempt already demonstrated, for a gap confirmed in 3/20 titles, not a
+systemic failure.
 
 **A sixth judge was built specifically to catch this — and also failed
 live, closing the search.** `SimilarityJudge` compares generated text
