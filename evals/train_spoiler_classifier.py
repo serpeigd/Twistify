@@ -50,10 +50,8 @@ from __future__ import annotations
 
 import json
 import sys
-import zipfile
 from pathlib import Path
 
-import yaml
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GroupKFold
@@ -62,43 +60,10 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 
-from preshow import tmdb  # noqa: E402
-from preshow.schemas import SpoilerLabel  # noqa: E402
+from external_dataset import ZIP_PATH, iter_reviews, load_labels_by_title, resolve_imdb_ids  # noqa: E402
 from stats import wilson_interval  # noqa: E402
 
-ZIP_PATH = ROOT / "evals" / "dataset" / "external" / "imbd_spoiler_dataset.zip"
-TITLES_PATH = ROOT / "evals" / "dataset" / "titles.yaml"
-LABELS_DIR = ROOT / "evals" / "dataset" / "spoilers"
-
 THRESHOLDS = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-
-
-def load_labels_by_title() -> dict[str, list[SpoilerLabel]]:
-    out: dict[str, list[SpoilerLabel]] = {}
-    for p in sorted(LABELS_DIR.glob("*.yaml")):
-        raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        out[p.stem] = [SpoilerLabel(**l) for l in (raw.get("labels") or [])]
-    return out
-
-
-def resolve_imdb_ids() -> dict[str, str]:
-    films = yaml.safe_load(TITLES_PATH.read_text(encoding="utf-8"))["films"]
-    tt_by_title_id: dict[str, str] = {}
-    for f in films:
-        movie = tmdb.get_movie(f["tmdb_id"])
-        imdb_id = movie.get("imdb_id") if movie else None
-        if imdb_id:
-            tt_by_title_id[f["title_id"]] = imdb_id
-    return tt_by_title_id
-
-
-def iter_reviews():
-    z = zipfile.ZipFile(ZIP_PATH)
-    with z.open("IMDB_reviews.json") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                yield json.loads(line)
 
 
 def load_dataset() -> tuple[list[str], list[bool], list[str]]:

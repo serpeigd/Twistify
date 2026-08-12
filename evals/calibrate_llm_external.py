@@ -89,25 +89,18 @@ import json
 import random
 import sys
 import time
-import zipfile
 from pathlib import Path
 
-import yaml
 from groq import APIConnectionError, APITimeoutError, Groq, InternalServerError, RateLimitError
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 
+from external_dataset import ZIP_PATH, iter_reviews, load_labels_by_title, resolve_imdb_ids  # noqa: E402
 from judge import LLMJudge  # noqa: E402
-from preshow import tmdb  # noqa: E402
 from preshow.env import read_env  # noqa: E402
-from preshow.schemas import SpoilerLabel  # noqa: E402
 from stats import wilson_interval  # noqa: E402
-
-ZIP_PATH = ROOT / "evals" / "dataset" / "external" / "imbd_spoiler_dataset.zip"
-TITLES_PATH = ROOT / "evals" / "dataset" / "titles.yaml"
-LABELS_DIR = ROOT / "evals" / "dataset" / "spoilers"
 
 DEFAULT_MODEL = "llama-3.1-8b-instant"
 DEFAULT_SAMPLE_PER_TITLE = 20  # up to this many reviews per title, split pos/neg
@@ -117,34 +110,6 @@ MAX_RETRIES = 4
 SEED = 20260728  # fixed: reproducible sample across re-runs (same reviews
 # get picked regardless of model/truncation config, so results stay
 # comparable across confound-isolation runs)
-
-
-def load_labels_by_title() -> dict[str, list[SpoilerLabel]]:
-    out: dict[str, list[SpoilerLabel]] = {}
-    for p in sorted(LABELS_DIR.glob("*.yaml")):
-        raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        out[p.stem] = [SpoilerLabel(**l) for l in (raw.get("labels") or [])]
-    return out
-
-
-def resolve_imdb_ids() -> dict[str, str]:
-    films = yaml.safe_load(TITLES_PATH.read_text(encoding="utf-8"))["films"]
-    tt_by_title_id: dict[str, str] = {}
-    for f in films:
-        movie = tmdb.get_movie(f["tmdb_id"])
-        imdb_id = movie.get("imdb_id") if movie else None
-        if imdb_id:
-            tt_by_title_id[f["title_id"]] = imdb_id
-    return tt_by_title_id
-
-
-def iter_reviews():
-    z = zipfile.ZipFile(ZIP_PATH)
-    with z.open("IMDB_reviews.json") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                yield json.loads(line)
 
 
 def build_sample(labels_by_title: dict, tt_by_title_id: dict, sample_per_title: int) -> list[dict]:

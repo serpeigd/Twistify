@@ -35,62 +35,15 @@ from __future__ import annotations
 
 import json
 import sys
-import zipfile
 from pathlib import Path
-
-import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 
+from external_dataset import ZIP_PATH, iter_reviews, load_labels_by_title, resolve_imdb_ids  # noqa: E402
 from judge import SubstringJudge  # noqa: E402
-from preshow import tmdb  # noqa: E402
-from preshow.schemas import SpoilerLabel  # noqa: E402
 from stats import wilson_interval  # noqa: E402
-
-ZIP_PATH = ROOT / "evals" / "dataset" / "external" / "imbd_spoiler_dataset.zip"
-TITLES_PATH = ROOT / "evals" / "dataset" / "titles.yaml"
-LABELS_DIR = ROOT / "evals" / "dataset" / "spoilers"
-
-
-def load_labels_by_title() -> dict[str, list[SpoilerLabel]]:
-    out: dict[str, list[SpoilerLabel]] = {}
-    for p in sorted(LABELS_DIR.glob("*.yaml")):
-        raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
-        out[p.stem] = [SpoilerLabel(**l) for l in (raw.get("labels") or [])]
-    return out
-
-
-def resolve_imdb_ids() -> dict[str, str]:
-    """title_id -> IMDb "tt..." id, via the tmdb_id already resolved in
-    titles.yaml (D10). Skips (and reports) any title TMDB doesn't have an
-    imdb_id for."""
-    films = yaml.safe_load(TITLES_PATH.read_text(encoding="utf-8"))["films"]
-    tt_by_title_id: dict[str, str] = {}
-    missing: list[str] = []
-    for f in films:
-        movie = tmdb.get_movie(f["tmdb_id"])
-        imdb_id = movie.get("imdb_id") if movie else None
-        if imdb_id:
-            tt_by_title_id[f["title_id"]] = imdb_id
-        else:
-            missing.append(f["title_id"])
-    if missing:
-        print(f"warning: no imdb_id resolved for {missing}", file=sys.stderr)
-    return tt_by_title_id
-
-
-def iter_reviews():
-    """Yields {"movie_id": "tt...", "is_spoiler": bool, "review_text": str}
-    for every line in IMDB_reviews.json without loading the whole 950MB
-    file into memory."""
-    z = zipfile.ZipFile(ZIP_PATH)
-    with z.open("IMDB_reviews.json") as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                yield json.loads(line)
 
 
 def main() -> int:
