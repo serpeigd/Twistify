@@ -206,13 +206,25 @@ def main() -> int:
         "on its own; this is what lets a human actually read the text and check "
         "for a leak no judge here can reliably see",
     )
+    ap.add_argument(
+        "--titles",
+        default=None,
+        help="comma-separated title_ids to process, instead of every labeled title -- "
+        "for finishing a partial run (e.g. a slow paced generator hitting a "
+        "rate limit) without re-spending quota on titles that already succeeded. "
+        "Does NOT affect the >=15-labeled-titles gate below (still checked against "
+        "the full dataset) -- the resulting aggregate here only covers the given "
+        "titles, merge with a prior --save-briefs run by hand for the full picture",
+    )
     args = ap.parse_args()
 
     cases = load_cases()
     labelled = [c for c in cases if load_labels(c.title_id)]
 
     # Dataset quality gate. Without enough ground truth, the metric is noise
-    # with two decimal places. Better to fail loudly than report 0.0.
+    # with two decimal places. Better to fail loudly than report 0.0. Checked
+    # against the FULL labelled set, before --titles filtering, on purpose --
+    # see that flag's help text.
     if len(labelled) < 15:
         print(
             f"BLOCKED: only {len(labelled)}/{len(cases)} titles labeled.\n"
@@ -221,6 +233,13 @@ def main() -> int:
             file=sys.stderr,
         )
         return 1
+
+    if args.titles:
+        wanted = set(args.titles.split(","))
+        labelled = [c for c in labelled if c.title_id in wanted]
+        missing = wanted - {c.title_id for c in labelled}
+        if missing:
+            print(f"WARNING: --titles named unknown/unlabeled title_ids: {sorted(missing)}", file=sys.stderr)
 
     if args.generator == "fake":
         print("The 'fake' generator is for tests only. Use --generator baseline.")
