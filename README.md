@@ -384,17 +384,31 @@ multiple selves, so it came from the model's memory, not the corpus.
 Milestone 1 is a real, measurable improvement — it isn't a solved
 problem.
 
-**A sixth judge, built specifically to catch this**: `SimilarityJudge`
-compares generated text against the SPECIFIC title's own documented
-spoiler paraphrases by sentence-embedding cosine similarity, not literal
-matching. Confirmed catching the exact Cronocrímenes leak (0.525
-similarity vs. 0.035 for clean text) after two other approaches failed
-on the same pair (TF-IDF: 0.023, no signal; NLI entailment: backwards,
-scored unrelated text higher). Calibrated on the same internal dataset
-as `SubstringJudge`'s own D7 calibration: recall=0.87, precision=0.856 —
-better than every other judge tried in this project, free, offline, no
-API key. `--judge similarity` — not yet tested on a full live run. Full
-account in D16, `docs/DESIGN.md`.
+**A sixth judge was built specifically to catch this — and also failed
+live, closing the search.** `SimilarityJudge` compares generated text
+against the SPECIFIC title's own documented spoiler paraphrases by
+sentence-embedding cosine similarity, not literal matching. It genuinely
+caught the Cronocrímenes leak (0.525 similarity vs. 0.035 for clean
+text) after two other approaches failed on that pair (TF-IDF: 0.023, no
+signal; NLI entailment: backwards, scored unrelated text higher), and
+calibrated well offline: recall=0.87, precision=0.856 on the same
+internal dataset as `SubstringJudge`'s own D7 calibration — better than
+every other judge tried in this project. But a live run immediately
+found a false positive ("The film stars Bruce Willis as a child
+psychologist...", the film's own public premise) scoring **0.561** —
+higher than the confirmed real leak's 0.525. No threshold separates
+those two numbers.
+
+**This was the sixth judge (Substring, LLM-external, NLI,
+TrainedClassifier, Hybrid, Similarity) to fail on real generator
+output.** Six independent technical approaches, six different failure
+reasons, the same result — a strong enough signal to stop, not keep
+trying a seventh. **Decision: judge iteration is closed.**
+`SubstringJudge` (recall=0.0, an honest and bounded floor) stays the
+only judge this project trusts for reporting a `leakage_rate`; the real
+safety practice is `--save-briefs` plus a human reading the generated
+text directly — which is what actually caught the one confirmed leak
+this project has found. Full account in D16, `docs/DESIGN.md`.
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't

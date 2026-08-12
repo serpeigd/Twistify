@@ -953,6 +953,46 @@ against the internal calibration set and the one confirmed leak) --
 that's the next real test, alongside finishing Milestone 1's remaining
 7 titles.
 
+**Live test result, and the final decision on judge iteration in this
+project.** `run_eval.py --generator retrieval-groq --judge similarity
+--show-leaks` got 1/20 titles in before hitting the same daily Groq
+quota, but that one title (Sixth Sense) was enough: `SimilarityJudge`
+flagged the film's own title ("The Sixth Sense"), a cast credit ("Bruce
+Willis and Haley Joel Osment star"), and a director credit ("From the
+mind of M. Night Shyamalan") as core leaks. Scored directly: the film's
+own public premise sentence -- "The film stars Bruce Willis as a child
+psychologist and Haley Joel Osment as his patient who claims he can see
+and talk to the dead" -- scored **0.561**, HIGHER than Los cronocrímenes'
+confirmed real leak (0.525) that this judge was built to catch. No
+threshold value separates those two numbers; this isn't a tuning
+problem, the model's similarity signal genuinely doesn't distinguish
+"generically related to this movie" from "reveals this movie's specific
+twist" in this generator's writing register.
+
+**This is the sixth judge tried in this project (Substring, LLM-external,
+NLI, TrainedClassifier, Hybrid, Similarity) to either fail outright or
+calibrate well and then fail live anyway.** Each failed for a
+genuinely different technical reason (task mismatch, no lexical/semantic
+signal on short text, backwards NLI results, insufficient separation at
+any threshold) -- this isn't one bug repeating, it's six independent
+pieces of evidence pointing at the same conclusion: reliably judging
+short, context-free generated marketing copy against a small labeled set
+is a hard problem this project's free-tier tools haven't solved, and
+each new attempt has had diminishing odds of being the exception.
+
+**Decision, made explicitly with the user rather than attempting a
+seventh judge**: judge iteration is closed. `SubstringJudge` (recall=0.0,
+D12) stays `run_eval.py`'s default and the only judge this project
+trusts for `leakage_rate` reporting -- not because it's good, but because
+its failure mode (misses things) is bounded and known, unlike every
+alternative tried, whose failure mode (flags things that aren't leaks,
+sometimes MORE confidently than real leaks) actively erodes trust in the
+number. The other five judges stay in the codebase for comparison, all
+clearly marked not for reporting. The actual safety practice going
+forward is what already caught the one confirmed real leak in this
+project: `--save-briefs` + a human reading the generated text directly
+-- not a better automated judge.
+
 ## D14 — Scaling the researched catalogue automates the labor, not the citation requirement
 
 The demo track's 8 hand-researched titles took ~15 min each. The user's goal is a much

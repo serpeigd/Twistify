@@ -93,22 +93,28 @@ def _load_judge(name: str, threshold: float | None):
         kwargs = {} if threshold is None else {"threshold": threshold}
         return HybridJudge(SubstringJudge(), TrainedClassifierJudge.from_artifact(**kwargs))
     if name == "similarity":
-        # Built after D16's human spot-check found a real leak
-        # (Los cronocrímenes: "his other selves") that SubstringJudge
-        # missed -- zero shared substring with the documented paraphrase.
-        # Sentence-embedding cosine similarity against the SPECIFIC
-        # title's own labels (per-label, like SubstringJudge/LLMJudge,
-        # unlike TrainedClassifierJudge) catches it: confirmed directly
-        # against all 3 of that title's real labels, and calibrated on
-        # the same internal held-out-paraphrase dataset SubstringJudge's
-        # own D7 calibration uses -- recall=0.87 (95% CI 0.799-0.918),
-        # precision=0.856 (95% CI 0.784-0.907) at the default threshold.
-        # No API key needed, no rate limit, offline after the model's
-        # one-time download. Real caveat: can cross-fire on a DIFFERENT
-        # documented label for the same title (some semantic overlap
-        # between a film's own spoilers) -- doesn't change whether a case
-        # is flagged LEAK, but can misattribute which specific label/
-        # severity triggered it. See D16 in docs/DESIGN.md.
+        # ALSO NOT GOOD ENOUGH, confirmed live -- see D16's final
+        # correction in docs/DESIGN.md. Calibrated well on held-out
+        # paraphrases (recall=0.87/precision=0.856), and did catch the
+        # one confirmed leak it was built for (Los cronocrímenes), but a
+        # live run immediately showed it can't separate real leaks from
+        # generic movie content in THIS generator's writing style: a
+        # false positive ("The film stars Bruce Willis as a child
+        # psychologist...", the film's own public premise) scored 0.561
+        # -- HIGHER than the confirmed real leak's 0.525. No threshold
+        # separates those two. Sixth judge in this project to calibrate
+        # well and still fail live -- see D16 for why judge iteration
+        # stops here. Kept available for comparison only.
+        print(
+            "WARNING: --judge similarity also fails on this project's actual "
+            "generator output despite good offline calibration -- a live run "
+            "scored a false positive HIGHER than the one confirmed real leak "
+            "it was built to catch (0.561 vs 0.525, no threshold separates "
+            "them). See D16's final correction in docs/DESIGN.md. Judge "
+            "iteration is closed -- use --judge substring (the default) for "
+            "reporting.",
+            file=sys.stderr,
+        )
         kwargs = {} if threshold is None else {"threshold": threshold}
         return SimilarityJudge(**kwargs)
     if name == "llm":
@@ -152,15 +158,15 @@ def main() -> int:
         "--judge",
         default="substring",
         choices=["substring", "trained-classifier", "hybrid", "similarity", "llm"],
-        help="substring (default, offline, known recall=0.0 -- see D12); "
-        "trained-classifier and hybrid (both KNOWN NOT GOOD ENOUGH on this "
-        "project's actual generator output -- see D15's corrections in "
-        "docs/DESIGN.md, do not use either for a real leakage_rate); "
-        "similarity (per-label sentence-embedding cosine match, offline, "
-        "no API key -- recall=0.87/precision=0.856 calibrated internally, "
-        "caught a real leak substring missed -- see D16); llm (Groq-backed "
-        "LLMJudge, needs GROQ_API_KEY -- calibrated at recall~=0.35-0.4 on "
-        "IMDb reviews, D13)",
+        help="substring (default -- offline, known recall=0.0, but the only "
+        "judge in this project confirmed NOT to produce false leak "
+        "verdicts on real generator output; judge iteration is closed, "
+        "see D16 in docs/DESIGN.md -- use --save-briefs + a human read "
+        "for anything substring can't see, not a different judge). "
+        "trained-classifier/hybrid/similarity/llm are all kept for "
+        "comparison only -- each calibrated well offline and each failed "
+        "live for a different reason (D15, D16); none fit to report a "
+        "real leakage_rate",
     )
     ap.add_argument(
         "--judge-threshold",

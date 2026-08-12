@@ -265,17 +265,19 @@ design decision.
 
 ## Next task
 
-**Judge search is closed (decision made, not defaulted into -- see D15's
-conclusion in docs/DESIGN.md).** Five judges tried against this
-project's actual `baseline-groq` generator output: `SubstringJudge`
-(recall=0.0, an honest floor), `TrainedClassifierJudge` (leakage_rate
-0.95 -- cast credits and stage directions flagged as spoilers),
-`HybridJudge` (0.6, still all false positives once inspected),
-`LLMJudge` (0.8, same pattern -- release-year facts, director credits,
-marketing hooks like "Are you ready to have your mind blown?" all
-flagged "core"). None fit to report a real `leakage_rate`.
-`SubstringJudge` stays `run_eval.py`'s default; the other three stay
-available for comparison, all clearly marked not for reporting.
+**Judge search is closed for good now (D15 first concluded this, D16
+briefly reopened it for one more attempt, now closed again for real --
+see the bullet list below for the final state).** Six judges tried
+against this project's actual generator output across D15/D16:
+`SubstringJudge` (recall=0.0, an honest floor -- the one that stuck),
+`TrainedClassifierJudge` (leakage_rate 0.95 -- cast credits and stage
+directions flagged as spoilers), `HybridJudge` (0.6, still all false
+positives once inspected), `LLMJudge` (0.8, same pattern), and
+`SimilarityJudge` (calibrated well offline, but a live false positive
+outscored the one real leak it was built to catch). None fit to report a
+real `leakage_rate`. `SubstringJudge` stays `run_eval.py`'s default; the
+other five stay available for comparison, all clearly marked not for
+reporting.
 
 **Working hypothesis instead of another judge attempt**: Milestone 0's
 `corpus=[]` generator has nothing real to write from, so it defaults to
@@ -286,7 +288,9 @@ that way, more or less regardless of which judge. If true, no more
 judge-tuning fixes this; giving the generator something real to write
 from might.
 
-**D16: Milestone 1 built to test that hypothesis, not yet run live.**
+**D16: Milestone 1 built to test that hypothesis -- confirmed live,
+see Status above (grounded_fact_rate 0.0->1.0, one real leak found by
+human review, sixth judge attempt also failed).**
 `src/preshow/retrieval.py`'s `build_green_corpus(title, year)` wires up
 the GREEN/AMBER/RED corpus-tagging mechanism D3 designed back in this
 project's early decisions but Milestone 0 never used
@@ -320,37 +324,48 @@ Concretely, next:
   update in docs/DESIGN.md for the full account. Milestone 1 measurably
   improved things, it didn't solve them -- don't report a Milestone 1
   `leakage_rate` as a safety claim yet either.
-- **Built and calibrated: `SimilarityJudge`, a real fix for the
-  parametric-memory leak, not a judge-noise retry.** Sentence-embedding
-  cosine similarity against the SPECIFIC title's own documented labels
-  (per-label, like `SubstringJudge`/`LLMJudge`) -- confirmed it catches
-  the exact Cronocrímenes leak (0.525 similarity vs. 0.035 for clean
-  text) after two other approaches failed on this same pair: TF-IDF
-  cosine (0.023, no signal) and NLI entailment (0.026 for the real leak,
-  0.775 -- backwards -- for unrelated clean text). Calibrated on the same
-  internal held-out-paraphrase dataset as `SubstringJudge`'s own D7
-  calibration: recall=0.87 (95% CI 0.799-0.918), precision=0.856 (95% CI
-  0.784-0.907) at threshold 0.3 -- clears every other judge calibrated in
-  this project. Free, offline, no API key. `run_eval.py --judge
-  similarity` wires it in; `tests/test_similarity_judge.py` (4 tests,
-  runs in CI) regression-tests the exact Cronocrímenes pair. Real,
-  honestly-reported caveat: it can also fire on a DIFFERENT documented
-  label for the same film (confirmed: the other 2 of Cronocrímenes' 3
-  labels also cleared 0.3 for this text) -- doesn't change whether a case
-  gets flagged LEAK, but can misattribute which label/severity triggered
-  it. See D16's follow-up in docs/DESIGN.md.
-- **Not yet tested against a live, full-catalogue run** -- only against
-  the internal calibration set and the one confirmed leak so far. Next:
-  `run_eval.py --generator retrieval-groq --judge similarity --show-leaks`
-  once the daily Groq quota clears, and finish the remaining 7 titles
-  from Milestone 1's live run (rolling window took over a day to clear
-  enough for the second 13-case run -- budget accordingly) with
-  `--save-briefs`, hand-reading each for the same kind of leak.
-- Also still open, low priority: the long-form `why_now`-paragraph
+- **`SimilarityJudge` tested live -- also not good enough, and judge
+  iteration is now CLOSED (explicit decision with the user).** Calibrated
+  well offline (recall=0.87/precision=0.856) and caught the one confirmed
+  leak it was built for, but a live run immediately found a false
+  positive ("The film stars Bruce Willis as a child psychologist...",
+  the film's own public premise) scoring 0.561 -- HIGHER than the
+  confirmed real leak's 0.525. No threshold separates those two numbers.
+  This is the SIXTH judge in this project (Substring, LLM-external, NLI,
+  TrainedClassifier, Hybrid, Similarity) to either fail outright or
+  calibrate well and then fail live -- six independent pieces of
+  evidence, not one repeating bug. **Decision: stop building judges.**
+  `SubstringJudge` (recall=0.0) stays the only judge this project trusts
+  for `leakage_rate` reporting -- not because it's good, but because its
+  failure mode (misses things, bounded and known) is safer than every
+  alternative's (confidently flags non-leaks, sometimes MORE confidently
+  than real leaks). The other five stay in the codebase for comparison
+  only, all clearly warn-on-use. The real safety practice going forward
+  is `--save-briefs` + a human reading the text directly -- which is what
+  actually caught the one confirmed real leak in this project so far, not
+  any automated judge. Full account in D16's final correction,
+  docs/DESIGN.md.
+- **Milestone 1 next step, now that judges are settled**: finish the
+  remaining 7 titles from the live `retrieval-groq` run (rolling daily
+  quota took over a day to clear enough for a 13-case run last time --
+  budget accordingly) with `--judge substring --save-briefs`, and
+  hand-read each for the same kind of leak Los cronocrímenes had.
+- Groq's Dev Tier (paid, would remove the daily-quota bottleneck this
+  project has repeatedly hit) is temporarily not accepting upgrades
+  ("high demand", per Groq's own billing page, checked live). Cheaper/
+  alternative options if this keeps blocking progress: wait and retry:
+  OpenRouter (pay-as-you-go, no minimum spend, ~5.5% top-up fee, 25+
+  free models with a 50 req/day cap) is the lowest-friction alternative
+  for this project's tiny volume; Together AI and Fireworks AI both work
+  too but require a real minimum prepay (~$5) for volume this project
+  doesn't need. Switching provider is a real code change, not just an
+  env var -- these use an OpenAI-compatible API shape, not Groq's own
+  SDK, so `baseline_groq.py`/`retrieval_groq.py` would need a new client
+  construction, not a drop-in swap.
+- Also still open, low priority, only relevant if a judge is ever
+  revisited (not planned): the long-form `why_now`-paragraph
   false-positive pattern found during `TrainedClassifierJudge`'s
-  in-domain validation (D15) -- try scoring long fields
-  sentence-by-sentence instead of as one block, if that judge is ever
-  revisited.
+  in-domain validation (D15).
 
 Upstash on the live Render deploy: deliberately deferred, user's call —
 no Upstash account yet. Comments/movie-requests on
