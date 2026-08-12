@@ -51,6 +51,16 @@ from preshow import tmdb, wikipedia  # noqa: E402
 from preshow.env import read_env  # noqa: E402
 
 DRAFTS_DIR = ROOT / "content" / "_drafts"
+# Stays llama-3.3-70b-versatile, unlike retrieval_groq.py's switch to
+# llama-3.1-8b-instant (D16) -- tried that swap here too, but this
+# script's richer 20-field schema (max_tokens=4096) plus retrieved text
+# immediately hit a 413 "Request too large" against the 8B model's
+# tighter 6K TPM cap (10,805 requested), not just a slower-clearing daily
+# quota. That's a hard per-request ceiling, not something pacing/retry
+# can work around -- would need real truncation + a smaller completion
+# budget to fit, a genuine content-richness tradeoff for a track whose
+# whole point is richer content than the pre-show brief. Explicit call
+# with the user: keep 70b's headroom and wait out its TPD instead.
 MODEL = "llama-3.3-70b-versatile"
 
 # Same lesson as evals/run_eval.py's --model flag / retrieval_groq.py's
@@ -471,7 +481,7 @@ def draft(title: str, year: int) -> dict:
     return pack
 
 
-def draft_best_of(title: str, year: int, n: int = 3) -> dict:
+def draft_best_of(title: str, year: int, n: int = 3, save_incrementally: bool = True) -> dict:
     """Generates `n` independent candidates from the SAME retrieved text
     and picks the one with the most grounded claims (after sanitizing
     each candidate's citations first, so a candidate can't win by
@@ -479,7 +489,14 @@ def draft_best_of(title: str, year: int, n: int = 3) -> dict:
     model is inconsistent run to run -- see D14 in docs/DESIGN.md: the
     same prompt against the same text produced anywhere from 4 to 15
     grounded claims across manual test runs. Retrieval happens once and
-    is shared across all n candidates -- only the generation call varies."""
+    is shared across all n candidates -- only the generation call varies.
+
+    save_incrementally writes the best candidate seen so far to
+    DRAFTS_DIR after every completed candidate, not just at the end --
+    added after a multi-title batch lost a genuinely good candidate
+    (13/13 grounded) to a mid-run TPD exhaustion, with nothing on disk
+    to show for it (D16-adjacent lesson, same as run_eval.py's
+    partial-results aggregation)."""
     chunks, meta = retrieve(title, year)
     print(f"retrieved {len(chunks)} source chunk(s): {[c['label'] for c in chunks]}")
     if meta.get("director"):
@@ -498,6 +515,12 @@ def draft_best_of(title: str, year: int, n: int = 3) -> dict:
         print(f"  candidate {i + 1}: {grounded}/{needs} grounded claims"
               + (f", {stripped} fabricated citation(s) stripped" if stripped else ""))
         candidates.append((grounded, stripped, pack))
+
+        if save_incrementally:
+            _, _, best_so_far = max(candidates, key=lambda c: (c[0], -c[1]))
+            DRAFTS_DIR.mkdir(parents=True, exist_ok=True)
+            out_path = DRAFTS_DIR / f"{best_so_far['title_id']}.json"
+            out_path.write_text(json.dumps(best_so_far, indent=2, ensure_ascii=False), encoding="utf-8")
 
     # Rank by most grounded claims; break ties by fewest citations that
     # had to be stripped (a candidate that tried to cite something it
