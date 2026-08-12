@@ -100,7 +100,15 @@ class GroqRetrievalGenerator:
         wait = self.MIN_CALL_INTERVAL_S - (time.monotonic() - self._last_call)
         if wait > 0:
             time.sleep(wait)
-        for attempt in range(3):
+        max_attempts = 5  # was 3 -- observed live: llama-3.1-8b-instant
+        # persistently dropped `end_s` from every script block across all
+        # 3 attempts on one title (Come and See), the SAME field missing
+        # every retry despite the corrective message already naming it.
+        # More attempts alone didn't seem like the real fix (same mistake
+        # repeating isn't a fluke a 4th roll of the dice reliably fixes),
+        # so the corrective message also gets more insistent about this
+        # ONE field specifically after the first failure -- see below.
+        for attempt in range(max_attempts):
             try:
                 resp = self._client.chat.completions.create(
                     model=self._model,
@@ -116,20 +124,26 @@ class GroqRetrievalGenerator:
                 return json.loads(call.function.arguments)
             except BadRequestError as e:
                 self._last_call = time.monotonic()
-                if attempt == 2:
+                if attempt == max_attempts - 1:
                     raise
-                messages.append(
-                    {
-                        "role": "user",
-                        "content": "That call was rejected: every object in an array must include "
-                        "ALL of its required properties (context_bullets/author_voice items need "
-                        "text, kind, AND source_id -- source_id must be null for "
-                        "kind=\"interpretation\" and must be one of the given source_ids for "
-                        "kind=\"fact\"; script blocks need start_s, end_s, on_screen_text, "
-                        "voiceover, AND visual_direction). Retry, filling in every required field "
-                        "on every item.",
-                    }
+                correction = (
+                    "That call was rejected: every object in an array must include "
+                    "ALL of its required properties (context_bullets/author_voice items need "
+                    "text, kind, AND source_id -- source_id must be null for "
+                    "kind=\"interpretation\" and must be one of the given source_ids for "
+                    "kind=\"fact\"; script blocks need start_s, end_s, on_screen_text, "
+                    "voiceover, AND visual_direction). Retry, filling in every required field "
+                    "on every item."
                 )
+                if attempt >= 1:
+                    # Repeating the same generic reminder wasn't enough
+                    # once already, name the specific mistake instead.
+                    correction += (
+                        f" Specifically: {e}. Double-check EVERY script block has a numeric "
+                        "end_s (in seconds, greater than that block's start_s) -- this is the "
+                        "field most often missed."
+                    )
+                messages.append({"role": "user", "content": correction})
             except RateLimitError as e:
                 # A per-minute TPM limit, not the daily TPD quota
                 # (EvaluationAborted-style) -- clears with a short wait,
@@ -138,7 +152,7 @@ class GroqRetrievalGenerator:
                 # generously rather than parse that string out of an
                 # error message not meant to be machine-read.
                 self._last_call = time.monotonic()
-                if attempt == 2:
+                if attempt == max_attempts - 1:
                     raise
                 print(f"  rate limited, backing off {self.MIN_CALL_INTERVAL_S:.0f}s: {e}")
                 time.sleep(self.MIN_CALL_INTERVAL_S)
