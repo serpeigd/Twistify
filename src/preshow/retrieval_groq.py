@@ -16,8 +16,9 @@ Needs: pip install groq
 from __future__ import annotations
 
 import json
+import time
 
-from groq import BadRequestError, Groq
+from groq import BadRequestError, Groq, RateLimitError
 
 from .env import read_env
 from .retrieval import build_green_corpus
@@ -56,9 +57,20 @@ class GroqRetrievalGenerator:
 
     name = "retrieval-groq"
 
+    # Observed live: this generator's prompt (real retrieved text, unlike
+    # baseline_groq's title-only prompt) uses ~2,500-4,300 tokens/call --
+    # a `RateLimitError` (429, "please try again in Ns") hit on the 3rd
+    # consecutive title even with no other traffic that minute, on both
+    # llama-3.3-70b-versatile (12K TPM) and llama-3.1-8b-instant (6K TPM,
+    # tighter). This is a per-MINUTE limit, unlike the daily TPD quota
+    # that blocks separately -- it clears with a short wait, so pacing +
+    # retry actually works here (see _call_with_retry).
+    MIN_CALL_INTERVAL_S = 40.0
+
     def __init__(self, client: Groq | None = None, model: str = "llama-3.3-70b-versatile"):
         self._client = client or Groq(api_key=read_env("GROQ_API_KEY"))
         self._model = model
+        self._last_call = 0.0
 
     def pre_show(self, case: TitleCase, corpus: list[SourceDoc]) -> PreShowBrief:
         green_corpus = build_green_corpus(case.title, case.year)
@@ -85,6 +97,9 @@ class GroqRetrievalGenerator:
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": build_user_prompt(case.title, case.year, green_corpus)},
         ]
+        wait = self.MIN_CALL_INTERVAL_S - (time.monotonic() - self._last_call)
+        if wait > 0:
+            time.sleep(wait)
         for attempt in range(3):
             try:
                 resp = self._client.chat.completions.create(
@@ -96,9 +111,11 @@ class GroqRetrievalGenerator:
                     tools=[_TOOL],
                     tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
                 )
+                self._last_call = time.monotonic()
                 call = resp.choices[0].message.tool_calls[0]
                 return json.loads(call.function.arguments)
             except BadRequestError as e:
+                self._last_call = time.monotonic()
                 if attempt == 2:
                     raise
                 messages.append(
@@ -113,4 +130,16 @@ class GroqRetrievalGenerator:
                         "on every item.",
                     }
                 )
+            except RateLimitError as e:
+                # A per-minute TPM limit, not the daily TPD quota
+                # (EvaluationAborted-style) -- clears with a short wait,
+                # unlike a daily quota that won't. Groq's own message
+                # names the wait ("please try again in Ns"); back off
+                # generously rather than parse that string out of an
+                # error message not meant to be machine-read.
+                self._last_call = time.monotonic()
+                if attempt == 2:
+                    raise
+                print(f"  rate limited, backing off {self.MIN_CALL_INTERVAL_S:.0f}s: {e}")
+                time.sleep(self.MIN_CALL_INTERVAL_S)
         raise RuntimeError("unreachable")
