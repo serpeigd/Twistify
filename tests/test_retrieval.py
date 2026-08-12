@@ -89,3 +89,17 @@ def test_missing_sections_are_simply_omitted(monkeypatch):
     corpus = retrieval.build_green_corpus("Fake Movie", 1974)
     sections = {doc.section for doc in corpus}
     assert sections == {"overview"}
+
+
+def test_long_sections_are_truncated(monkeypatch):
+    """Regression test: an untruncated corpus pushed a single request
+    over llama-3.1-8b-instant's 6,000 TPM cap live (413 "Request too
+    large") -- a genuinely long "Production" section (some Wikipedia
+    articles run long) must not reach a generator unbounded."""
+    long_extract = (
+        "Short lead.\n\n== Production ==\n" + ("Filming detail. " * 500) + "\n\n== Accolades ==\nWon an award."
+    )
+    _patch_wikipedia(monkeypatch, extract=long_extract)
+    corpus = retrieval.build_green_corpus("Fake Movie", 1974, max_chars_per_section=100)
+    by_section = {doc.section: doc.text for doc in corpus}
+    assert len(by_section["production"]) <= 100

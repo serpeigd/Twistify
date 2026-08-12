@@ -50,8 +50,16 @@ GREEN_SECTIONS = ("overview", "production", "accolades")
 # with a human review gate before publishing (D14), which this
 # generator-facing path doesn't have.
 
+DEFAULT_MAX_CHARS_PER_SECTION = 2500  # observed live: an untruncated
+# corpus (some Wikipedia "Production" sections run long) pushed a single
+# request over llama-3.1-8b-instant's 6,000 TPM cap (413 "Request too
+# large", not a rate limit that clears with a retry -- that exact
+# request will never succeed). 3 sections x 2,500 chars is ~1,900 tokens
+# (~4 chars/token), leaving real headroom under either model's TPM cap
+# alongside the system prompt and generation reservation.
 
-def build_green_corpus(title: str, year: int) -> list[SourceDoc]:
+
+def build_green_corpus(title: str, year: int, max_chars_per_section: int = DEFAULT_MAX_CHARS_PER_SECTION) -> list[SourceDoc]:
     """Retrieves the title's Wikipedia article and returns ONLY the
     GREEN-tagged chunks as SourceDocs -- this is the exact list a
     Milestone 1 generator's `corpus` argument should receive. Returns []
@@ -77,7 +85,7 @@ def build_green_corpus(title: str, year: int) -> list[SourceDoc]:
             SourceDoc(
                 source_id=f"wikipedia:{name}",
                 origin="wikipedia",
-                text=text,
+                text=text[:max_chars_per_section],
                 tier=SpoilerTier.GREEN,
                 url=article["url"],
                 section=name,

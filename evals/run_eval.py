@@ -24,7 +24,7 @@ from judge import HybridJudge, LLMJudge, SimilarityJudge, SubstringJudge, Traine
 from metrics import aggregate, evaluate_case  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 
-def _load_generator(name: str):
+def _load_generator(name: str, model: str | None = None):
     if name == "baseline":
         from preshow.baseline import AnthropicBaselineGenerator
 
@@ -32,16 +32,22 @@ def _load_generator(name: str):
     if name == "baseline-groq":
         from preshow.baseline_groq import GroqBaselineGenerator
 
-        return GroqBaselineGenerator()
+        kwargs = {} if model is None else {"model": model}
+        return GroqBaselineGenerator(**kwargs)
     if name == "retrieval-groq":
         # Milestone 1 (see docs/DESIGN.md D3): real GREEN-tier retrieval
         # instead of an empty corpus. Same measurement code as
         # baseline-groq -- the comparison between the two IS Milestone 1's
         # result. Needs network access to en.wikipedia.org in addition to
-        # GROQ_API_KEY.
+        # GROQ_API_KEY. Default model (llama-3.3-70b-versatile) has a
+        # 100K TPD cap that's repeatedly blocked a full 20-title run --
+        # --model llama-3.1-8b-instant has a 500K TPD cap (checked live
+        # against Groq's own rate-limits page) and was mostly unused
+        # today, since every run so far hit the 70B model specifically.
         from preshow.retrieval_groq import GroqRetrievalGenerator
 
-        return GroqRetrievalGenerator()
+        kwargs = {} if model is None else {"model": model}
+        return GroqRetrievalGenerator(**kwargs)
     return None
 
 
@@ -153,6 +159,15 @@ def load_labels(title_id: str) -> list[SpoilerLabel]:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--generator", default="fake")
+    ap.add_argument(
+        "--model",
+        default=None,
+        help="Groq model override for --generator baseline-groq/retrieval-groq "
+        "(default: each generator's own default, llama-3.3-70b-versatile). "
+        "Its 100K TPD cap has repeatedly blocked a full 20-title run --try "
+        "llama-3.1-8b-instant (500K TPD, checked live on Groq's rate-limits "
+        "page) if that keeps happening",
+    )
     ap.add_argument("--out", default="evals/results/latest.json")
     ap.add_argument(
         "--judge",
@@ -211,7 +226,7 @@ def main() -> int:
         print("The 'fake' generator is for tests only. Use --generator baseline.")
         return 1
 
-    generator = _load_generator(args.generator)
+    generator = _load_generator(args.generator, args.model)
     if generator is None:
         print(f"Unknown generator: {args.generator}", file=sys.stderr)
         return 1
