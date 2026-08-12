@@ -39,9 +39,10 @@ from __future__ import annotations
 
 import json
 import sys
+import time
 from pathlib import Path
 
-from groq import BadRequestError, Groq
+from groq import BadRequestError, Groq, RateLimitError
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -51,6 +52,14 @@ from preshow.env import read_env  # noqa: E402
 
 DRAFTS_DIR = ROOT / "content" / "_drafts"
 MODEL = "llama-3.3-70b-versatile"
+
+# Same lesson as evals/run_eval.py's --model flag / retrieval_groq.py's
+# pacing (see D16): draft_best_of() alone makes 3 calls/title against
+# this model's 12K TPM / 100K TPD limits, well before any multi-title
+# batch. Module-level (not per-call) because draft_best_of calls
+# _call_llm several times in a row for the same title.
+MIN_CALL_INTERVAL_S = 40.0
+_last_call = 0.0
 
 # Must match webapp/index.html's THEME_META -- the app only filters by
 # this closed vocabulary, so a theme outside it would silently never
@@ -335,14 +344,22 @@ def build_user_prompt(title: str, year: int, chunks: list[dict], meta: dict) -> 
 
 
 def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dict) -> dict:
-    """One generation call, with the existing schema-validation retry.
-    Returns the raw tool-call arguments (not yet assembled into a pack)."""
+    """One generation call, with the existing schema-validation retry plus
+    pacing/backoff on RateLimitError (added after run_eval.py's
+    retrieval-groq run hit the identical 429 on this same free tier --
+    see D16 in docs/DESIGN.md). Returns the raw tool-call arguments (not
+    yet assembled into a pack)."""
+    global _last_call
     user_prompt = build_user_prompt(title, year, chunks, meta)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_prompt},
     ]
-    for attempt in range(3):
+    wait = MIN_CALL_INTERVAL_S - (time.monotonic() - _last_call)
+    if wait > 0:
+        time.sleep(wait)
+    max_attempts = 5
+    for attempt in range(max_attempts):
         try:
             resp = client.chat.completions.create(
                 model=MODEL,
@@ -352,12 +369,14 @@ def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dic
                 tools=[_TOOL],
                 tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
             )
+            _last_call = time.monotonic()
             call = resp.choices[0].message.tool_calls[0]
             return json.loads(call.function.arguments)
         except BadRequestError as e:
-            if attempt == 2:
+            _last_call = time.monotonic()
+            if attempt == max_attempts - 1:
                 raise
-            print(f"  schema validation failed (attempt {attempt + 1}/3), retrying: {e}")
+            print(f"  schema validation failed (attempt {attempt + 1}/{max_attempts}), retrying: {e}")
             messages.append(
                 {
                     "role": "user",
@@ -367,6 +386,12 @@ def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dic
                     "Retry, filling in every required field on every item.",
                 }
             )
+        except RateLimitError as e:
+            _last_call = time.monotonic()
+            if attempt == max_attempts - 1:
+                raise
+            print(f"  rate limited, backing off {MIN_CALL_INTERVAL_S:.0f}s: {e}")
+            time.sleep(MIN_CALL_INTERVAL_S)
     raise RuntimeError("unreachable")
 
 
