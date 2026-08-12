@@ -382,7 +382,19 @@ matching this project's own documented core-spoiler paraphrase almost
 exactly — and the retrieved corpus for that title never mentions
 multiple selves, so it came from the model's memory, not the corpus.
 Milestone 1 is a real, measurable improvement — it isn't a solved
-problem. Full account in D16, `docs/DESIGN.md`.
+problem.
+
+**A sixth judge, built specifically to catch this**: `SimilarityJudge`
+compares generated text against the SPECIFIC title's own documented
+spoiler paraphrases by sentence-embedding cosine similarity, not literal
+matching. Confirmed catching the exact Cronocrímenes leak (0.525
+similarity vs. 0.035 for clean text) after two other approaches failed
+on the same pair (TF-IDF: 0.023, no signal; NLI entailment: backwards,
+scored unrelated text higher). Calibrated on the same internal dataset
+as `SubstringJudge`'s own D7 calibration: recall=0.87, precision=0.856 —
+better than every other judge tried in this project, free, offline, no
+API key. `--judge similarity` — not yet tested on a full live run. Full
+account in D16, `docs/DESIGN.md`.
 
 The decisions behind this design (why there's no LangGraph, why the schema
 allows invalid states on purpose, why the same model being measured can't

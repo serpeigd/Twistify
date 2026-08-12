@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 
-from judge import HybridJudge, LLMJudge, SubstringJudge, TrainedClassifierJudge  # noqa: E402
+from judge import HybridJudge, LLMJudge, SimilarityJudge, SubstringJudge, TrainedClassifierJudge  # noqa: E402
 from metrics import aggregate, evaluate_case  # noqa: E402
 from preshow.schemas import SpoilerLabel, TitleCase  # noqa: E402
 
@@ -87,11 +87,30 @@ def _load_judge(name: str, threshold: float | None):
             "trained-classifier's misfiring (leakage_rate=0.6 in testing was "
             "still mostly false positives on mood/theme/production text, not "
             "real leaks -- see D15's second correction in docs/DESIGN.md). "
-            "Try --judge llm instead.",
+            "Try --judge similarity instead.",
             file=sys.stderr,
         )
         kwargs = {} if threshold is None else {"threshold": threshold}
         return HybridJudge(SubstringJudge(), TrainedClassifierJudge.from_artifact(**kwargs))
+    if name == "similarity":
+        # Built after D16's human spot-check found a real leak
+        # (Los cronocrímenes: "his other selves") that SubstringJudge
+        # missed -- zero shared substring with the documented paraphrase.
+        # Sentence-embedding cosine similarity against the SPECIFIC
+        # title's own labels (per-label, like SubstringJudge/LLMJudge,
+        # unlike TrainedClassifierJudge) catches it: confirmed directly
+        # against all 3 of that title's real labels, and calibrated on
+        # the same internal held-out-paraphrase dataset SubstringJudge's
+        # own D7 calibration uses -- recall=0.87 (95% CI 0.799-0.918),
+        # precision=0.856 (95% CI 0.784-0.907) at the default threshold.
+        # No API key needed, no rate limit, offline after the model's
+        # one-time download. Real caveat: can cross-fire on a DIFFERENT
+        # documented label for the same title (some semantic overlap
+        # between a film's own spoilers) -- doesn't change whether a case
+        # is flagged LEAK, but can misattribute which specific label/
+        # severity triggered it. See D16 in docs/DESIGN.md.
+        kwargs = {} if threshold is None else {"threshold": threshold}
+        return SimilarityJudge(**kwargs)
     if name == "llm":
         # The one calibrated alternative never tested against this
         # project's actual generator output. D13's external calibration
@@ -132,14 +151,16 @@ def main() -> int:
     ap.add_argument(
         "--judge",
         default="substring",
-        choices=["substring", "trained-classifier", "hybrid", "llm"],
+        choices=["substring", "trained-classifier", "hybrid", "similarity", "llm"],
         help="substring (default, offline, known recall=0.0 -- see D12); "
         "trained-classifier and hybrid (both KNOWN NOT GOOD ENOUGH on this "
         "project's actual generator output -- see D15's corrections in "
-        "docs/DESIGN.md, do not use either for a real leakage_rate); llm "
-        "(Groq-backed LLMJudge, needs GROQ_API_KEY -- calibrated at "
-        "recall~=0.35-0.4 on IMDb reviews, D13, but never tested against "
-        "this project's actual generator output until now)",
+        "docs/DESIGN.md, do not use either for a real leakage_rate); "
+        "similarity (per-label sentence-embedding cosine match, offline, "
+        "no API key -- recall=0.87/precision=0.856 calibrated internally, "
+        "caught a real leak substring missed -- see D16); llm (Groq-backed "
+        "LLMJudge, needs GROQ_API_KEY -- calibrated at recall~=0.35-0.4 on "
+        "IMDb reviews, D13)",
     )
     ap.add_argument(
         "--judge-threshold",

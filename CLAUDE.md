@@ -320,28 +320,32 @@ Concretely, next:
   update in docs/DESIGN.md for the full account. Milestone 1 measurably
   improved things, it didn't solve them -- don't report a Milestone 1
   `leakage_rate` as a safety claim yet either.
-- **Finish the remaining 7 titles** once the daily quota clears (rolling
-  window, took over a day to clear enough for a second 13-case run --
-  budget accordingly) with the same `--save-briefs` command, and hand-read
-  those too for the same kind of leak.
-- **The parametric-memory leak is a different failure mode than D15's
-  judge-noise problem, and needs a different fix**: it's not about the
-  judge misfiring, it's about the corpus being clean but the model
-  answering from its own training data anyway despite being told not to
-  (SYSTEM_PROMPT in retrieval_prompts.py already says "even if something
-  in the retrieved text hints at one, leave it out" -- this is closer to
-  "the model didn't even need a hint from the text, it already knew").
-  Worth trying: an explicit denylist of the title's own documented
-  SpoilerLabel canonicals/paraphrases as a final code-level check on the
-  generated output (same "don't trust the model to police itself"
-  principle as D3/sanitize_grounding() in D14). Note `SubstringJudge`
-  DID check this exact text against this exact title's labels and still
-  missed it -- expected, not a new mystery: "his other selves" vs. "two,
-  even three, versions of the same man" share no literal substring, the
-  same paraphrase blindness D12 already established. A real fix here
-  needs paraphrase-level matching (LLMJudge, or the denylist idea above
-  scored by similarity rather than exact match), not just "run substring
-  again."
+- **Built and calibrated: `SimilarityJudge`, a real fix for the
+  parametric-memory leak, not a judge-noise retry.** Sentence-embedding
+  cosine similarity against the SPECIFIC title's own documented labels
+  (per-label, like `SubstringJudge`/`LLMJudge`) -- confirmed it catches
+  the exact Cronocrímenes leak (0.525 similarity vs. 0.035 for clean
+  text) after two other approaches failed on this same pair: TF-IDF
+  cosine (0.023, no signal) and NLI entailment (0.026 for the real leak,
+  0.775 -- backwards -- for unrelated clean text). Calibrated on the same
+  internal held-out-paraphrase dataset as `SubstringJudge`'s own D7
+  calibration: recall=0.87 (95% CI 0.799-0.918), precision=0.856 (95% CI
+  0.784-0.907) at threshold 0.3 -- clears every other judge calibrated in
+  this project. Free, offline, no API key. `run_eval.py --judge
+  similarity` wires it in; `tests/test_similarity_judge.py` (4 tests,
+  runs in CI) regression-tests the exact Cronocrímenes pair. Real,
+  honestly-reported caveat: it can also fire on a DIFFERENT documented
+  label for the same film (confirmed: the other 2 of Cronocrímenes' 3
+  labels also cleared 0.3 for this text) -- doesn't change whether a case
+  gets flagged LEAK, but can misattribute which label/severity triggered
+  it. See D16's follow-up in docs/DESIGN.md.
+- **Not yet tested against a live, full-catalogue run** -- only against
+  the internal calibration set and the one confirmed leak so far. Next:
+  `run_eval.py --generator retrieval-groq --judge similarity --show-leaks`
+  once the daily Groq quota clears, and finish the remaining 7 titles
+  from Milestone 1's live run (rolling window took over a day to clear
+  enough for the second 13-case run -- budget accordingly) with
+  `--save-briefs`, hand-reading each for the same kind of leak.
 - Also still open, low priority: the long-form `why_now`-paragraph
   false-positive pattern found during `TrainedClassifierJudge`'s
   in-domain validation (D15) -- try scoring long fields
@@ -429,7 +433,9 @@ pip install scikit-learn && python evals/train_spoiler_classifier.py       # bes
 python evals/calibrate_trained_classifier_internal.py             # validates it in-domain, not just IMDb reviews
 python evals/run_eval.py --generator baseline-groq --judge substring  # Milestone 0 (default judge), needs GROQ_API_KEY
 python evals/run_eval.py --generator baseline-groq --judge llm --show-leaks    # judges tested, none good enough -- see D15
-python evals/run_eval.py --generator retrieval-groq --judge substring --show-leaks  # Milestone 1 (D16), not yet run live
+python evals/run_eval.py --generator retrieval-groq --judge substring --show-leaks  # Milestone 1 (D16), confirmed live
+python evals/calibrate_similarity.py                               # calibrates SimilarityJudge, see D16
+python evals/run_eval.py --generator retrieval-groq --judge similarity --show-leaks --save-briefs evals/results/similarity_briefs.json  # not yet run live
 ```
 `gh` CLI may need its full path (`C:\Program Files\GitHub CLI\gh.exe`) if not on PATH.
 TMDB key/read token live in `.env` (gitignored) — used by `src/preshow/tmdb.py`

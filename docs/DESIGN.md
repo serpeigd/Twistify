@@ -896,6 +896,63 @@ this as a second reason (D15's judge-noise problem was the first) that
 this project isn't ready to publish a `leakage_rate` as a safety claim
 yet -- Milestone 1 measurably improved things, it didn't solve them.
 
+**Follow-up: `SimilarityJudge`, a real fix for this specific gap, not
+just another attempt.** The Los cronocrímenes leak needed a judge that
+catches near-paraphrases SubstringJudge structurally can't. Three
+approaches were tested directly against this exact pair ("his other
+selves" vs. the documented "two, even three, versions of the same man
+coexisting on the same day") before committing to one:
+
+| Approach | Score for the real leak | Score for clean/unrelated text | Verdict |
+|---|---|---|---|
+| TF-IDF cosine similarity | 0.023 | 0.0 | No real signal, too little lexical overlap |
+| NLI cross-encoder entailment (NLIJudge's own model) | 0.026 | 0.775 (backwards!) | Unusable -- scored unrelated text HIGHER |
+| Sentence-embedding cosine similarity (bi-encoder) | 0.525 | 0.035 | Real separation |
+
+Only the bi-encoder embedding approach worked -- NLI's *entailment*
+framing (does A logically follow from B) is the wrong tool here, same
+lesson NLIJudge already taught with external data (D15); plain semantic
+*similarity* (do these mean approximately the same thing) is the right
+one. `SimilarityJudge` (`evals/judge.py`) embeds `text` and the
+label's own canonical + paraphrases once each (fast -- no cross-encoder
+reprocessing per pair, so it doesn't hit NLIJudge's speed problem) and
+takes the max cosine similarity, same per-label framing as
+`SubstringJudge`/`LLMJudge` (unlike `TrainedClassifierJudge`, which
+ignores `label` entirely).
+
+Calibrated on `calibrate_substring.py`'s own internal dataset (the
+held-out-paraphrase methodology already used for `SubstringJudge`'s D7
+calibration -- the right fit here since this is also a per-label judge)
+via `evals/calibrate_similarity.py`:
+
+| Threshold | Recall (95% CI) | Precision (95% CI) |
+|---|---|---|
+| 0.2 | 1.0 (0.97–1.0) | 0.755 (0.683–0.814) |
+| 0.3 | **0.87** (0.799–0.918) | **0.856** (0.784–0.907) |
+| 0.4 | 0.602 (0.513–0.684) | 0.925 (0.846–0.965) |
+
+Threshold 0.3 (the shipped default) is the best simultaneous
+recall/precision in the sweep -- and both numbers clear every other
+judge calibrated in this project by a wide margin (`LLMJudge`'s best was
+recall~=0.35-0.4; `TrainedClassifierJudge`'s in-domain number was
+comparable, 0.838/0.928, but that judge turned out not to generalize to
+real generator output at all, D15's live-run correction). Confirmed
+directly against all 3 of Los cronocrímenes' real documented labels: the
+correct (`core`) label scored highest (0.525), though the other two
+labels for the same film also cleared the 0.3 threshold (0.370, 0.316)
+-- a real, honestly-reported limitation (some semantic bleed between a
+film's own distinct spoilers), not disqualifying for the actual use case
+(flagging the CASE as leaked), but it can misattribute which specific
+label/severity triggered the flag. Free, offline, no API key, no rate
+limit -- `run_eval.py --judge similarity` wires it in, with 4 regression
+tests in `tests/test_similarity_judge.py` (including the exact
+Cronocrímenes pair) that run in CI via `pytest.importorskip`.
+
+Not yet tested against a live, full-catalogue generator run (only
+against the internal calibration set and the one confirmed leak) --
+that's the next real test, alongside finishing Milestone 1's remaining
+7 titles.
+
 ## D14 — Scaling the researched catalogue automates the labor, not the citation requirement
 
 The demo track's 8 hand-researched titles took ~15 min each. The user's goal is a much

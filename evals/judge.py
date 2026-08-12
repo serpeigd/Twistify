@@ -270,6 +270,68 @@ class HybridJudge:
         return judge.entails(text, label)
 
 
+DEFAULT_SIMILARITY_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_SIMILARITY_THRESHOLD = 0.3  # calibrated (evals/calibrate_similarity.py,
+# same internal held-out-paraphrase dataset as SubstringJudge's own D7
+# calibration): recall=0.87 (95% CI 0.799-0.918), precision=0.856 (95% CI
+# 0.784-0.907) at this threshold -- the best recall/precision balance in
+# the sweep, and recall-favoring per this project's own "recall rules"
+# principle (see calibrate()'s docstring below). Update this constant if
+# a re-run picks a different value, don't let the two drift apart.
+
+
+class SimilarityJudge:
+    """Sentence-embedding cosine similarity between `text` and the
+    SPECIFIC label's own canonical + paraphrases -- per-label, same
+    framing as SubstringJudge/LLMJudge (unlike TrainedClassifierJudge,
+    D15, which ignores `label` entirely).
+
+    Built to catch what D16's human spot-check of Milestone 1 found
+    SubstringJudge missing: Los cronocrímenes' generated "his other
+    selves" vs. its documented "two, even three, versions of the same
+    man coexisting" -- zero shared substring, so SubstringJudge (and,
+    tested directly, TF-IDF cosine similarity: 0.023, no real signal)
+    both missed it. A cross-encoder NLI entailment check (NLIJudge's own
+    model, already downloaded) was tried on this same pair too and gave
+    a WORSE, backwards result (0.026 "entailment" for the real leak,
+    0.775 for a genuinely unrelated clean sentence -- unusable). A plain
+    bi-encoder sentence embedding, compared by cosine similarity (NOT
+    entailment classification), is what actually separated the two:
+    0.525 for the real leak vs. 0.035-0.19 for clean/unrelated text in
+    that same spot-check. This class turns that into something
+    calibrated rather than a one-off anecdote -- see
+    evals/calibrate_similarity.py.
+
+    Bi-encoders embed each text ONCE and compare via cosine similarity,
+    unlike NLIJudge's cross-encoder (which reprocesses the full pair
+    through the transformer every time and was impractically slow on
+    long text, D15) -- this stays fast even on this project's dev
+    hardware, since the texts being compared here are always short
+    (a claim/script line vs. a label's own paraphrase, not a full
+    review).
+    """
+
+    name = "similarity"
+
+    def __init__(self, model_name: str = DEFAULT_SIMILARITY_MODEL, threshold: float = DEFAULT_SIMILARITY_THRESHOLD):
+        from sentence_transformers import SentenceTransformer
+
+        self._model = SentenceTransformer(model_name)
+        self.threshold = threshold
+
+    def max_similarity(self, text: str, label: SpoilerLabel) -> float:
+        """Max cosine similarity between `text` and any of the label's
+        canonical + paraphrases -- same "any phrasing counts" logic as
+        SubstringJudge's needles."""
+        needles = [label.canonical, *label.paraphrases]
+        embeddings = self._model.encode([text, *needles], normalize_embeddings=True)
+        text_vec, needle_vecs = embeddings[0], embeddings[1:]
+        return float((needle_vecs @ text_vec).max())
+
+    def entails(self, text: str, label: SpoilerLabel) -> bool:
+        return self.max_similarity(text, label) >= self.threshold
+
+
 @dataclass(frozen=True)
 class Calibration:
     judge: str
