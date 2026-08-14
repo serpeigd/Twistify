@@ -263,6 +263,12 @@ design decision.
 - Ground truth is LLM-researched-with-citations, not hand-labeled — say so precisely;
   never call it "hand-labeled."
 - `run_eval.py` blocks below 15 labeled titles by design — don't lower the threshold.
+- **Keep it short (2026-08-13, explicit request in chat).** Too much text, too much
+  explaining. Lead with the answer or the change; give reasoning only where it would
+  change a decision. Don't recap work already visible in the diff, don't restate the
+  question before answering it, and don't close with a summing-up line. Applies to
+  chat, commit messages and PR bodies. Reference docs (README, this file) can be
+  longer, but only where the length earns it.
 - Never report leakage_rate/grounded_fact_rate without richness alongside — an empty
   output scores perfectly on the first two.
 - New generators get tested against fixtures/`ScriptedFakeGenerator` first, never the
