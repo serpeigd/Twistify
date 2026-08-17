@@ -98,7 +98,10 @@ retrieval) · MyMemory (free — on-the-fly Spanish translation, cached) ·
 Upstash Redis free REST API (optional — durable comments/movie-requests
 on a redeploy; falls back to local files without it).
 
-**CI:** GitHub Actions runs the 26 tests on every push (see badge above).
+**CI:** GitHub Actions runs 18 of the 26 tests on every push (see badge
+above) — the other 8 (`SimilarityJudge`, `TrainedClassifierJudge`) need
+optional `sentence-transformers`/`scikit-learn` and are skipped by design
+(`pytest.importorskip`) when those aren't installed, which CI doesn't.
 
 ## How it's built
 
@@ -119,7 +122,7 @@ on a redeploy; falls back to local files without it).
 |---|---|
 | Twistify app (catalogue, spoiler gate, filters, comments) | ✅ 8/20 entries researched |
 | Browse catalogue (TMDB posters, live search, ES/EN) | ✅ 20/20 have posters, search reaches all of TMDB |
-| Offline evals harness | ✅ 26 tests passing |
+| Offline evals harness | ✅ 18/18 passing in CI, 26/26 with optional `scikit-learn`/`sentence-transformers` installed |
 | Spoiler ground truth (20 titles) | ✅ 20/20, LLM-researched with cited sources (never hand-labeled — see [Ground truth, precisely](#ground-truth-precisely) below) |
 | Baseline generator (no retrieval) | ✅ two providers — Anthropic (paid) and Groq (free tier, no card) |
 | Judge calibration (offline + real spoiler reviews) | ⛔ **closed, unsolved** — six judges built and tested against real generator output; none clears the bar to trust a `leakage_rate`. `SubstringJudge` (recall=0.0) stays the default because its failure mode is bounded and known (see [Limitations](#limitations)) |
@@ -152,7 +155,7 @@ a system that **measures**, instead of promising, three things per entry:
    this one)
 
 ```bash
-python -m pytest tests/ -q                            # 26/26, no network, no API key
+python -m pytest tests/ -q                            # 18/18 (26/26 with scikit-learn + sentence-transformers), no network, no API key
 python evals/run_eval.py --generator baseline-groq    # free tier, no card
 python evals/run_eval.py --generator baseline         # or the paid Anthropic version
 ```
@@ -551,7 +554,7 @@ content/
   _tmdb_cache/                 (gitignored)
   _wikipedia_cache/            research_assist.py's fetched articles (gitignored)
 
-tests/                   offline pytest suite (26 tests), no network, no API key
+tests/                   offline pytest suite (26 tests; 18 run in CI, 8 need optional scikit-learn/sentence-transformers), no network, no API key
 docs/DESIGN.md            every design decision (D1–D16) with its trade-off
 docs/screenshots/          the two screenshots at the top of this README
 .github/workflows/tests.yml   CI: installs core deps, runs pytest on every push/PR
