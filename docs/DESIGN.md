@@ -1176,8 +1176,9 @@ are both done):
   card required). Get a key at console.groq.com/keys, set `GROQ_API_KEY`,
   then run `python evals/run_eval.py --generator baseline-groq` to get real
   numbers into the README. Those numbers exist now (see Status in
-  CLAUDE.md); Milestone 1 (retrieval) is built (D16) and just needs a
-  live run.
+  CLAUDE.md); Milestone 1 (retrieval) is built and complete — all 20/20
+  titles run and hand-read, closed with two confirmed leak mechanisms
+  documented rather than fixed (D16).
 - **Automating the "+ Suggest a movie" pipeline.** The webapp captures
   suggestions (`POST /api/requests`, appended to
   `content/movie_requests.json`, gitignored) and now resolves the exact
@@ -1207,9 +1208,13 @@ are both done):
   iterating on judges and test D15's own hypothesis instead (a
   no-retrieval generator's vague prose may be what's actually
   undermining every judge, not the judges themselves). ~~Run Milestone 1
-  to test that hypothesis.~~ Done, partially — see D16:
-  `grounded_fact_rate` confirmed 0.0 → 1.0 live (19/20 titles). Open now:
-  finish the human spot-check of `--save-briefs` output (does the model
-  leak from parametric memory despite a clean corpus?) once Groq's daily
-  quota resets, then decide whether `leakage_rate` under any tested
-  judge is trustworthy enough to report for Milestone 1.
+  to test that hypothesis.~~ Done — see D16: `grounded_fact_rate`
+  confirmed 0.0 → 1.0 live, all 20/20 titles run and hand-read. The
+  human spot-check found three real leaks via two independent
+  mechanisms (model memory bypassing a clean corpus; a "safe" GREEN
+  section that wasn't actually safe for some titles) — a sixth judge
+  (`SimilarityJudge`) was built to catch the first kind and also failed
+  live, closing judge iteration for good. Decision made explicitly with
+  the user: document both as known limits of Milestone 1 rather than
+  chase a seventh judge or a content filter, and don't report a
+  Milestone 1 `leakage_rate` as a safety claim.
