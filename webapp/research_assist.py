@@ -48,22 +48,20 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from preshow import tmdb, wikipedia  # noqa: E402
 from preshow.env import read_env  # noqa: E402
-from preshow.groq_retry import GroqPacer, call_with_retry  # noqa: E402
+from preshow.groq_retry import GroqPacer, call_with_retry, safe_print  # noqa: E402
 
 DRAFTS_DIR = ROOT / "content" / "_drafts"
 # llama-3.3-70b-versatile was decommissioned by Groq on 2026-08-18
 # (confirmed live: a call to it now 404s) -- openai/gpt-oss-120b is
 # Groq's documented replacement, and the only one of the three
 # replacement models with a comparable context/capability profile for
-# this script's richer 20-field schema. IMPORTANT: this does NOT fully
-# resolve the earlier 413 "Request too large" finding (D16/this file's
-# git history) -- ALL free/developer-tier models now share one flat TPM
-# cap (8,000, checked live), tighter than the old 70b model's 12K TPM
-# that this script's truncation was never tuned against. A full 5-chunk
-# request (Dune: 10,805 tokens) will still exceed 8K TPM on this new
-# model too. Real truncation (chunk size and/or max_tokens below) is
-# still an open, unresolved tradeoff against this track's content
-# richness -- flag to the user before changing either.
+# this script's richer 20-field schema. All free/developer-tier models
+# now share one flat TPM cap (8,000, checked live), tighter than the old
+# 70b model's 12K -- a full 5-chunk request at the old truncation asked
+# for 10,805 tokens on Dune (413 "Request too large"). Explicit call
+# with the user: cut MAX_CHARS_PER_CHUNK and max_tokens below to fit
+# (real content-richness tradeoff, not free), rather than wait out a
+# bigger model that no longer exists.
 MODEL = "openai/gpt-oss-120b"
 
 # Same lesson as evals/run_eval.py's --model flag / retrieval_groq.py's
@@ -322,6 +320,22 @@ def slugify(title: str, year: int) -> str:
     return f"{base}_{year}"
 
 
+# Was 6000, then 3000 -- cut twice after Groq's 2026-08-18 model
+# decommission (see MODEL above) left every free/developer-tier model at
+# a flat 8K TPM, tighter than the old 70b model's 12K. 6000 chars/chunk
+# asked for 10,805 tokens on Dune (413 "Request too large"). 3000
+# chars/chunk fit under TPM but then max_tokens=3000 wasn't enough
+# completion budget for this rich schema (a DIFFERENT failure -- "Failed
+# to parse tool call arguments as JSON", the model ran out of room
+# mid-response, not a 413 -- see _call_llm's make_call comment). 2000
+# chars/chunk x up to 5 chunks (worst case ~2500 tokens) + the
+# ~1,672-token SYSTEM_PROMPT + max_tokens=3500 leaves real margin under
+# 8000 even in the worst case -- not reverified against every title, so
+# a 413 is still possible on an unusually long article; call_with_retry
+# doesn't turn that into an infinite loop, it just raises (D16).
+MAX_CHARS_PER_CHUNK = 2000
+
+
 def retrieve(title: str, year: int) -> tuple[list[dict], dict]:
     """Fetches everything this script is allowed to cite from. Returns
     (source_chunks, tmdb_meta). Each chunk: {label, url, text}."""
@@ -334,7 +348,9 @@ def retrieve(title: str, year: int) -> tuple[list[dict], dict]:
             sections = wikipedia.relevant_sections(article["extract"])
             for label, text in sections.items():
                 if text:
-                    chunks.append({"label": f"wikipedia:{label}", "url": article["url"], "text": text[:6000]})
+                    chunks.append(
+                        {"label": f"wikipedia:{label}", "url": article["url"], "text": text[:MAX_CHARS_PER_CHUNK]}
+                    )
 
     tmdb_movie = tmdb.best_match(title, year)
     director = tmdb.get_director(tmdb_movie["tmdb_id"]) if tmdb_movie else None
@@ -377,7 +393,15 @@ def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dic
     def make_call() -> dict:
         resp = client.chat.completions.create(
             model=MODEL,
-            max_tokens=4096,
+            max_tokens=3500,  # was 4096 -- cut alongside MAX_CHARS_PER_CHUNK
+            # (see that constant's comment) to fit the new flat 8K TPM cap.
+            # Observed live: 3000 wasn't enough for this schema's full 21
+            # fields -- a real Dune call got cut off mid-"story" with 16/21
+            # fields written, "Failed to parse tool call arguments as JSON"
+            # (not a 413 -- the request fit under TPM fine, the model just
+            # ran out of completion budget). 3500 + MAX_CHARS_PER_CHUNK's
+            # worst case still stays under 8K TPM with margin -- see that
+            # constant's comment for the math.
             temperature=0.8,
             messages=messages,
             tools=[_TOOL],
@@ -387,7 +411,23 @@ def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dic
         return json.loads(call.function.arguments)
 
     def correction_text(e: BadRequestError, attempt: int) -> str:
-        print(f"  schema validation failed (attempt {attempt + 1}/{max_attempts}), retrying: {e}")
+        safe_print(f"  schema validation failed (attempt {attempt + 1}/{max_attempts}), retrying: {e}")
+        if "Failed to parse tool call arguments as JSON" in str(e):
+            # Different failure mode from a missing-field validation
+            # error (observed live, see make_call's comment) -- the
+            # completion got cut off by max_tokens before finishing
+            # valid JSON. The generic "fill in every required field"
+            # correction below doesn't address THIS cause and risks
+            # truncating again in a different place; ask for brevity
+            # instead so the full schema actually fits this time.
+            return (
+                "That call was cut off before it finished producing valid JSON -- you ran "
+                "out of space. This schema has many fields; be noticeably more concise in "
+                "prose fields (story: 2-3 shorter paragraphs; fewer production_trivia/"
+                "fun_facts items, 1-2 instead of the max; terser critical_consensus_summary "
+                "and verdict) so the ENTIRE response, every field, fits and is valid JSON. "
+                "A shorter complete answer is better than a longer incomplete one."
+            )
         return (
             "That call was rejected: every object in an array must include "
             "ALL of its required properties (e.g. before_watching/fun_facts items need "

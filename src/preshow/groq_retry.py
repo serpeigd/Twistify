@@ -27,10 +27,26 @@ around it is now shared.
 
 from __future__ import annotations
 
+import sys
 import time
 from typing import Callable
 
 from groq import BadRequestError, RateLimitError
+
+
+def safe_print(text: str) -> None:
+    """print() that can't crash the whole retry loop on a console
+    codepage that can't encode a character the API/LLM legitimately
+    produced -- observed live on Windows (cp1252 default) choking on a
+    non-breaking hyphen (U+2011) inside a BadRequestError's own message
+    text, which took down the entire call_with_retry attempt with an
+    unrelated UnicodeEncodeError instead of retrying. Falls back to
+    replacing unencodable characters rather than losing the retry."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        encoding = sys.stdout.encoding or "ascii"
+        print(text.encode(encoding, errors="replace").decode(encoding))
 
 
 class GroqPacer:
@@ -100,6 +116,6 @@ def call_with_retry(
             pacer.mark_call()
             if attempt == max_attempts - 1:
                 raise
-            print(f"  rate limited, backing off {pacer.min_interval_s:.0f}s: {e}")
+            safe_print(f"  rate limited, backing off {pacer.min_interval_s:.0f}s: {e}")
             time.sleep(pacer.min_interval_s)
     raise RuntimeError("unreachable")
