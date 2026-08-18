@@ -39,11 +39,12 @@ def _load_generator(name: str, model: str | None = None):
         # instead of an empty corpus. Same measurement code as
         # baseline-groq -- the comparison between the two IS Milestone 1's
         # result. Needs network access to en.wikipedia.org in addition to
-        # GROQ_API_KEY. Default model (llama-3.3-70b-versatile) has a
-        # 100K TPD cap that's repeatedly blocked a full 20-title run --
-        # --model llama-3.1-8b-instant has a 500K TPD cap (checked live
-        # against Groq's own rate-limits page) and was mostly unused
-        # today, since every run so far hit the 70B model specifically.
+        # GROQ_API_KEY. Default model is openai/gpt-oss-120b (Groq
+        # decommissioned llama-3.3-70b-versatile/llama-3.1-8b-instant on
+        # 2026-08-18) -- all free/developer-tier models now share one
+        # flat quota (RPM 30, RPD 1K, TPM 8K, TPD 200K, checked live), so
+        # --model no longer trades quality for a bigger daily budget the
+        # way the old --model llama-3.1-8b-instant override did.
         from preshow.retrieval_groq import GroqRetrievalGenerator
 
         kwargs = {} if model is None else {"model": model}
@@ -163,10 +164,11 @@ def main() -> int:
         "--model",
         default=None,
         help="Groq model override for --generator baseline-groq/retrieval-groq "
-        "(default: each generator's own default, llama-3.3-70b-versatile). "
-        "Its 100K TPD cap has repeatedly blocked a full 20-title run --try "
-        "llama-3.1-8b-instant (500K TPD, checked live on Groq's rate-limits "
-        "page) if that keeps happening",
+        "(default: each generator's own default, openai/gpt-oss-120b -- "
+        "llama-3.3-70b-versatile/llama-3.1-8b-instant were decommissioned "
+        "by Groq on 2026-08-18). All free/developer-tier models share one "
+        "flat quota now (RPM 30, RPD 1K, TPM 8K, TPD 200K, checked live), "
+        "so this no longer trades quality for a bigger daily budget",
     )
     ap.add_argument("--out", default="evals/results/latest.json")
     ap.add_argument(

@@ -48,7 +48,7 @@ llm_calibration_external.json):
   # model. Sample size cut to fit the model's real observed daily budget
   # (see "Token budget math" below -- the naive estimate undershot this
   # by ~35%, and a live run hit DailyQuotaExhausted around call ~400/480).
-  python evals/calibrate_llm_external.py --model llama-3.3-70b-versatile --sample-per-title 12
+  python evals/calibrate_llm_external.py --model openai/gpt-oss-120b --sample-per-title 12
 
 Token budget math (rough, ~4 chars/token): prompt overhead (JUDGE_PROMPT
 template + one SpoilerLabel) is ~100-150 tokens; review text adds
@@ -102,7 +102,16 @@ from judge import LLMJudge  # noqa: E402
 from preshow.env import read_env  # noqa: E402
 from stats import wilson_interval  # noqa: E402
 
-DEFAULT_MODEL = "llama-3.1-8b-instant"
+# All the token-budget/TPM/TPD numbers documented above this line were
+# measured live against llama-3.1-8b-instant/llama-3.3-70b-versatile,
+# both decommissioned by Groq on 2026-08-18 -- kept as an honest
+# historical record (that's what was actually measured, and the D13
+# conclusions still hold), NOT re-verified against the replacement
+# models' limits (RPM 30, RPD 1K, TPM 8K, TPD 200K, all identical now --
+# see baseline_groq.py/retrieval_groq.py/run_eval.py). Re-check the
+# pacing/sample-size math above before trusting it if this script gets
+# run again.
+DEFAULT_MODEL = "openai/gpt-oss-20b"
 DEFAULT_SAMPLE_PER_TITLE = 20  # up to this many reviews per title, split pos/neg
 DEFAULT_TRUNCATE_CHARS = 350
 DEFAULT_INTERVAL_S = 2.4  # ~25 calls/min, under the 30 RPM / ~6k TPM caps

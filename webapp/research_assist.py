@@ -39,37 +39,43 @@ from __future__ import annotations
 
 import json
 import sys
-import time
 from pathlib import Path
 
-from groq import BadRequestError, Groq, RateLimitError
+from groq import BadRequestError, Groq
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from preshow import tmdb, wikipedia  # noqa: E402
 from preshow.env import read_env  # noqa: E402
+from preshow.groq_retry import GroqPacer, call_with_retry  # noqa: E402
 
 DRAFTS_DIR = ROOT / "content" / "_drafts"
-# Stays llama-3.3-70b-versatile, unlike retrieval_groq.py's switch to
-# llama-3.1-8b-instant (D16) -- tried that swap here too, but this
-# script's richer 20-field schema (max_tokens=4096) plus retrieved text
-# immediately hit a 413 "Request too large" against the 8B model's
-# tighter 6K TPM cap (10,805 requested), not just a slower-clearing daily
-# quota. That's a hard per-request ceiling, not something pacing/retry
-# can work around -- would need real truncation + a smaller completion
-# budget to fit, a genuine content-richness tradeoff for a track whose
-# whole point is richer content than the pre-show brief. Explicit call
-# with the user: keep 70b's headroom and wait out its TPD instead.
-MODEL = "llama-3.3-70b-versatile"
+# llama-3.3-70b-versatile was decommissioned by Groq on 2026-08-18
+# (confirmed live: a call to it now 404s) -- openai/gpt-oss-120b is
+# Groq's documented replacement, and the only one of the three
+# replacement models with a comparable context/capability profile for
+# this script's richer 20-field schema. IMPORTANT: this does NOT fully
+# resolve the earlier 413 "Request too large" finding (D16/this file's
+# git history) -- ALL free/developer-tier models now share one flat TPM
+# cap (8,000, checked live), tighter than the old 70b model's 12K TPM
+# that this script's truncation was never tuned against. A full 5-chunk
+# request (Dune: 10,805 tokens) will still exceed 8K TPM on this new
+# model too. Real truncation (chunk size and/or max_tokens below) is
+# still an open, unresolved tradeoff against this track's content
+# richness -- flag to the user before changing either.
+MODEL = "openai/gpt-oss-120b"
 
 # Same lesson as evals/run_eval.py's --model flag / retrieval_groq.py's
 # pacing (see D16): draft_best_of() alone makes 3 calls/title against
-# this model's 12K TPM / 100K TPD limits, well before any multi-title
-# batch. Module-level (not per-call) because draft_best_of calls
-# _call_llm several times in a row for the same title.
+# this model's 8K TPM / 200K TPD limits, well before any multi-title
+# batch. Module-level (not per-instance -- this file has no class to
+# hang it off) because draft_best_of calls _call_llm several times in a
+# row for the same title. Pacing/RateLimitError retry now live in
+# preshow/groq_retry.py, shared with baseline_groq.py/retrieval_groq.py
+# (previously duplicated near-verbatim here and in retrieval_groq.py).
 MIN_CALL_INTERVAL_S = 40.0
-_last_call = 0.0
+_pacer = GroqPacer(MIN_CALL_INTERVAL_S)
 
 # Must match webapp/index.html's THEME_META -- the app only filters by
 # this closed vocabulary, so a theme outside it would silently never
@@ -354,55 +360,42 @@ def build_user_prompt(title: str, year: int, chunks: list[dict], meta: dict) -> 
 
 
 def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dict) -> dict:
-    """One generation call, with the existing schema-validation retry plus
-    pacing/backoff on RateLimitError (added after run_eval.py's
-    retrieval-groq run hit the identical 429 on this same free tier --
-    see D16 in docs/DESIGN.md). Returns the raw tool-call arguments (not
-    yet assembled into a pack)."""
-    global _last_call
+    """One generation call, with the existing schema-validation retry.
+    Pacing/backoff on RateLimitError now lives in preshow/groq_retry.py,
+    shared with baseline_groq.py/retrieval_groq.py (previously
+    duplicated near-verbatim here and in retrieval_groq.py -- added
+    after run_eval.py's retrieval-groq run hit the identical 429 on this
+    same free tier, see D16 in docs/DESIGN.md). Returns the raw
+    tool-call arguments (not yet assembled into a pack)."""
     user_prompt = build_user_prompt(title, year, chunks, meta)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_prompt},
     ]
-    wait = MIN_CALL_INTERVAL_S - (time.monotonic() - _last_call)
-    if wait > 0:
-        time.sleep(wait)
     max_attempts = 5
-    for attempt in range(max_attempts):
-        try:
-            resp = client.chat.completions.create(
-                model=MODEL,
-                max_tokens=4096,
-                temperature=0.8,
-                messages=messages,
-                tools=[_TOOL],
-                tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
-            )
-            _last_call = time.monotonic()
-            call = resp.choices[0].message.tool_calls[0]
-            return json.loads(call.function.arguments)
-        except BadRequestError as e:
-            _last_call = time.monotonic()
-            if attempt == max_attempts - 1:
-                raise
-            print(f"  schema validation failed (attempt {attempt + 1}/{max_attempts}), retrying: {e}")
-            messages.append(
-                {
-                    "role": "user",
-                    "content": "That call was rejected: every object in an array must include "
-                    "ALL of its required properties (e.g. before_watching/fun_facts items need "
-                    "both 'lead' and 'text'; scene_analysis items need both 'scene' and 'text'). "
-                    "Retry, filling in every required field on every item.",
-                }
-            )
-        except RateLimitError as e:
-            _last_call = time.monotonic()
-            if attempt == max_attempts - 1:
-                raise
-            print(f"  rate limited, backing off {MIN_CALL_INTERVAL_S:.0f}s: {e}")
-            time.sleep(MIN_CALL_INTERVAL_S)
-    raise RuntimeError("unreachable")
+
+    def make_call() -> dict:
+        resp = client.chat.completions.create(
+            model=MODEL,
+            max_tokens=4096,
+            temperature=0.8,
+            messages=messages,
+            tools=[_TOOL],
+            tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
+        )
+        call = resp.choices[0].message.tool_calls[0]
+        return json.loads(call.function.arguments)
+
+    def correction_text(e: BadRequestError, attempt: int) -> str:
+        print(f"  schema validation failed (attempt {attempt + 1}/{max_attempts}), retrying: {e}")
+        return (
+            "That call was rejected: every object in an array must include "
+            "ALL of its required properties (e.g. before_watching/fun_facts items need "
+            "both 'lead' and 'text'; scene_analysis items need both 'scene' and 'text'). "
+            "Retry, filling in every required field on every item."
+        )
+
+    return call_with_retry(make_call, messages, correction_text, _pacer, max_attempts=max_attempts)
 
 
 def _assemble_pack(title: str, year: int, data: dict, chunks: list[dict], meta: dict) -> dict:
