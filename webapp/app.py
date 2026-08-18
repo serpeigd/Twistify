@@ -72,6 +72,32 @@ def load_calibration() -> dict | None:
 
 CASES = load_cases()
 PACKS: dict[str, ContentPack] = load_all(CONTENT_DIR) if CONTENT_DIR.exists() else {}
+
+# Demo-only titles: a researched ContentPack in content/researched/ with no
+# matching entry in evals/dataset/titles.yaml -- e.g. one added on request
+# (The Odyssey, 2026-08-18) rather than through the stratified-sample
+# measurement track. Synthesizes a TitleCase purely for display (title/year/
+# tmdb_id come from the pack itself -- see ContentPack's docstring);
+# stratum="mainstream" here is a DISPLAY grouping only, not a stratified-
+# sample claim. Kept separate from CASES on purpose -- evals/run_eval.py
+# reads titles.yaml directly and never sees this dict, so a demo-only title
+# can't affect the measurement track (dataset size, the >=15-labeled gate,
+# stratum breakdowns, anything). Requires pack.title/pack.year to be set
+# (added alongside this feature) -- older packs without them are silently
+# skipped here, not shown as demo-only (correct: no real title/year to show).
+DEMO_ONLY_CASES: dict[str, TitleCase] = {
+    tid: TitleCase(
+        kind="film",
+        title_id=tid,
+        title=pack.title,
+        year=pack.year,
+        stratum="mainstream",
+        tmdb_id=pack.tmdb_id,
+        notes="Demo-only title, not part of the measurement track's stratified sample.",
+    )
+    for tid, pack in PACKS.items()
+    if tid not in CASES and pack.title and pack.year
+}
 CALIBRATION = load_calibration()
 
 
@@ -175,7 +201,7 @@ def write_comments(data: dict) -> None:
 @app.get("/api/catalogue")
 def api_catalogue():
     out = []
-    for tid, case in CASES.items():
+    for tid, case in {**CASES, **DEMO_ONLY_CASES}.items():
         pack = PACKS.get(tid)
         browse = tmdb.get_movie(case.tmdb_id) if case.tmdb_id else None
         out.append(
@@ -199,7 +225,7 @@ def api_catalogue():
 
 @app.get("/api/film/{title_id}")
 def api_film(title_id: str, seen: bool = False, lang: str = "en"):
-    case = CASES.get(title_id)
+    case = CASES.get(title_id) or DEMO_ONLY_CASES.get(title_id)
     if case is None:
         raise HTTPException(404, f"Unknown title: {title_id}")
 
@@ -293,7 +319,7 @@ def api_post_comment(title_id: str, payload: dict = Body(...)):
     owner_token = (payload.get("owner_token") or "").strip()[:64]
     if not text:
         raise HTTPException(400, "Empty comment")
-    if title_id not in CASES:
+    if title_id not in CASES and title_id not in DEMO_ONLY_CASES:
         raise HTTPException(404, "Unknown title")
 
     data = read_comments()

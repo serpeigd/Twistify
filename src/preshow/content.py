@@ -134,6 +134,17 @@ class ContentPack(BaseModel):
     director: str | None = None
     themes: list[str] = Field(default_factory=list)
 
+    # --- Demo-only titles (outside evals/dataset/titles.yaml's 20-title
+    # measurement set, e.g. added via webapp/research_assist.py without a
+    # matching TitleCase) need their own title/year/tmdb_id to be
+    # displayable at all -- webapp/app.py's CASES normally supplies these.
+    # Left None for every measurement-track title (title/year/stratum
+    # live in titles.yaml instead, don't duplicate them here). See
+    # app.py's DEMO_ONLY_CASES for how these get used.
+    title: str | None = None
+    year: int | None = None
+    tmdb_id: int | None = None
+
     # ---- Completeness / grounding metrics ----
 
     def all_sourced(self) -> list[SourcedText]:

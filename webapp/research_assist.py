@@ -468,6 +468,15 @@ def _assemble_pack(title: str, year: int, data: dict, chunks: list[dict], meta: 
         "sources": sorted({c["url"] for c in chunks}),
         "director": meta.get("director"),
         "themes": data["themes"],
+        # Only load-bearing for a title outside evals/dataset/titles.yaml's
+        # 20-title measurement set (e.g. one added on request, not part of
+        # the stratified sample) -- see ContentPack's docstring on these
+        # fields. Harmless to always include: for a measurement-track
+        # title, webapp/app.py's CASES (titles.yaml) is authoritative and
+        # these are ignored.
+        "title": title,
+        "year": year,
+        "tmdb_id": meta.get("tmdb_id"),
     }
 
 
