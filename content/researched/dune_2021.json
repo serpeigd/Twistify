@@ -1,0 +1,118 @@
+{
+  "title_id": "dune_2021",
+  "story": "In a far‑future universe where the desert planet Arrakis is the sole source of the priceless spice, noble House Atreides is thrust into a deadly political game. Young Paul Atreides, heir to the house, must navigate treachery, prophecy, and the mystic culture of the Fremen. Director Denis Villeneuve expands Herbert’s sprawling epic into a visually arresting, two‑part saga, grounding the massive world‑building in intimate character moments. The film’s release was delayed by the pandemic, but its premiere at Venice and subsequent theatrical rollout garnered both critical acclaim and strong box‑office returns.\n\nThe production assembled a seasoned team—Greig Fraser’s sweeping cinematography, Hans Zimmer’s haunting score, and intricate production design—to bring the harsh beauty of Arrakis to life. While the narrative covers only the first half of the novel, it sets up a compelling clash of empires, religion, and destiny that promises to continue in the sequel. Audiences responded with an \"A‑\" CinemaScore, indicating that the film’s ambition resonated despite its measured pace.",
+  "context_bullets": [
+    "First of a two‑part adaptation of Frank Herbert's 1965 novel.",
+    "Third cinematic adaptation of Dune, following David Lynch (1984) and the 2000 TV miniseries.",
+    "Produced by Legendary Pictures; Villeneuve co‑wrote the screenplay with Jon Spaihts and Eric Roth."
+  ],
+  "before_watching": [
+    {
+      "lead": "Legendary acquired the rights",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "After an unsuccessful attempt by Paramount Pictures to produce a new adaptation, Legendary Pictures acquired the Dune film and television rights in 2016, with Villeneuve signing on as director in February 2017."
+    },
+    {
+      "lead": "COVID‑19 delayed release",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "Dune was scheduled for a late 2020 release, but was delayed due to the COVID-19 pandemic."
+    }
+  ],
+  "author_voice": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "Denis Villeneuve said, \"a longstanding dream of mine is to adapt Dune, but it's a long process to get the rights, and I don't think I will succeed.\""
+    }
+  ],
+  "emotional_temperature": "Elevated",
+  "why_now": "Amid a resurgence of big‑budget science‑fiction franchises, Dune’s blend of ecological concerns, political intrigue, and diverse casting speaks to contemporary audiences seeking both spectacle and substance.",
+  "metaphors": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "Ben Travis described the film as \"blockbuster filmmaking in the Christopher Nolan mould\"."
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "Dune follows the 1984 David Lynch film and the 2000 John Harrison television miniseries as the third adaptation of Herbert’s novel."
+    }
+  ],
+  "production_trivia": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "Principal photography ran from March to July 2019 across Budapest, Jordan, Norway, and Abu Dhabi."
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "The film was made on a $165 million budget and grossed $411 million worldwide."
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Gom Jabbar test",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "The test underscores the film’s focus on humanity versus animal instinct, using tight close‑ups and a stark, clinical set design to heighten tension."
+    }
+  ],
+  "critical_consensus": {
+    "summary": "While Dune occasionally struggles with its unwieldy source material, the film’s scope, ambition, and visually thrilling adaptation largely outweigh those issues.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "url": null,
+        "value": "83%"
+      },
+      {
+        "source": "Metacritic",
+        "url": null,
+        "value": "74/100"
+      }
+    ],
+    "awards": [
+      "Won six Academy Awards out of ten nominations.",
+      "Won one Golden Globe Award out of three nominations."
+    ]
+  },
+  "strengths": [
+    "Immersive world‑building and striking visual design.",
+    "Strong performances from Timothée Chalamet and Rebecca Ferguson."
+  ],
+  "weaknesses": [
+    "Pacing can feel deliberate, causing parts of the story to drag.",
+    "The film’s scope leaves some narrative threads feeling incomplete."
+  ],
+  "verdict": "A visually spectacular and thematically rich opening that lays a solid foundation for the saga’s continuation.",
+  "useless_fact": "The on‑screen title appears as \"Dune: Part One\".",
+  "fun_facts": [
+    {
+      "lead": "Cinematographer switch",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "Roger Deakins was originally slated as cinematographer but was replaced in December 2018 by Greig Fraser."
+    },
+    {
+      "lead": "Venice premiere",
+      "source_id": "https://en.wikipedia.org/wiki/Dune_%282021_film%29",
+      "text": "The film premiered at the 78th Venice International Film Festival on September 3, 2021."
+    }
+  ],
+  "questions": [
+    "How will the political struggle over the spice of Arrakis unfold in the sequel?",
+    "What moral choices will Paul Atreides face as he embraces his destiny?",
+    "Will the Fremen culture be fully explored in Part Two?"
+  ],
+  "debate_prompts": [
+    "Does Dune’s monumental world‑building and visual spectacle compensate for its uneven pacing and incomplete narrative?"
+  ],
+  "cta": "Dive into the desert world of Arrakis and experience the epic beginning of Paul Atreides’ saga.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Dune_%282021_film%29"
+  ],
+  "director": "Denis Villeneuve",
+  "themes": [
+    "Identity",
+    "Class and Power"
+  ]
+}

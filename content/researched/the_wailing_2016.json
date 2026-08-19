@@ -1,0 +1,95 @@
+{
+  "title_id": "the_wailing_2016",
+  "story": "In the remote mountain village of Gokseong, a stoic police officer confronts a series of bizarre murders and a mysterious illness that spreads like a contagion. When a foreign stranger appears, the community’s fragile peace shatters, and the officer must navigate local superstitions, a cryptic shaman, and unsettling rumors to protect his family. The film weaves folklore, dread, and an escalating sense of paranoia into a slow‑burning horror mystery that refuses to give easy answers.",
+  "context_bullets": [
+    "South Korean horror film released in 2016.",
+    "Directed and written by Na Hong-jin.",
+    "Runtime of 156 minutes, noted for its length."
+  ],
+  "before_watching": [
+    {
+      "lead": "Film basics",
+      "source_id": "https://en.wikipedia.org/wiki/The_Wailing_%282016_film%29",
+      "text": "The Wailing is a 2016 South Korean horror film written and directed by Na Hong-jin."
+    }
+  ],
+  "author_voice": [],
+  "emotional_temperature": "Uneasy tension that builds steadily throughout the film.",
+  "why_now": "As global audiences continue to embrace Korean cinema, The Wailing offers a compelling blend of cultural myth and universal horror that feels both timely and timeless.",
+  "metaphors": [
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The village itself functions as a crucible where ancient superstition collides with modern skepticism, turning the landscape into a living metaphor for the unknown."
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/The_Wailing_%282016_film%29",
+      "text": "Leah Pickett noted that the film meshes ancient East Asian mythology and rituals with recognizable horror tropes such as demonic possession and zombification."
+    }
+  ],
+  "production_trivia": [],
+  "scene_analysis": [
+    {
+      "scene": "Opening arrival of the Japanese man",
+      "source_id": "https://en.wikipedia.org/wiki/The_Wailing_%282016_film%29",
+      "text": "The stranger’s silent entrance sets a tone of unease, establishing the village as a place where the ordinary and the uncanny coexist."
+    },
+    {
+      "scene": "Shaman Il‑gwang’s failed ritual",
+      "source_id": "https://en.wikipedia.org/wiki/The_Wailing_%282016_film%29",
+      "text": "The botched exorcism heightens the film’s theme of uncertainty, as the audience watches the ritual collapse into chaos."
+    }
+  ],
+  "critical_consensus": {
+    "summary": "Critics praised The Wailing for its atmospheric, cleverly constructed mystery and its blend of ancient East Asian mythology with familiar horror tropes, noting that its 156‑minute length never feels boring despite its sprawling scope.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "url": null,
+        "value": "99% approval rating (based on 86 reviews)"
+      },
+      {
+        "source": "Metacritic",
+        "url": null,
+        "value": "81/100 weighted average"
+      }
+    ],
+    "awards": []
+  },
+  "strengths": [
+    "Rich atmosphere built through folklore and meticulous sound design.",
+    "Strong performances that anchor the film’s sprawling narrative."
+  ],
+  "weaknesses": [
+    "Its 156‑minute length can feel excessive, potentially alienating viewers seeking tighter pacing."
+  ],
+  "verdict": "A haunting, genre‑defying masterpiece that rewards patience with a uniquely unsettling experience.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Critical acclaim",
+      "source_id": "https://en.wikipedia.org/wiki/The_Wailing_%282016_film%29",
+      "text": "The film holds a 99% approval rating on Rotten Tomatoes, based on 86 critical reviews."
+    }
+  ],
+  "questions": [
+    "What is the true nature of the mysterious Japanese stranger?",
+    "How much of the horror stems from cultural folklore versus universal fear?",
+    "Does the film ultimately suggest that evil is external or resides within the community?"
+  ],
+  "debate_prompts": [
+    "Is the film's sprawling 156‑minute runtime a bold artistic choice that deepens its horror, or does it unnecessarily overextend the narrative?"
+  ],
+  "cta": "Watch The Wailing to experience its unsettling blend of folklore and horror.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/The_Wailing_%282016_film%29"
+  ],
+  "director": "Na Hong-jin",
+  "themes": [
+    "Morality and Justice",
+    "Perception"
+  ]
+}

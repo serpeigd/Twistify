@@ -1,0 +1,104 @@
+{
+  "title_id": "oldboy_2003",
+  "story": "Oldboy follows Oh Dae‑su, a businessman who is inexplicably imprisoned for fifteen years. Upon his sudden release, he is thrust into a labyrinthine quest for answers and vengeance, discovering a web of conspiracy that ties his past to a shocking present.\n\nAs he navigates a world of brutal encounters and unexpected intimacy, the film blends hyper‑stylized action with a haunting emotional core, leaving audiences to grapple with the moral complexities of revenge.",
+  "context_bullets": [
+    "Second installment of Park Chan-wook's Vengeance Trilogy.",
+    "Loose adaptation of the Japanese manga by Garon Tsuchiya and Nobuaki Minegishi.",
+    "Renowned for its single‑shot hallway fight sequence."
+  ],
+  "before_watching": [
+    {
+      "lead": "Cannes Grand Prix win",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "text": "Oldboy won the Grand Prix at the 2004 Cannes Film Festival, receiving high praise from jury president Quentin Tarantino."
+    }
+  ],
+  "author_voice": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "text": "When asked in DVD commentary if he felt sorry for Choi, director Park Chan-wook said he felt more sorry for the octopuses."
+    }
+  ],
+  "emotional_temperature": "intense",
+  "why_now": "Amid the global rise of Korean cinema on streaming platforms, Oldboy’s influence on contemporary thrillers and its status as a benchmark for stylish, morally complex storytelling make it essential viewing today.",
+  "metaphors": [
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The endless corridor fight serves as a metaphor for Dae‑su’s inescapable rage."
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "text": "The film adapts the Japanese manga Old Boy by Garon Tsuchiya and Nobuaki Minegishi, translating its revenge premise into a Korean cinematic context."
+    }
+  ],
+  "production_trivia": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "text": "The hallway fight required 17 takes over three days and was captured in one continuous shot; only the knife stab was added with CGI."
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Hallway fight",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "text": "Filmed in a single uninterrupted take, the sequence thrusts viewers into Dae‑su’s raw fury, making the violence feel immediate and unavoidable."
+    }
+  ],
+  "critical_consensus": {
+    "summary": "Oldboy is praised for its artful revenge narrative, striking visuals, and unforgettable action, though its relentless violence can alienate some viewers.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "url": null,
+        "value": "82% (160 reviews)"
+      },
+      {
+        "source": "Metacritic",
+        "url": null,
+        "value": "78/100 (33 critics)"
+      }
+    ],
+    "awards": [
+      "Grand Prix, Cannes Film Festival (2004)",
+      "Ranked 64th on Empire's top 500 movies list (2008)",
+      "Ranked #3 in The Guardian's list of modern South Korean cinema classics (2020)"
+    ]
+  },
+  "strengths": [
+    "Visually arresting, especially the iconic hallway fight.",
+    "Deeply layered narrative that balances brutality with emotional resonance."
+  ],
+  "weaknesses": [
+    "Graphic violence may deter some viewers.",
+    "Ambiguous ending leaves key narrative threads unresolved."
+  ],
+  "verdict": "A masterful, brutal revenge thriller that rewards viewers willing to endure its intensity.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Live octopuses",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "text": "Four live octopuses were used for the eating scene; Park later said he felt more sorry for the octopuses than for the actors."
+    }
+  ],
+  "questions": [
+    "What is the true motive behind Evergreen’s elaborate revenge?",
+    "How does the ambiguous ending affect our perception of Dae‑su’s redemption?"
+  ],
+  "debate_prompts": [
+    "Does Oldboy's graphic violence serve the story’s emotional depth, or does it cross into gratuitous excess?"
+  ],
+  "cta": "Watch Oldboy and experience its visceral revenge saga.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29"
+  ],
+  "director": "Park Chan-wook",
+  "themes": [
+    "Obsession",
+    "Morality and Justice"
+  ]
+}

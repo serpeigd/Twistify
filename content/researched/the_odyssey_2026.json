@@ -1,0 +1,110 @@
+{
+  "title_id": "the_odyssey_2026",
+  "story": "In Christopher Nolan's The Odyssey, the legendary Greek king Odysseus (Matt Damon) embarks on a perilous trek home after the Trojan War, confronting cyclops, sorceresses, and sea‑borne threats. The film weaves mythic spectacle with a focus on memory and identity, as Odysseus fights to reclaim his place beside his wife Penelope (Anne Hathaway) amid suitors vying for the throne. Nolan grounds the ancient tale in visceral realism, employing IMAX 70 mm to render the Mediterranean landscape as both wondrous and unforgiving.",
+  "context_bullets": [
+    "Adaptation of Homer's epic poem, written and directed by Christopher Nolan.",
+    "Features an ensemble cast led by Matt Damon as Odysseus.",
+    "Follows Nolan's post‑Oppenheimer trajectory, leveraging his partnership with Universal Pictures."
+  ],
+  "before_watching": [
+    {
+      "lead": "Record‑breaking IMAX shoot",
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "The Odyssey is the first feature film to be shot entirely on IMAX's 70 mm film cameras."
+    },
+    {
+      "lead": "Massive budget",
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "With an estimated budget of $250 million, it ranks among the most expensive films of Nolan's career."
+    }
+  ],
+  "author_voice": [],
+  "emotional_temperature": "exhilarating",
+  "why_now": "At a time when blockbuster cinema seeks fresh mythic foundations, The Odyssey demonstrates how ancient stories can be reimagined with cutting‑edge technology and contemporary relevance.",
+  "metaphors": [
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The Odyssey functions as a modern odyssey of memory, with the hero navigating both literal seas and the currents of his own past."
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "Nolan cited the historical epics Andrei Rublev (1966) and Ran (1985) as visual inspirations."
+    }
+  ],
+  "production_trivia": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "Filming occurred from February to August 2025, marking Nolan's longest continuous shoot to date."
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Cyclops encounter",
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "The sequence blends practical effects with IMAX clarity, emphasizing the claustrophobic terror of the cave while showcasing the crew's ingenuity in blinding the beast."
+    }
+  ],
+  "critical_consensus": {
+    "summary": "Critics laud Nolan's sweeping direction and the film’s visual grandeur, though some note liberties taken with the ancient source.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "url": null,
+        "value": "94%"
+      },
+      {
+        "source": "Metacritic",
+        "url": null,
+        "value": "88"
+      }
+    ],
+    "awards": [
+      "Ranked the most anticipated film for the second half of 2026 at the 9th Astra Midseason Movie Awards."
+    ]
+  },
+  "strengths": [
+    "Epic scale and groundbreaking IMAX cinematography.",
+    "Strong ensemble performances that anchor the mythic narrative."
+  ],
+  "weaknesses": [
+    "Some critics argue the deviations from Homer's poem dilute the source material’s thematic depth.",
+    "A few reviewers found the film’s pacing uneven compared to Nolan's earlier work."
+  ],
+  "verdict": "A visually stunning, ambitiously told myth that largely succeeds despite occasional narrative liberties.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Global locations",
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "Principal photography spanned Morocco, Greece, Italy, Scotland, Iceland, Western Sahara, Malta, and Los Angeles."
+    },
+    {
+      "lead": "Box‑office milestone",
+      "source_id": "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29",
+      "text": "The film grossed $1.297 billion worldwide, becoming the second‑highest‑grossing film of 2026 and the second‑highest‑grossing R‑rated film ever."
+    }
+  ],
+  "questions": [
+    "How does the film’s portrayal of mythic creatures reflect contemporary anxieties?",
+    "What does the reinterpretation of the Trojan Horse suggest about modern notions of deception?"
+  ],
+  "debate_prompts": [
+    "Does the film’s departure from Homer’s narrative enhance its cinematic power, or does it undermine the myth’s core themes?"
+  ],
+  "cta": "Experience The Odyssey in IMAX or a premium large format near you.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/The_Odyssey_%282026_film%29"
+  ],
+  "director": "Christopher Nolan",
+  "themes": [
+    "Identity",
+    "Obsession"
+  ],
+  "title": "The Odyssey",
+  "year": 2026,
+  "tmdb_id": 1368337
+}
