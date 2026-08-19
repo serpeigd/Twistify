@@ -65,13 +65,15 @@ DRAFTS_DIR = ROOT / "content" / "_drafts"
 MODEL = "openai/gpt-oss-120b"
 
 # Same lesson as evals/run_eval.py's --model flag / retrieval_groq.py's
-# pacing (see D16): draft_best_of() alone makes 3 calls/title against
+# pacing (see D16): draft_best_of() alone makes 2n calls/title (pre-show
+# + deep-dive per candidate, see PRE_SHOW_PROPERTIES' comment) against
 # this model's 8K TPM / 200K TPD limits, well before any multi-title
 # batch. Module-level (not per-instance -- this file has no class to
-# hang it off) because draft_best_of calls _call_llm several times in a
-# row for the same title. Pacing/RateLimitError retry now live in
-# preshow/groq_retry.py, shared with baseline_groq.py/retrieval_groq.py
-# (previously duplicated near-verbatim here and in retrieval_groq.py).
+# hang it off) because draft_best_of calls _call_pre_show/_call_deep_dive
+# several times in a row for the same title. Pacing/RateLimitError retry
+# now live in preshow/groq_retry.py, shared with
+# baseline_groq.py/retrieval_groq.py (previously duplicated near-verbatim
+# here and in retrieval_groq.py).
 MIN_CALL_INTERVAL_S = 40.0
 _pacer = GroqPacer(MIN_CALL_INTERVAL_S)
 
@@ -111,7 +113,10 @@ Rules, none negotiable:
    {", ".join(THEME_VOCAB)}
 6. Write in the same voice as a film-literate critic, not marketing copy. Spoiler-free
    fields (story, context_bullets, before_watching, author_voice, emotional_temperature,
-   why_now) must not reveal plot twists or the ending.
+   why_now) must not reveal plot twists or the ending. On the pre-show call, you are
+   simply NOT GIVEN the plot/reception text (see RETRIEVED TEXT below) -- that's the
+   real guarantee, this instruction is reinforcement, not the mechanism. Even so, don't
+   infer or guess at a twist from what production/overview text implies.
 7. "critical_consensus_scores" is ONLY for a specific, named, numeric or ranked score from
    a real aggregator or organization found in the retrieved text (e.g. "88% on Rotten
    Tomatoes, 374 reviews", "#4 on WGA's list of 101 Greatest Screenplays"). A vague
@@ -179,8 +184,6 @@ one you're drafting -- match this level of specificity, not this content):
 Every item you write should look like the GOOD examples: a real number, name, date, or
 quote from the retrieved text -- not a paraphrase that could apply to almost any film.
 """
-
-TOOL_NAME = "emit_content_draft"
 
 _SOURCED = {
     "type": "object",
@@ -271,18 +274,83 @@ CONTENT_REQUIRED = [
     "debate_prompts", "cta", "themes",
 ]
 
-_TOOL = {
+# --- Two-call structural partition (2026-08-18, replacing a single call
+# over the full schema) -----------------------------------------------
+#
+# D3/D16's whole thesis is that spoiler safety must be a context
+# PARTITION (the generator never sees the spoiler text), not an
+# instruction the model could ignore -- exactly the property
+# src/preshow/retrieval.py's build_green_corpus() already gives the
+# measurement track. This script didn't have that: one call got ALL
+# retrieved text (including "plot") and rule 6 above just ASKED it to
+# keep plot/reception out of the pre-viewing fields. Live proof this
+# doesn't hold: promoting the first batch of drafts and diffing them
+# against evals/dataset/spoilers/ found 4/13 titles stating a
+# core/major documented spoiler directly in "story" (Tetsuo, Come and
+# See, Coherence, Cronocrímenes -- see git history same day).
+#
+# Fix: PRE_SHOW_PROPERTIES/PRE_SHOW_REQUIRED (the same six fields rule 6
+# already named) are generated from a call that is only ever given
+# overview/production/accolades chunks -- plot and reception are
+# filtered out before the request is built, not just discouraged
+# in-prompt (see _call_pre_show/PRE_SHOW_SECTIONS below). Everything
+# else (DEEP_DIVE_PROPERTIES/DEEP_DIVE_REQUIRED) is a separate call that
+# DOES get the full retrieved text, same as ContentPack's own Phase
+# 2+3 grouping (content.py) -- "spoilers are the product" there, by
+# design.
+#
+# IMPORTANT CAVEAT, not fully solved by this: D16 also found the leak
+# for Tetsuo/Hard to Be a God specifically traces to Wikipedia's
+# `overview` section ITSELF stating the twist, not to `plot` leaking
+# through -- a section this fix still includes in the pre-show call
+# (it has to; overview is legitimately needed for a real synopsis).
+# This fix removes the "plot/reception leaks into pre-show" failure
+# class (Coherence/Cronocrímenes' likely cause) but does NOT guarantee
+# every title's `overview` prose is itself spoiler-free. Human review
+# before content/researched/ stays the real gate, not this alone.
+PRE_SHOW_PROPERTIES = {
+    k: CONTENT_PROPERTIES[k]
+    for k in ("story", "context_bullets", "before_watching", "author_voice", "emotional_temperature", "why_now")
+}
+PRE_SHOW_REQUIRED = list(PRE_SHOW_PROPERTIES)
+
+DEEP_DIVE_PROPERTIES = {k: v for k, v in CONTENT_PROPERTIES.items() if k not in PRE_SHOW_PROPERTIES}
+DEEP_DIVE_REQUIRED = [f for f in CONTENT_REQUIRED if f not in PRE_SHOW_PROPERTIES]
+
+PRE_SHOW_TOOL_NAME = "emit_pre_show_fields"
+DEEP_DIVE_TOOL_NAME = "emit_deep_dive_fields"
+
+_PRE_SHOW_TOOL = {
     "type": "function",
     "function": {
-        "name": TOOL_NAME,
-        "description": "Emit a fully-populated Twistify content draft, grounded only in the retrieved text.",
+        "name": PRE_SHOW_TOOL_NAME,
+        "description": "Emit the spoiler-free, pre-viewing fields of a Twistify content draft. "
+        "You have NOT been given plot or reception text for this call -- work only from what "
+        "you were actually given (overview/production/accolades, where available).",
         "parameters": {
             "type": "object",
-            "properties": CONTENT_PROPERTIES,
-            "required": CONTENT_REQUIRED,
+            "properties": PRE_SHOW_PROPERTIES,
+            "required": PRE_SHOW_REQUIRED,
         },
     },
 }
+_DEEP_DIVE_TOOL = {
+    "type": "function",
+    "function": {
+        "name": DEEP_DIVE_TOOL_NAME,
+        "description": "Emit the post-viewing, critical-reception, and engagement fields of a "
+        "Twistify content draft -- spoilers are expected and fine here.",
+        "parameters": {
+            "type": "object",
+            "properties": DEEP_DIVE_PROPERTIES,
+            "required": DEEP_DIVE_REQUIRED,
+        },
+    },
+}
+
+# GREEN tier, same as src/preshow/retrieval.py's GREEN_SECTIONS (D3/D16)
+# -- the pre-show call is only ever built from chunks in this set.
+PRE_SHOW_SECTIONS = {"wikipedia:overview", "wikipedia:production", "wikipedia:accolades"}
 
 
 def sanitize_grounding(pack: dict, allowed_urls: set[str]) -> int:
@@ -327,7 +395,7 @@ def slugify(title: str, year: int) -> str:
 # chars/chunk fit under TPM but then max_tokens=3000 wasn't enough
 # completion budget for this rich schema (a DIFFERENT failure -- "Failed
 # to parse tool call arguments as JSON", the model ran out of room
-# mid-response, not a 413 -- see _call_llm's make_call comment). 2000
+# mid-response, not a 413 -- see _call's make_call comment). 2000
 # chars/chunk x up to 5 chunks (worst case ~2500 tokens) + the
 # ~1,672-token SYSTEM_PROMPT + max_tokens=3500 leaves real margin under
 # 8000 even in the worst case -- not reverified against every title, so
@@ -363,8 +431,8 @@ def retrieve(title: str, year: int) -> tuple[list[dict], dict]:
     return chunks, meta
 
 
-def build_user_prompt(title: str, year: int, chunks: list[dict], meta: dict) -> str:
-    parts = [f"MOVIE: {title} ({year})"]
+def build_user_prompt(title: str, year: int, chunks: list[dict], meta: dict, phase: str) -> str:
+    parts = [f"MOVIE: {title} ({year})", f"PHASE: {phase}"]
     if meta.get("director"):
         parts.append(f"Director (from TMDB, already confirmed, don't re-derive): {meta['director']}")
     parts.append("\nRETRIEVED TEXT (only source of facts allowed):\n")
@@ -375,37 +443,29 @@ def build_user_prompt(title: str, year: int, chunks: list[dict], meta: dict) -> 
     return "\n".join(parts)
 
 
-def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dict) -> dict:
-    """One generation call, with the existing schema-validation retry.
-    Pacing/backoff on RateLimitError now lives in preshow/groq_retry.py,
-    shared with baseline_groq.py/retrieval_groq.py (previously
-    duplicated near-verbatim here and in retrieval_groq.py -- added
-    after run_eval.py's retrieval-groq run hit the identical 429 on this
-    same free tier, see D16 in docs/DESIGN.md). Returns the raw
-    tool-call arguments (not yet assembled into a pack)."""
-    user_prompt = build_user_prompt(title, year, chunks, meta)
-    messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_prompt},
-    ]
+def _call(
+    client: Groq,
+    messages: list[dict],
+    tool: dict,
+    tool_name: str,
+    max_tokens: int,
+    required_fields_hint: str,
+) -> dict:
+    """Shared low-level call + schema-validation retry for both the
+    pre-show and deep-dive calls below. Pacing/backoff on RateLimitError
+    lives in preshow/groq_retry.py, shared with
+    baseline_groq.py/retrieval_groq.py. Returns the raw tool-call
+    arguments (not yet assembled into a pack)."""
     max_attempts = 5
 
     def make_call() -> dict:
         resp = client.chat.completions.create(
             model=MODEL,
-            max_tokens=3500,  # was 4096 -- cut alongside MAX_CHARS_PER_CHUNK
-            # (see that constant's comment) to fit the new flat 8K TPM cap.
-            # Observed live: 3000 wasn't enough for this schema's full 21
-            # fields -- a real Dune call got cut off mid-"story" with 16/21
-            # fields written, "Failed to parse tool call arguments as JSON"
-            # (not a 413 -- the request fit under TPM fine, the model just
-            # ran out of completion budget). 3500 + MAX_CHARS_PER_CHUNK's
-            # worst case still stays under 8K TPM with margin -- see that
-            # constant's comment for the math.
+            max_tokens=max_tokens,
             temperature=0.8,
             messages=messages,
-            tools=[_TOOL],
-            tool_choice={"type": "function", "function": {"name": TOOL_NAME}},
+            tools=[tool],
+            tool_choice={"type": "function", "function": {"name": tool_name}},
         )
         call = resp.choices[0].message.tool_calls[0]
         return json.loads(call.function.arguments)
@@ -414,60 +474,92 @@ def _call_llm(client: Groq, title: str, year: int, chunks: list[dict], meta: dic
         safe_print(f"  schema validation failed (attempt {attempt + 1}/{max_attempts}), retrying: {e}")
         if "Failed to parse tool call arguments as JSON" in str(e):
             # Different failure mode from a missing-field validation
-            # error (observed live, see make_call's comment) -- the
-            # completion got cut off by max_tokens before finishing
-            # valid JSON. The generic "fill in every required field"
+            # error -- the completion got cut off by max_tokens before
+            # finishing valid JSON (observed live on the old single-call
+            # schema; still possible on the deep-dive call's larger
+            # schema). The generic "fill in every required field"
             # correction below doesn't address THIS cause and risks
             # truncating again in a different place; ask for brevity
             # instead so the full schema actually fits this time.
             return (
                 "That call was cut off before it finished producing valid JSON -- you ran "
-                "out of space. This schema has many fields; be noticeably more concise in "
-                "prose fields (story: 2-3 shorter paragraphs; fewer production_trivia/"
-                "fun_facts items, 1-2 instead of the max; terser critical_consensus_summary "
-                "and verdict) so the ENTIRE response, every field, fits and is valid JSON. "
-                "A shorter complete answer is better than a longer incomplete one."
+                "out of space. Be noticeably more concise in prose fields so the ENTIRE "
+                "response, every field, fits and is valid JSON. A shorter complete answer "
+                "is better than a longer incomplete one."
             )
         return (
-            "That call was rejected: every object in an array must include "
-            "ALL of its required properties (e.g. before_watching/fun_facts items need "
-            "both 'lead' and 'text'; scene_analysis items need both 'scene' and 'text'). "
-            "Retry, filling in every required field on every item."
+            f"That call was rejected: every object in an array must include ALL of its "
+            f"required properties ({required_fields_hint}). Retry, filling in every "
+            "required field on every item."
         )
 
     return call_with_retry(make_call, messages, correction_text, _pacer, max_attempts=max_attempts)
 
 
-def _assemble_pack(title: str, year: int, data: dict, chunks: list[dict], meta: dict) -> dict:
+def _call_pre_show(client: Groq, title: str, year: int, chunks: list[dict], meta: dict) -> dict:
+    """The structural half of the fix (see PRE_SHOW_PROPERTIES' comment
+    above): filters to GREEN-tier chunks BEFORE building the prompt, so
+    plot/reception text is never in this call's context at all -- not
+    just discouraged by instruction."""
+    pre_show_chunks = [c for c in chunks if c["label"] in PRE_SHOW_SECTIONS]
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_user_prompt(title, year, pre_show_chunks, meta, phase="pre-show (spoiler-free)")},
+    ]
+    return _call(
+        client, messages, _PRE_SHOW_TOOL, PRE_SHOW_TOOL_NAME, max_tokens=1800,
+        required_fields_hint="before_watching items need 'lead', 'text', AND 'source_id'; "
+        "author_voice items need 'text' AND 'source_id'",
+    )
+
+
+def _call_deep_dive(client: Groq, title: str, year: int, chunks: list[dict], meta: dict) -> dict:
+    """Gets the FULL retrieved text (plot/reception included) -- spoilers
+    are expected and fine in these fields, same as ContentPack's own
+    Phase 2+3 grouping (content.py)."""
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": build_user_prompt(title, year, chunks, meta, phase="deep-dive (spoilers expected)")},
+    ]
+    return _call(
+        client, messages, _DEEP_DIVE_TOOL, DEEP_DIVE_TOOL_NAME, max_tokens=3200,
+        required_fields_hint="e.g. before_watching/fun_facts items need both 'lead' and 'text'; "
+        "scene_analysis items need both 'scene' and 'text'",
+    )
+
+
+def _assemble_pack(
+    title: str, year: int, pre_show_data: dict, deep_dive_data: dict, chunks: list[dict], meta: dict
+) -> dict:
     title_id = slugify(title, year)
     return {
         "title_id": title_id,
-        "story": data["story"],
-        "context_bullets": data["context_bullets"],
-        "before_watching": data["before_watching"],
-        "author_voice": data["author_voice"],
-        "emotional_temperature": data["emotional_temperature"],
-        "why_now": data["why_now"],
-        "metaphors": data["metaphors"],
-        "intertextual_refs": data["intertextual_refs"],
-        "production_trivia": data["production_trivia"],
-        "scene_analysis": data["scene_analysis"],
+        "story": pre_show_data["story"],
+        "context_bullets": pre_show_data["context_bullets"],
+        "before_watching": pre_show_data["before_watching"],
+        "author_voice": pre_show_data["author_voice"],
+        "emotional_temperature": pre_show_data["emotional_temperature"],
+        "why_now": pre_show_data["why_now"],
+        "metaphors": deep_dive_data["metaphors"],
+        "intertextual_refs": deep_dive_data["intertextual_refs"],
+        "production_trivia": deep_dive_data["production_trivia"],
+        "scene_analysis": deep_dive_data["scene_analysis"],
         "critical_consensus": {
-            "summary": data["critical_consensus_summary"],
-            "scores": data["critical_consensus_scores"],
-            "awards": data["critical_consensus_awards"],
+            "summary": deep_dive_data["critical_consensus_summary"],
+            "scores": deep_dive_data["critical_consensus_scores"],
+            "awards": deep_dive_data["critical_consensus_awards"],
         },
-        "strengths": data["strengths"],
-        "weaknesses": data["weaknesses"],
-        "verdict": data["verdict"],
-        "useless_fact": data["useless_fact"],
-        "fun_facts": data["fun_facts"],
-        "questions": data["questions"],
-        "debate_prompts": data["debate_prompts"],
-        "cta": data["cta"],
+        "strengths": deep_dive_data["strengths"],
+        "weaknesses": deep_dive_data["weaknesses"],
+        "verdict": deep_dive_data["verdict"],
+        "useless_fact": deep_dive_data["useless_fact"],
+        "fun_facts": deep_dive_data["fun_facts"],
+        "questions": deep_dive_data["questions"],
+        "debate_prompts": deep_dive_data["debate_prompts"],
+        "cta": deep_dive_data["cta"],
         "sources": sorted({c["url"] for c in chunks}),
         "director": meta.get("director"),
-        "themes": data["themes"],
+        "themes": deep_dive_data["themes"],
         # Only load-bearing for a title outside evals/dataset/titles.yaml's
         # 20-title measurement set (e.g. one added on request, not part of
         # the stratified sample) -- see ContentPack's docstring on these
@@ -510,11 +602,13 @@ def grounding_summary(pack: dict) -> str:
 
 def draft(title: str, year: int) -> dict:
     """Single-candidate draft (kept for scripts/tests that want exactly
-    one call). draft_best_of below is what main() actually uses."""
+    one call each). draft_best_of below is what main() actually uses.
+    Two calls, not one -- see PRE_SHOW_PROPERTIES' comment for why."""
     chunks, meta = retrieve(title, year)
     client = Groq(api_key=read_env("GROQ_API_KEY"))
-    data = _call_llm(client, title, year, chunks, meta)
-    pack = _assemble_pack(title, year, data, chunks, meta)
+    pre_show_data = _call_pre_show(client, title, year, chunks, meta)
+    deep_dive_data = _call_deep_dive(client, title, year, chunks, meta)
+    pack = _assemble_pack(title, year, pre_show_data, deep_dive_data, chunks, meta)
     allowed_urls = {c["url"] for c in chunks}
     stripped = sanitize_grounding(pack, allowed_urls)
     if stripped:
@@ -538,9 +632,16 @@ def draft_best_of(title: str, year: int, n: int = 3, save_incrementally: bool = 
     added after a multi-title batch lost a genuinely good candidate
     (13/13 grounded) to a mid-run TPD exhaustion, with nothing on disk
     to show for it (D16-adjacent lesson, same as run_eval.py's
-    partial-results aggregation)."""
+    partial-results aggregation).
+
+    Each candidate is now 2 calls (pre-show + deep-dive, see
+    PRE_SHOW_PROPERTIES' comment), not 1 -- n=3 costs 6 calls/title, not
+    3. Budget accordingly against Groq's flat 200K TPD (all
+    free/developer models share it now, see MODEL's comment)."""
     chunks, meta = retrieve(title, year)
     print(f"retrieved {len(chunks)} source chunk(s): {[c['label'] for c in chunks]}")
+    pre_show_chunks = [c for c in chunks if c["label"] in PRE_SHOW_SECTIONS]
+    print(f"  of which {len(pre_show_chunks)} are GREEN-tier (pre-show call only sees these)")
     if meta.get("director"):
         print(f"director (TMDB): {meta['director']}")
 
@@ -550,8 +651,9 @@ def draft_best_of(title: str, year: int, n: int = 3, save_incrementally: bool = 
     candidates = []
     for i in range(n):
         print(f"generating candidate {i + 1}/{n}...")
-        data = _call_llm(client, title, year, chunks, meta)
-        pack = _assemble_pack(title, year, data, chunks, meta)
+        pre_show_data = _call_pre_show(client, title, year, chunks, meta)
+        deep_dive_data = _call_deep_dive(client, title, year, chunks, meta)
+        pack = _assemble_pack(title, year, pre_show_data, deep_dive_data, chunks, meta)
         stripped = sanitize_grounding(pack, allowed_urls)
         needs, grounded = grounded_count(pack)
         print(f"  candidate {i + 1}: {grounded}/{needs} grounded claims"

@@ -1,0 +1,127 @@
+{
+  "title_id": "coherence_2013",
+  "story": "On the night a comet streaks across the sky, a group of friends gathers for a casual dinner in a modest living room. As the night deepens, ordinary conversation gives way to subtle, disorienting disturbances that ripple through the house. The camera stays close, capturing the actors' spontaneous reactions as reality begins to fracture in ways they cannot explain. Each moment feels both intimate and uncanny, inviting viewers to question how much of what they see is grounded in the characters' perceptions. The film's minimalist setting amplifies the growing sense of unease, turning a simple gathering into a laboratory for the unknown.",
+  "context_bullets": [
+    "Debuted at Fantastic Fest on September 19, 2013.",
+    "Earned multiple screenplay awards, including the Next Wave Best Screenplay at Austin Fantastic Fest.",
+    "Directed by James Ward Byrkit in his feature‑directorial debut."
+  ],
+  "before_watching": [
+    {
+      "lead": "Crewless, home‑based production",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit shot the entire film in his own Santa Monica home with no crew, relying on improvisational actors and a minimal 12‑page treatment instead of a traditional script."
+    },
+    {
+      "lead": "Improvisational acting approach",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "The eight actors were given only a basic outline of their characters, motivations, and major plot points, receiving a page of personal notes each day rather than a full screenplay."
+    },
+    {
+      "lead": "Concept born from experimental ambition",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit conceived Coherence to test the idea of making a film \"without a crew and without a script,\" using charts, maps, and scientific research to structure the story while keeping the set stripped down."
+    }
+  ],
+  "author_voice": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit told an interviewer, \"For about a year, all I did was make charts and maps and drew diagrams of houses, arrows pointing where everyone was going, trying to keep track of different iterations. Months and months of tracking fractured realities, looking up what actual scientists believe about the nature of reality—Schrödinger's cat and all that. It was research, but despite all the graphs and charts, I think our whole idea was that it has to be character-based. We want the logic of our internal rules to be sound, and we wanted it to be something people could watch 12 times and still discover a new layer.\""
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit told him that his desire was \"to strip down a film set to the bare minimum: getting rid of the script, getting rid of the crew.\""
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit added, \"... instead of a script I had my own 12-page treatment that I spent about a year working on. It outlined all of the twists and reveals, and character arcs and pieces of the puzzle that needed to happen scene-by-scene. But each day, instead of getting a script, the actors would get a page of notes for their individual character, whether it was a backstory or information about\""
+    }
+  ],
+  "emotional_temperature": "curious and unsettling",
+  "why_now": "In an era of increasingly polished, effects‑driven sci‑fi, Coherence demonstrates how narrative tension can be generated through improvisation and constrained production, offering a fresh model for low‑budget creators seeking to explore complex ideas without massive resources.",
+  "metaphors": [
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The comet acts as a catalyst that shatters the characters’ perception of a single, stable reality, turning the dinner party into a kaleidoscope of possible lives."
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "The film references Schrödinger's cat, even delivering a joke about it (“I’m allergic!”)."
+    }
+  ],
+  "production_trivia": [
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit conceived the project to test shooting a film “without a crew and without a script,” using his own home as the set."
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "He spent a year making charts, maps, and diagrams to track fractured realities and scientific concepts like Schrödinger’s cat."
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Power outage and glow‑stick exchange",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "The sudden loss of electricity forces the group to rely on colored glow sticks, visually marking the split between their original reality (blue) and the alternate one (red), heightening tension and underscoring the theme of perception."
+    }
+  ],
+  "critical_consensus": {
+    "summary": "The film holds an 89% approval rating on Rotten Tomatoes and a Metacritic score of 65, with critics praising its low‑budget, character‑driven storytelling and the cast’s ability to anchor a complex, reality‑bending premise.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "url": null,
+        "value": "89%"
+      },
+      {
+        "source": "Metacritic",
+        "url": null,
+        "value": "65"
+      }
+    ],
+    "awards": []
+  },
+  "strengths": [
+    "Critics highlighted the ensemble’s grounded performances, noting they keep the bewildering plot emotionally resonant.",
+    "The film’s claustrophobic single‑location setting amplifies dread and paranoia, making repeated viewings rewarding."
+  ],
+  "weaknesses": [],
+  "verdict": "Coherence transforms a modest, improvised production into a compelling meditation on reality and self, delivering a tense, repeat‑viewable experience that rewards attentive audiences.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Improvisation over script",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "Byrkit gave actors only a basic outline and a page of notes each day instead of a traditional script."
+    },
+    {
+      "lead": "Home‑grown set",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "text": "The entire film was shot in James Ward Byrkit’s Santa Monica home with a minimal crew."
+    }
+  ],
+  "questions": [
+    "What determines which reality ultimately persists after the comet passes?",
+    "How far are the characters willing to go to claim a version of reality that better serves their desires?"
+  ],
+  "debate_prompts": [
+    "Does Coherence's improvisational, script‑free production enhance its exploration of reality, or does it lead to uneven narrative clarity?"
+  ],
+  "cta": "Watch Coherence to experience a mind‑twisting night where improvisation meets quantum theory.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+  ],
+  "director": "James Ward Byrkit",
+  "themes": [
+    "Perception",
+    "Identity"
+  ],
+  "title": "Coherence",
+  "year": 2013,
+  "tmdb_id": 220289
+}
