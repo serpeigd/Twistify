@@ -400,7 +400,13 @@ def _auto_publish_suggestion(title: str, year: int, tmdb_id: int | None) -> None
         return  # already researched, or already being researched (dedupe concurrent suggestions)
     _AUTO_PUBLISH_IN_PROGRESS.add(title_id)
     try:
-        pack_dict = research_assist.draft_best_of(title, year, n=1, save_incrementally=True)
+        # n=3 (draft_best_of's own default), not n=1 -- explicit call
+        # with the user (2026-08-19): quality over throughput. n=1 was
+        # this project's earlier cost-saving choice and it showed:
+        # single-candidate drafts came back visibly thinner than the
+        # hand-researched titles (see research_assist.py's rule 12 for
+        # the full account). Costs 2x the Groq calls per suggestion.
+        pack_dict = research_assist.draft_best_of(title, year, n=3, save_incrementally=True)
         if tmdb_id and not pack_dict.get("tmdb_id"):
             pack_dict["tmdb_id"] = tmdb_id
         out_path = CONTENT_DIR / f"{title_id}.json"
