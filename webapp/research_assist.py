@@ -153,6 +153,15 @@ Rules, none negotiable:
    critical_consensus_summary or scene_analysis instead. If the retrieved text contains no
    attributed quote from someone who made the film, leave author_voice EMPTY -- an empty
    list is correct and expected here (see rule 3), a critic-voice paraphrase is not.
+12. DEPTH IS NOT OPTIONAL. metaphors, intertextual_refs, production_trivia,
+   scene_analysis, strengths, weaknesses, fun_facts, and questions have no fixed max --
+   aim for 3-5 items in EACH, not 1-2, whenever the retrieved text has that much real
+   material (it usually does: a full Wikipedia article has many distinct facts, only a
+   few of which any one item can cover). Stopping at one item per field after finding
+   the FIRST usable fact is the single most common failure mode -- keep reading the
+   retrieved text for a second and third distinct angle before moving to the next field.
+   Rule 3 (leave a field empty/short if the text doesn't support more) still applies --
+   this rule is about not stopping early when it DOES, not about padding with filler.
 
 EXAMPLE OF THE TARGET DEPTH (illustrative only -- about a different, unnamed film, not the
 one you're drafting -- match this level of specificity, not this content):
@@ -226,9 +235,21 @@ CONTENT_PROPERTIES = {
     },
     "emotional_temperature": {"type": "string"},
     "why_now": {"type": "string"},
-    "metaphors": {"type": "array", "items": _SOURCED_KIND},
-    "intertextual_refs": {"type": "array", "items": _SOURCED_KIND},
-    "production_trivia": {"type": "array", "items": _SOURCED},
+    "metaphors": {
+        "type": "array", "items": _SOURCED_KIND,
+        "description": "3-5 distinct readings when the film supports that many -- see rule 12. "
+        "One item per field is under-depth, not caution.",
+    },
+    "intertextual_refs": {
+        "type": "array", "items": _SOURCED_KIND,
+        "description": "3-5 distinct references/influences/comparisons when the retrieved text "
+        "supports that many -- see rule 12.",
+    },
+    "production_trivia": {
+        "type": "array", "items": _SOURCED,
+        "description": "3-5 distinct, specific facts (budget, schedule, casting, technical "
+        "choices, behind-the-scenes) when the retrieved text supports that many -- see rule 12.",
+    },
     "scene_analysis": {
         "type": "array",
         "items": {
@@ -240,6 +261,8 @@ CONTENT_PROPERTIES = {
             },
             "required": ["scene", "text", "source_id"],
         },
+        "description": "2-4 distinct scenes/moments worth analyzing when the retrieved text "
+        "supports that many -- see rule 12.",
     },
     "critical_consensus_summary": {"type": ["string", "null"]},
     "critical_consensus_scores": {
@@ -255,12 +278,24 @@ CONTENT_PROPERTIES = {
         },
     },
     "critical_consensus_awards": {"type": "array", "items": {"type": "string"}},
-    "strengths": {"type": "array", "items": {"type": "string"}},
-    "weaknesses": {"type": "array", "items": {"type": "string"}},
+    "strengths": {
+        "type": "array", "items": {"type": "string"},
+        "description": "3-5 distinct strengths when the retrieved text supports that many -- see rule 12.",
+    },
+    "weaknesses": {
+        "type": "array", "items": {"type": "string"},
+        "description": "2-4 distinct weaknesses/criticisms when the retrieved text supports that many -- see rule 12.",
+    },
     "verdict": {"type": "string"},
     "useless_fact": {"type": ["string", "null"]},
-    "fun_facts": {"type": "array", "items": _FACT_BULLET, "maxItems": 4},
-    "questions": {"type": "array", "items": {"type": "string"}},
+    "fun_facts": {
+        "type": "array", "items": _FACT_BULLET, "maxItems": 4,
+        "description": "Up to 4 -- use all 4 when the retrieved text supports that many, see rule 12.",
+    },
+    "questions": {
+        "type": "array", "items": {"type": "string"},
+        "description": "3-4 distinct open-ended questions -- see rule 12.",
+    },
     "debate_prompts": {"type": "array", "items": {"type": "string"}, "maxItems": 1},
     "cta": {"type": "string"},
     "themes": {"type": "array", "items": {"type": "string", "enum": THEME_VOCAB}, "maxItems": 2},
@@ -522,7 +557,12 @@ def _call_deep_dive(client: Groq, title: str, year: int, chunks: list[dict], met
         {"role": "user", "content": build_user_prompt(title, year, chunks, meta, phase="deep-dive (spoilers expected)")},
     ]
     return _call(
-        client, messages, _DEEP_DIVE_TOOL, DEEP_DIVE_TOOL_NAME, max_tokens=3200,
+        client, messages, _DEEP_DIVE_TOOL, DEEP_DIVE_TOOL_NAME, max_tokens=3400,
+        # 3200 -> 3400 alongside rule 12's richness push (2026-08-19) --
+        # worst-case prompt (~1,934-token SYSTEM_PROMPT + 5 chunks at
+        # MAX_CHARS_PER_CHUNK + user overhead) leaves ~3,400 tokens of
+        # margin under the flat 8K TPM cap, matched here rather than left
+        # unused.
         required_fields_hint="e.g. before_watching/fun_facts items need both 'lead' and 'text'; "
         "scene_analysis items need both 'scene' and 'text'",
     )
