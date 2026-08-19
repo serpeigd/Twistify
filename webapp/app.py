@@ -12,6 +12,17 @@ WHAT THIS MAKES VISIBLE (this is a portfolio piece, not a movie blog):
    alongside the judge's MEASURED recall -- because "0 leaks" from a judge
    with 0.0 recall doesn't mean "there are no leaks."
 
+EXPLICIT, KNOWINGLY RISKY DECISION (2026-08-19, user's own instruction,
+after being warned): "+ Suggest a movie" auto-publishes straight to
+content/researched/ with NO human or AI review step -- see
+_auto_publish_suggestion() below. This directly contradicts D14's own
+review gate (content/_drafts/ existing specifically because "an LLM can
+still misread retrieved text correctly-cited") and the SAME session's
+own finding that 4/13 titles in one batch leaked a real spoiler into a
+"spoiler-free" field before that gate caught them. The user was told
+this plainly and chose speed anyway. Not silently done -- if this ever
+needs revisiting, that's the reason it looked the way it does.
+
 Run:
     pip install fastapi "uvicorn[standard]"
     python webapp/app.py
@@ -31,7 +42,7 @@ sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "evals"))
 
 import yaml
-from fastapi import Body, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Body, FastAPI, HTTPException
 from fastapi.responses import HTMLResponse
 
 from judge import SubstringJudge  # noqa: E402
@@ -369,14 +380,59 @@ def api_delete_comment(title_id: str, comment_id: str, owner_token: str = ""):
     raise HTTPException(404, "Comment not found")
 
 
-@app.post("/api/requests")
-def api_post_movie_request(payload: dict = Body(...)):
-    """Captures a title someone couldn't find in the catalogue.
+_AUTO_PUBLISH_IN_PROGRESS: set[str] = set()
 
-    Intentionally NOT wired to an LLM: turning this into "analyze and add to
-    content/researched/ automatically" is a real feature with a quality bar to
-    match the rest of the catalogue (cited sources, no hallucinated facts) --
-    it's a pending milestone, not a one-request-handler job. See docs/DESIGN.md.
+
+def _auto_publish_suggestion(title: str, year: int, tmdb_id: int | None) -> None:
+    """Researches and publishes a suggested title with NO review step --
+    see the module docstring's 2026-08-19 note for why this exists in
+    this exact shape and what it knowingly gives up. Runs as a
+    FastAPI BackgroundTask (after the /api/requests response is already
+    sent), so this function must never raise into the request/response
+    cycle -- every failure mode here is caught and logged, not
+    propagated. Needs GROQ_API_KEY; silently no-ops without one (same
+    as the rest of the app's optional-integration pattern, e.g. TMDB)."""
+    import research_assist  # noqa: PLC0415 -- lazy: heavy (groq client),
+
+    # only needed for this one background path, not every app.py request
+    title_id = research_assist.slugify(title, year)
+    if title_id in CASES or title_id in PACKS or title_id in _AUTO_PUBLISH_IN_PROGRESS:
+        return  # already researched, or already being researched (dedupe concurrent suggestions)
+    _AUTO_PUBLISH_IN_PROGRESS.add(title_id)
+    try:
+        pack_dict = research_assist.draft_best_of(title, year, n=1, save_incrementally=True)
+        if tmdb_id and not pack_dict.get("tmdb_id"):
+            pack_dict["tmdb_id"] = tmdb_id
+        out_path = CONTENT_DIR / f"{title_id}.json"
+        out_path.write_text(json.dumps(pack_dict, indent=2, ensure_ascii=False), encoding="utf-8")
+
+        pack = ContentPack(**pack_dict)
+        PACKS[title_id] = pack
+        if title_id not in CASES and pack.title and pack.year:
+            DEMO_ONLY_CASES[title_id] = TitleCase(
+                kind="film",
+                title_id=title_id,
+                title=pack.title,
+                year=pack.year,
+                stratum="mainstream",
+                tmdb_id=pack.tmdb_id,
+                notes="Auto-published from a user suggestion, no review step -- see app.py's module docstring.",
+            )
+        print(f"[auto-publish] {title_id}: published, no review (user's explicit 2026-08-19 decision)")
+    except Exception as e:  # noqa: BLE001 -- background task, must never crash the process
+        print(f"[auto-publish] {title_id}: FAILED -- {type(e).__name__}: {e}")
+    finally:
+        _AUTO_PUBLISH_IN_PROGRESS.discard(title_id)
+
+
+@app.post("/api/requests")
+def api_post_movie_request(payload: dict = Body(...), background_tasks: BackgroundTasks = None):
+    """Captures a title someone couldn't find in the catalogue, and (see
+    the module docstring's 2026-08-19 note) kicks off unreviewed
+    auto-publishing in the background if TMDB can resolve a year for it.
+    The HTTP response returns immediately either way -- research takes
+    1-4+ minutes (Groq pacing, see research_assist.py), nowhere close to
+    a request timeout.
     """
     title = (payload.get("title") or "").strip()[:200]
     note = (payload.get("note") or "").strip()[:300]
@@ -395,6 +451,22 @@ def api_post_movie_request(payload: dict = Body(...)):
         }
     )
     kv_store.write_json_blob("twistify:movie_requests", MOVIE_REQUESTS_FILE, requests_list)
+
+    # Resolve a confirmed title/year before handing off to research --
+    # prefer the tmdb_id the client already resolved via autocomplete
+    # (D10) over the free-typed title, since TMDB's own title/year is
+    # what wikipedia.find_page_title needs to work reliably.
+    resolved_title, resolved_year, resolved_tmdb_id = title, None, tmdb_id
+    movie = tmdb.get_movie(tmdb_id) if tmdb_id else None
+    if movie is None:
+        matches = tmdb.search_movies(title)
+        movie = matches[0] if matches else None
+    if movie and movie.get("year"):
+        resolved_title, resolved_year, resolved_tmdb_id = movie["title"], movie["year"], movie["tmdb_id"]
+
+    if resolved_year and background_tasks is not None:
+        background_tasks.add_task(_auto_publish_suggestion, resolved_title, resolved_year, resolved_tmdb_id)
+
     return {"ok": True}
 
 
