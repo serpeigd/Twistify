@@ -1471,6 +1471,43 @@ function renderPhase4(ct) {
 
 /* curtain: loads content the first time it's opened; just opens/closes after */
 /* poll: one question, two sides, simulated live votes (100 each to start) */
+
+// debate_prompts is written to end in "Is X, or Y?" / "Does X, or Y?"
+// (research_assist.py's SYSTEM_PROMPT rule 8) -- but not every prompt is
+// framed that way (a plain yes/no question has no "or" to split), so this
+// returns null rather than force a bad split when there isn't one. Poll
+// button labels then use these two named positions instead of a generic
+// Agree/Disagree that doesn't fit a comparative question (e.g. Se7en's
+// "the most honest ending... or handing the killer what he wanted?" --
+// neither side is really "agreeing", there's nothing to agree WITH).
+function splitDebateSides(q) {
+  if (!q) return null;
+  // Isolate the final question first -- debate_prompts often leads with a
+  // scene-setting sentence before the actual two-sided question (e.g.
+  // Se7en's "John Doe wins: ... Is that the most honest ending..., or is
+  // it handing the killer what he wanted?"). Splitting on " or " against
+  // the WHOLE string would drag that lead-in into side A.
+  const qMark = q.lastIndexOf('?');
+  if (qMark === -1) return null;
+  const priorStop = Math.max(q.lastIndexOf('. ', qMark), q.lastIndexOf(': ', qMark));
+  const question = q.slice(priorStop === -1 ? 0 : priorStop + 2, qMark);
+
+  // "or" in English, "o" in the Spanish machine translation (D9) -- this
+  // runs client-side against whatever `content` the API already returned
+  // for the current `lang`, so it must handle both, not just the source
+  // English text the prompt itself is drafted in.
+  const m = /^(.*?),?\s+(?:or|o)\s+(.*)$/i.exec(question);
+  if (!m) return null;
+  const clean = s => s.trim()
+    .replace(/^(is|does|was|do|did|has|have|can|could|would|should)\s+(it|that|this|they)?\s*/i, '')
+    .replace(/^(es|¿es|fue|¿fue|hace|¿hace)\s+(que|esto|eso)?\s*/i, '')
+    .replace(/^\w/, c => c.toUpperCase());
+  const shorten = s => s.length > 46 ? s.slice(0, 44).trim() + '…' : s;
+  const a = shorten(clean(m[1]));
+  const b = shorten(clean(m[2]));
+  return a && b && a.toLowerCase() !== b.toLowerCase() ? [a, b] : null;
+}
+
 function updatePollUI(card) {
   const a = Number(card.dataset.a), b = Number(card.dataset.b), total = a + b;
   const pa = Math.round(100 * a / total), pb = 100 - pa;
@@ -1563,16 +1600,20 @@ async function loadDeepDive(dc) {
       sections.push({ id, ico, title, html:
         `<div class="card ${extra}" id="${id}"><h3><span class="ico">${ico}</span> ${esc(title)}</h3>${inner}</div>` });
 
-    if ((ct.metaphors || []).length)
-      push('sec-meta', '🪞', t('secMeta'), sourcedList(ct.metaphors));
-    if ((ct.intertextual_refs || []).length)
-      push('sec-ref', '🔗', t('secRef'), sourcedList(ct.intertextual_refs));
-    if ((ct.production_trivia || []).length)
-      push('sec-rod', '🎬', t('secRod'), accordionList(ct.production_trivia));
+    // Reading order (2026-08-19, explicit request): concrete analysis of
+    // what you just watched, before zooming out to interpretation and
+    // reception, before behind-the-scenes trivia, ending on the most
+    // interactive piece (the poll) right before comments -- was field
+    // registration order (research_assist.py's schema order), not an
+    // intentional reading flow.
     if ((ct.scene_analysis || []).length)
       push('sec-esc', '🔍', t('secEsc'),
         `<ul class="clean">${ct.scene_analysis.map(s =>
           `<li><div class="scene-name">${esc(s.scene)}</div><div class="scene-txt">${esc(s.text)}</div>${sourceTag(s)}</li>`).join('')}</ul>`);
+    if ((ct.metaphors || []).length)
+      push('sec-meta', '🪞', t('secMeta'), sourcedList(ct.metaphors));
+    if ((ct.intertextual_refs || []).length)
+      push('sec-ref', '🔗', t('secRef'), sourcedList(ct.intertextual_refs));
 
     const cc = ct.critical_consensus || {};
     if (cc.summary || (cc.scores || []).length || (cc.awards || []).length)
@@ -1589,23 +1630,32 @@ async function loadDeepDive(dc) {
         <div class="sw good"><h4>${esc(t('swGood'))}</h4><ul>${(ct.strengths || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div>
         <div class="sw bad"><h4>${esc(t('swBad'))}</h4><ul>${(ct.weaknesses || []).map(s => `<li>${esc(s)}</li>`).join('')}</ul></div></div>`);
 
+    if ((ct.production_trivia || []).length)
+      // Icon was 🎬, same as the pre-viewing "Story" section -- confusing
+      // once both are visible together in the nav chips with the curtain
+      // open. 🛠️ (behind-the-scenes) is distinct.
+      push('sec-rod', '🛠️', t('secRod'), accordionList(ct.production_trivia));
+
     if ((ct.fun_facts || []).length)
       push('sec-dato', '🎲', t('secDato'), factList(ct.fun_facts));
 
     if ((ct.debate_prompts || []).length) {
       const q = ct.debate_prompts[0];
+      const sides = splitDebateSides(q);
+      const labelA = sides ? sides[0] : t('pollAgree');
+      const labelB = sides ? sides[1] : t('pollDisagree');
       push('sec-deb', '🔥', t('secDeb'), `
         <div class="lede-inline">${esc(t('pollLede'))}</div>
         <div class="poll" id="pollCard" data-q="${esc(q)}" data-a="24" data-b="24">
           <div class="poll-txt">${esc(q)}</div>
           <div class="poll-options">
             <button class="poll-opt" data-side="a">
-              <span class="poll-label">${esc(t('pollAgree'))}</span>
+              <span class="poll-label">${esc(labelA)}</span>
               <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
               <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 ${esc(t('pollVotes'))}</span></span>
             </button>
             <button class="poll-opt" data-side="b">
-              <span class="poll-label">${esc(t('pollDisagree'))}</span>
+              <span class="poll-label">${esc(labelB)}</span>
               <span class="poll-bar"><span class="poll-fill" style="width:50%"></span></span>
               <span class="poll-meta"><span class="poll-pct">50%</span><span class="poll-n">24 ${esc(t('pollVotes'))}</span></span>
             </button>
@@ -1743,6 +1793,14 @@ document.getElementById('toTop').onclick = () =>
 
 applyStaticStrings();
 loadCatalogue();
+
+// Land directly on search, not a bare "pick a film" placeholder (explicit
+// request, 2026-08-19): on mobile the sidebar (search + catalogue) is an
+// off-canvas drawer by default (see MOBILE_QUERY above) -- open it on
+// first load same as a manual hamburger tap, then focus #search either
+// way so typing works immediately without an extra click on desktop too.
+if (MOBILE_QUERY.matches) openSidebar();
+document.getElementById('search').focus({ preventScroll: true });
 </script>
 </body>
 </html>

@@ -1,0 +1,159 @@
+{
+  "title_id": "barbie_2023",
+  "story": "La comedia de fantasía 2023 de Greta Gerwig imagina a la icónica muñeca de moda saliendo de su mundo rosa perfecto y enfrentando una crisis existencial. Junto con el carismático Ken de Ryan Gosling, Barbie se embarca en un viaje por carretera que la lleva de lashiperestilizadas calles de Barbieland a la desordenada realidad del mundo humano. En el camino, conoce a un conjunto diverso de personajes que reflejan facetas de la identidad y la ambición modernas. La película equilibra la sátira afilada con momentos sinceros, invitando al público a cuestionar lo que significa ser \"perfecto\" mientras se deleita con la pura alegría de su exceso visual.",
+  "context_bullets": [
+    "Barbie se convirtió en la película más taquillerade Warner Bros. y la película más taquillera de 2023.",
+    "Su lanzamiento simultáneo con Oppenheimer provocó el fenómeno cultural de la doblefunción \"Barbenheimer\".",
+    "La película recibió ocho nominaciones a los Premios de la Academia, ganando el premio a la Mejor Canción Original."
+  ],
+  "before_watching": [
+    {
+      "lead": "Se anuncia el desarrollo temprano",
+      "text": "Universal Pictures anunció una película de Barbie de acción en vivo en septiembre de 2009 con Laurence Mark como productor.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    },
+    {
+      "lead": "Derechos transferidos a Warner Bros.",
+      "text": "Los derechos cinematográficos se transfirieron a Warner Bros. Pictures en octubre de 2018, lo que provocó una nueva ronda de cambios en el reparto y el equipo.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    },
+    {
+      "lead": "Programa de fotografía principal",
+      "text": "La fotografía principal se realizó principalmente en Warner Bros. Studios, Leavesden, Inglaterra, y en el Venice Beach Skatepark en Los Ángeles de marzo a julio de 2022.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    }
+  ],
+  "author_voice": [],
+  "emotional_temperature": "exuberante, autorreflexivo y salvajemente juguetón",
+  "why_now": "Lanzada en medio de conversaciones renovadas sobre género, cultura de consumo y representación, Barbie aprovecha un juguete querido para comentar las expectativas contemporáneas de feminidad. Su éxito de taquilla junto con un drama histórico serio destaca el apetito del público tanto por la diversión escapista como por la crítica reflexiva, lo que convierte a la película en una piedra de toque cultural para 2023.",
+  "metaphors": [
+    {
+      "text": "Las repentinas imperfecciones físicas de Barbie funcionan como una metáfora de las grietas en una sociedad obsesionada con la perfección impecable.",
+      "source_id": null,
+      "kind": "interpretation"
+    },
+    {
+      "text": "El viaje de Barbieland al mundo real refleja un rito de iniciación, convirtiendo la utopía plástica en un crisol para el auténtico autodescubrimiento.",
+      "source_id": null,
+      "kind": "interpretation"
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "text": "Barbie se basa en las muñecas de moda de Mattel, marcando la primera adaptación deacción en vivo después de décadas de especiales animados.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29",
+      "kind": "fact"
+    },
+    {
+      "text": "La tendencia del doblelargometraje \"Barbenheimer\" hace referencia directa al estreno teatral simultáneo de Oppenheimer de Christopher Nolan.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29",
+      "kind": "fact"
+    }
+  ],
+  "production_trivia": [
+    {
+      "text": "La fotografía principal se realizó de marzo a julio de 2022, principalmente en Warner Bros. Studios, Leavesden, Inglaterra, y en el Venice Beach Skatepark en Los Ángeles.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29",
+      "kind": null
+    },
+    {
+      "text": "El proyecto cambió de manos tres veces: Universal (2009), Sony (2014‑2018) y luego Warner Bros. (2018), con múltiples escritores y directores, incluidas Amy Schumer y Anne Hathaway, antes de que Greta Gerwig tomara el timón.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29",
+      "kind": null
+    },
+    {
+      "text": "Amy Schumer salió de las negociaciones en 2023, citando diferencias creativas con los productores de la película.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29",
+      "kind": null
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Parada en Venice Beach",
+      "text": "El puñetazo impulsivo de Barbie a un acosador y el posterior arresto empujaron a la muñeca hiperperfecta a la cruda realidad de la ley callejera, contrastando visualmente la paleta pastel de Barbieland con los tonos apagados del mundo real, subrayando el tema de la dislocación de la identidad de la película.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    },
+    {
+      "scene": "Enfrentamiento final en Barbieland",
+      "text": "Cuando Barbie se enfrenta a los ejecutivos de Mattel en su propia utopía, la escena combina la sátira con una recuperación catártica de la agencia, utilizando caricaturas corporativas exageradas para reflejar la lucha interna entre la autodefinición y las expectativas externas.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    }
+  ],
+  "critical_consensus": {
+    "summary": "Barbie fue aclamada por su deslumbrante estilo visual, su agudo metahumor y un guión que equilibra el espectáculo centradoen la marca con la narración subversiva y feminista, ganando elogios generalizados de los críticos en las principales publicaciones.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "value": "88% (based on 506 reviews)",
+        "url": null
+      },
+      {
+        "source": "Metacritic",
+        "value": "80/100 (based on 67 critics)",
+        "url": null
+      },
+      {
+        "source": "CinemaScore",
+        "value": "Grade A",
+        "url": null
+      },
+      {
+        "source": "PostTrak",
+        "value": "89% overall positive",
+        "url": null
+      }
+    ],
+    "awards": [
+      "Nombrada una de las diez mejores películas de 2023 por el National Board of Review y el American Film Institute",
+      "Emparejado con Cabaret (1972) por la segunda mayor cantidad de nominaciones al Globo de Oro de la historia, obteniendo nueve nominaciones y ganando la Mejor Canción Original y el Globo de Oro inaugural por Logros Cinematográficos y de Taquilla",
+      "Recibió la mayor cantidad de nominaciones a los Critics 'Choice Movie Awards (18) y la mayor cantidad de nominaciones a la lista larga de BAFTA para un solo año (15)",
+      "Ganó ocho nominaciones a los Premios de la Academia, incluyendo Mejor Película, y ganó Mejor Canción Original por \"What Was I Made For?\""
+    ]
+  },
+  "strengths": [
+    "Diseño de producción visualmente deslumbrante que amplifica el contraste temático de la película entre fantasía y realidad.",
+    "Un guión bien escrito que equilibra el humor, los meta-comentarios y los momentos de carácter sincero."
+  ],
+  "weaknesses": [
+    "Algunos críticos señalan que la trama puede parecer engorrosa en medio de la premisa de alto concepto de la película."
+  ],
+  "verdict": "Barbie ofrece una sátira inteligente y visualmente suntuosa que convierte un icono comercial en un vehículo para la autoexploración genuina, incluso si su narrativa ocasionalmente tropieza con su propia ambición.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Juggernaut detaquilla",
+      "text": "La película recaudó $ 1.448 millones, convirtiéndose en la película más taquillerade Warner Bros. y la 14ª película más taquillerade todos los tiempos en su lanzamiento.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    },
+    {
+      "lead": "Fenómeno \"Barbenheimer\"",
+      "text": "El lanzamiento de Barbie el 21 de julio junto con Oppenheimer provocó el meme cultural \"Barbenheimer\", alentando al público a ver ambas películas como una doble función.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    },
+    {
+      "lead": "Reconocimiento Grammy",
+      "text": "La banda sonora y la partitura de la película recibieron doce nominaciones en la 66ª Entrega Anual de los Premios Grammy.",
+      "source_id": "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+    }
+  ],
+  "questions": [
+    "¿Cómo comenta la crisis existencial de Barbie sobre las presiones ejercidas sobre las mujeres por los estándares de belleza idealizados?",
+    "¿Qué sugiere la película sobre la relación entre la cultura de consumo y la identidad personal?",
+    "¿De qué manera la representación de los Kens critica la masculinidad tradicional?"
+  ],
+  "debate_prompts": [
+    "¿El abrazo de Barbie a sus orígenes comerciales diluye su mensaje feminista, o la película subvierte hábilmente la marca para avanzar en una narrativa progresiva?"
+  ],
+  "cta": "Sumérgete en la audaz reinvención de Greta Gerwig de un icono cultural: mira a Barbie ahora.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Barbie_%28film%29"
+  ],
+  "director": "Greta Gerwig",
+  "themes": [
+    "Identity",
+    "Perception"
+  ],
+  "title": "Barbie",
+  "year": 2023,
+  "tmdb_id": 346698
+}
