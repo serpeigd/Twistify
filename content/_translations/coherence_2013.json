@@ -1,0 +1,132 @@
+{
+  "title_id": "coherence_2013",
+  "story": "En la noche en que un cometa cruza el cielo, un grupo de amigos se reúne para una cena informal en una modesta sala de estar. A medida que la noche se profundiza, la conversación ordinaria da paso a perturbaciones sutiles y desorientadoras que se propagan por la casa. La cámara permanece cerca, capturando las reacciones espontáneas de los actores a medida que la realidad comienza a fracturarse de maneras que no pueden explicar. Cada momento se siente íntimo y extraño, invitando a los espectadores a cuestionarse cuánto de lo que ven se basa en las percepciones de los personajes. El entorno minimalista de la película amplifica la creciente sensación de inquietud, convirtiendo una simple reunión en un laboratorio para lo desconocido.",
+  "context_bullets": [
+    "Debutó en el Fantastic Fest el 19 de septiembre de 2013.",
+    "Ganó múltiples premios de guión, incluido el Next Wave Best Screenplay en Austin Fantastic Fest.",
+    "Dirigida por James Ward Byrkit en su debut como director."
+  ],
+  "before_watching": [
+    {
+      "lead": "Producción sin tripulación y basadaen el hogar",
+      "text": "Byrkit filmó toda la película en su propia casa de Santa Mónica sin equipo, confiando en actores de improvisación y un tratamiento mínimo de 12 páginas en lugar de un guión tradicional.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+    },
+    {
+      "lead": "Enfoque de actuación improvisada",
+      "text": "A los ocho actores se les dio solo un resumen básico de sus personajes, motivaciones y puntos principales de la trama, recibiendo una página de notas personales cada día en lugar de un guión completo.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+    },
+    {
+      "lead": "Concepto nacido de la ambición experimental",
+      "text": "Byrkit concibió Coherence para probar la idea de hacer una película \"sin equipo y sin guión\", utilizando gráficos, mapas e investigación científica para estructurar la historia mientras se mantenía el set reducido.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+    }
+  ],
+  "author_voice": [
+    {
+      "text": "Byrkit le dijo a un entrevistador: \"Durante aproximadamente un año, todo lo que hice fue hacer gráficos y mapas y dibujar diagramas de casas, flechas que apuntaban a donde iban todos, tratando de hacer un seguimiento de las diferentes iteraciones. Meses y meses de seguimiento de realidades fracturadas, buscando lo que los científicos reales creen sobre la naturaleza de la realidad: el gato de Schrödinger y todo eso. Fue una investigación, pero a pesar de todos los gráficos y tablas, creo que toda nuestra idea era que tiene que estar basada en el carácter. Queremos que la lógica de nuestras reglas internas sea sólida, y queríamos que fuera algo que la gente pudiera ver 12 veces y aún así descubrir una nueva capa \".",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "kind": null
+    },
+    {
+      "text": "Byrkit le dijo que su deseo era \"desnudar un set de filmación al mínimo: deshacerse del guión, deshacerse del equipo\".",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "kind": null
+    },
+    {
+      "text": "Byrkit añadió: \"... en lugar de un guión, tuve mi propio tratamiento de 12 páginas en el que pasé alrededor de un año trabajando. Describió todos los giros y revelaciones, y los arcos de los personajes y las piezas del rompecabezas que debían suceder escena por escena. Pero cada día, en lugar de recibir un guión, los actores recibían una página de notas para su personaje individual, ya fuera una historia de fondo o información sobre\"",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "kind": null
+    }
+  ],
+  "emotional_temperature": "curioso e inquietante",
+  "why_now": "En una era de ciencia ficción cada vez más pulida e impulsada por los efectos, Coherence demuestra cómo se puede generar tensión narrativa a través de la improvisación y la producción limitada, ofreciendo un nuevo modelo para los creadores de bajo presupuesto que buscan explorar ideas complejas sin recursos masivos.",
+  "metaphors": [
+    {
+      "text": "El cometa actúa como un catalizador que rompe la percepción de los personajes de una realidad única y estable, convirtiendo la cena en un caleidoscopio de vidas posibles.",
+      "source_id": null,
+      "kind": "interpretation"
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "text": "La película hace referencia al gato de Schrödinger, incluso haciendo una broma al respecto (\"¡Soy alérgico!\").",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "kind": "fact"
+    }
+  ],
+  "production_trivia": [
+    {
+      "text": "Byrkit concibió el proyecto para probar el rodaje de una película \"sin equipo y sin guión\", utilizando su propia casa como escenario.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "kind": null
+    },
+    {
+      "text": "Pasó un año haciendo gráficos, mapas y diagramas para rastrear realidades fracturadas y conceptos científicos como el gato de Schrödinger.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29",
+      "kind": null
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Interruptor de energía e intercambio debarra luminiscente",
+      "text": "La repentina pérdida de electricidad obliga al grupo a confiar en barras luminosas de colores, marcando visualmente la división entre su realidad original (azul) y la alternativa (rojo), aumentando la tensión y subrayando el tema de la percepción.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+    }
+  ],
+  "critical_consensus": {
+    "summary": "La película tiene un índice de aprobación del 89% en Rotten Tomatoes y una puntuación de Metacritic de 65, y los críticos elogian su bajo presupuesto, su narración basada en los personajes y la capacidad del elenco para anclar una premisa compleja derealidad.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "value": "89%",
+        "url": null
+      },
+      {
+        "source": "Metacritic",
+        "value": "65",
+        "url": null
+      }
+    ],
+    "awards": []
+  },
+  "strengths": [
+    "Los críticos destacaron las actuaciones fundamentadas del conjunto, señalando que mantienen la desconcertante trama emocionalmente resonante.",
+    "El entorno claustrofóbico de una sola ubicación de la película amplifica el temor y la paranoia, lo que hace que las visitas repetidas sean gratificantes."
+  ],
+  "weaknesses": [],
+  "verdict": "La coherencia transforma una producción modesta e improvisada en una meditación convincente sobre la realidad y el yo, ofreciendo una experiencia tensa y repetida que recompensa al público atento.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Improvisación sobre guión",
+      "text": "Byrkit les dio a los actores solo un esquema básico y una página de notas cada día en lugar de un guión tradicional.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+    },
+    {
+      "lead": "Setdecultivo casero",
+      "text": "Toda la película se rodó en la casa de James Ward Byrkit en Santa Mónica con un equipo mínimo.",
+      "source_id": "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+    }
+  ],
+  "questions": [
+    "¿Qué determina qué realidad persiste en última instancia después de que el cometa pasa?",
+    "¿Hasta dónde están dispuestos a llegar los personajes para reclamar una versión de la realidad que sirva mejor a sus deseos?"
+  ],
+  "debate_prompts": [
+    "¿La producción improvisada y libre de guiones de Coherence mejora su exploración de la realidad o conduce a una claridad narrativa desigual?"
+  ],
+  "cta": "Mira Coherence para experimentar una noche retorcida donde la improvisación se encuentra con la teoría cuántica.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Coherence_%28film%29"
+  ],
+  "director": "James Ward Byrkit",
+  "themes": [
+    "Perception",
+    "Identity"
+  ],
+  "title": "Coherence",
+  "year": 2013,
+  "tmdb_id": 220289
+}
