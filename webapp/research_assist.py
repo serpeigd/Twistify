@@ -436,7 +436,15 @@ def slugify(title: str, year: int) -> str:
 # 8000 even in the worst case -- not reverified against every title, so
 # a 413 is still possible on an unusually long article; call_with_retry
 # doesn't turn that into an infinite loop, it just raises (D16).
-MAX_CHARS_PER_CHUNK = 2000
+MAX_CHARS_PER_CHUNK = 1850
+# ^ Was 2000 -- cut again (2026-08-19) after a real 413 on The Odyssey:
+# "Request too large... TPM: Limit 8000, Requested 8021" for the
+# deep-dive call, 21 tokens over. Char/4 estimates are approximate;
+# this project's own richer articles (Odyssey, a heavily-covered 2026
+# release) push the actual tokenizer past that margin even though the
+# arithmetic above looked safe. Trading a little input length for real
+# headroom, not max_tokens (that's the deliberate richness budget from
+# rule 12, don't shrink it back down to "fix" this).
 
 
 def retrieve(title: str, year: int) -> tuple[list[dict], dict]:
