@@ -1119,7 +1119,9 @@ bar itself, and not the human review before anything is published.
   model to police its own citations; enforce it in code that runs after generation.
 - **Output goes to `content/_drafts/` (gitignored), never straight to `content/researched/`.**
   A human review pass is still the actual quality gate — what's automated is turning
-  "write from scratch" into "review and edit," not eliminating the check.
+  "write from scratch" into "review and edit," not eliminating the check. (True for this
+  CLI path specifically; D17 documents a later, separate entry point that deliberately
+  skips it.)
 
 **Honestly reported limitation, found by testing on one real title (Citizen Kane) across
 three prompt iterations**: a single generation call from a small free model is
@@ -1150,6 +1152,41 @@ statement from someone who made the film (director, screenwriter) — the field'
 content, as seen in Gone Girl's Fincher/Flynn quotes. It still cites the retrieved
 Wikipedia source correctly; it's a category mismatch, not a fabrication.
 
+## D17 — "+ Suggest a movie" auto-publishes with no review step (2026-08-19)
+
+D14 built one path into `content/researched/`: `research_assist.py` drafts to
+`content/_drafts/`, a human reviews and promotes. That review step is what
+caught a real bug the same week: diffing the first 13-candidate batch against
+`evals/dataset/spoilers/` found 4 titles (Tetsuo, Come and See, Coherence,
+Cronocrímenes) stating a core/major spoiler directly in the spoiler-free
+`story` field — the script gave one LLM call both the plot text and an
+instruction not to leak it, an instruction-level guard, not the context
+PARTITION this project's whole thesis (D3) says is required. Fixed by
+splitting generation into two calls: one for `story`/`context_bullets`/
+`author_voice`/etc., given only overview/production/accolades text; the
+other for post-viewing fields, given everything. That fix cleared Coherence
+and Come and See on re-verification (both promoted). Cronocrímenes improved
+but stayed borderline, held back pending another look. Tetsuo *still* leaked
+the same way after the fix — its own Wikipedia overview states the film's
+premise-is-the-spoiler directly, so no retrieval partition can produce a
+synopsis that's both honest and safe for it; it needs a hand-written entry
+like the original 8, not a code fix.
+
+Against that backdrop, the user's own instruction for a second entry point —
+the live app's "+ Suggest a movie" box — was to skip the review gate
+entirely: `webapp/app.py`'s `_auto_publish_suggestion()` runs
+`research_assist.draft_best_of()` as a background task and writes straight
+to `content/researched/`, no `content/_drafts/` stop in between. Given
+explicitly, after being told plainly what the 4/13 finding above means for
+this specific path. Not a contradiction of D14 by accident — a deliberate,
+disclosed exception to it, for one entry point, made with the failure mode
+already measured rather than hypothetical. `tests/test_auto_publish.py`
+covers the happy/no-op/dedup paths with everything mocked (no network, no
+Groq quota spent); nothing has verified live whether a real suggestion
+submitted through the deployed app has actually hit this path yet, and
+Render's filesystem wipe (D11) means even a successful one wouldn't survive
+the next spin-down without a redeploy baking it back into the repo.
+
 ## Rejected
 
 - **Multi-agent (researcher / writer / critic).** No dynamic decision to
@@ -1179,16 +1216,12 @@ are both done):
   CLAUDE.md); Milestone 1 (retrieval) is built and complete — all 20/20
   titles run and hand-read, closed with two confirmed leak mechanisms
   documented rather than fixed (D16).
-- **Automating the "+ Suggest a movie" pipeline.** The webapp captures
-  suggestions (`POST /api/requests`, appended to
-  `content/movie_requests.json`, gitignored) and now resolves the exact
-  film via TMDB autocomplete (D10) so a suggestion carries a `tmdb_id`,
-  but it still does **not** research or add anything automatically. Turning
-  a suggestion into a `content/researched/*.json` entry has to meet the
-  same bar as the existing 8 — cited sources, no invented facts (D6/D7) —
-  which is a real research pipeline with a review step, not a one-request
-  LLM call. Deliberately left as a manual step until that pipeline is
-  designed.
+- **Automating the "+ Suggest a movie" pipeline — done, not pending.** The
+  webapp resolves the exact film via TMDB autocomplete (D10) and now
+  auto-publishes a `research_assist.py` draft straight to
+  `content/researched/*.json` with no review step at all — see D17. That's
+  a deliberate, disclosed exception to D14's review gate for this one entry
+  point, not the missing manual step this bullet used to describe.
 
 ## Open questions
 
