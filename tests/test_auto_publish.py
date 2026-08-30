@@ -16,6 +16,8 @@ sys.path.insert(0, str(ROOT / "evals"))
 
 import pytest  # noqa: E402
 
+pytest.importorskip("fastapi")
+
 import app  # noqa: E402
 import research_assist  # noqa: E402
 from preshow import tmdb  # noqa: E402
