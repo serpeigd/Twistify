@@ -10,9 +10,12 @@ GroqPacer.wait() is a no-op when min_interval_s=0.
 import sys
 from pathlib import Path
 
-import httpx
 import pytest
-from groq import BadRequestError, RateLimitError
+
+httpx = pytest.importorskip("httpx")
+groq = pytest.importorskip("groq")
+BadRequestError = groq.BadRequestError
+RateLimitError = groq.RateLimitError
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
