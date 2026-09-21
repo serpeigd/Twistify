@@ -1,52 +1,120 @@
 {
   "title_id": "under_the_skin_2013",
-  "story": "A mysterious woman roams the Scottish night, luring unsuspecting men into her van. Beneath her alluring exterior lies an alien perspective that turns ordinary encounters into eerie examinations of humanity. As she navigates unfamiliar emotions, the landscape itself becomes a mirror for her growing curiosity and dread.\n\nGlazer’s stark visual style and Mica Levi’s disquieting score turn everyday settings—shopping centres, nightclubs, remote coastlines—into alien terrains, prompting viewers to question what it means to be human when seen through an otherworldly gaze.",
+  "story": "Imagine wandering the mist‑shrouded streets of Scotland at night, where an enigmatic woman lures unsuspecting strangers into an otherworldly encounter. The film follows this alien masquerader as she navigates human rituals, from nightclubs to lonely roadside diners, each moment a study in alien curiosity and alienation. Through a minimalist lens, the audience is invited to see the familiar world through an unfamiliar gaze, questioning what it means to be human when the observer is not.\n\nGlazer’s direction strips away conventional exposition, letting visual texture and sound design carry the narrative weight. The sparse dialogue and lingering shots create a sense of unease, while Scarlett Johansson’s muted performance hints at an intelligence both alien and eerily human. The film’s tone oscillates between clinical observation and unsettling intimacy, leaving viewers with a lingering sense of disquiet.\n\nAll the while, the Scottish landscape itself becomes a character—its bleak horizons and muted palette mirroring the protagonist’s alien detachment. As she moves through this world, the audience is forced to confront the thin line between predator and prey, observer and observed, in a world that feels both familiar and alien.",
   "context_bullets": [
-    "Adaptation of Michel Faber's 2000 novel.",
-    "Financed by Film4, BFI, Scottish Screen, Silver Reel, and FilmNation.",
-    "Premiered at Telluride on 29 August 2013; UK release 14 March 2014."
+    "Adapted from Michel Faber's 2000 novel, the project lingered in development for over a decade.",
+    "Originally envisioned as a high‑budget spectacle, Glazer pared the script down to a sparse, alien‑centric narrative.",
+    "Financing came from a coalition of UK bodies—including Film4, the BFI, and Scottish Screen—reflecting its independent‑spirit."
   ],
   "before_watching": [
     {
-      "lead": "Decade‑long development",
+      "lead": "Festival debut",
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "Glazer developed Under the Skin for over a decade before production began."
+      "text": "The film premiered at the Telluride Film Festival on 29 August 2013."
     },
     {
-      "lead": "Hidden‑camera approach",
+      "lead": "Budget vs. box‑office",
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "Many pickup scenes were unscripted and filmed with hidden cameras to preserve realism."
+      "text": "It was made on a $13.3 million budget but grossed only $7.2 million, making it a box‑office failure."
+    },
+    {
+      "lead": "Non‑actors and hidden cameras",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "Glazer cast many performers with no acting experience and filmed numerous scenes with hidden cameras to heighten realism."
     }
   ],
   "author_voice": [
     {
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "Glazer said: \"I knew then that I absolutely didn't want to film the book. But I still wanted to make the book a film.\""
+      "text": "I knew then that I absolutely didn't want to film the book. But I still wanted to make the book a film."
     },
     {
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "He likened the script's reduction to \"a big, extravagant rock band turning into PJ Harvey\"."
+      "text": "a big, extravagant rock band turning into PJ Harvey"
     }
   ],
-  "emotional_temperature": "Uneasy, contemplative",
-  "why_now": "In an era of AI‑driven surveillance, the film’s exploration of alien observation feels increasingly resonant.",
-  "metaphors": [],
-  "intertextual_refs": [],
+  "emotional_temperature": "disquieting and introspective",
+  "why_now": "In an era of AI-driven avatars and debates about digital identity, Under the Skin’s exploration of an outsider trying to comprehend humanity feels strikingly prescient. Its minimalist storytelling invites contemporary viewers to reflect on how we present ourselves to strangers—and to machines—making its themes of perception and identity more resonant than ever.",
+  "metaphors": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "Glazer described the script’s transformation as \"a big, extravagant rock band turning into PJ Harvey\"."
+    },
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The alien’s void can be read as a metaphorical black hole swallowing human identity."
+    },
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The beach drowning sequence serves as a visual metaphor for humanity’s self‑destruction when confronted with the unknown."
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "The film adapts Michel Faber’s 2000 novel, but unlike the book it omits explicit references to the alien harvesting humans for meat, making the premise more ambiguous."
+    },
+    {
+      "kind": "fact",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "Glazer likened the script’s reduction from a high‑budget spectacle to a minimal piece to \"a big, extravagant rock band turning into PJ Harvey\"."
+    },
+    {
+      "kind": "interpretation",
+      "source_id": null,
+      "text": "The film’s stark Scottish landscapes echo the existential isolation found in classic European art‑house cinema."
+    }
+  ],
   "production_trivia": [
     {
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "Glazer stripped an elaborate, effects‑heavy script down to a sparse story, describing the process as turning \"a big, extravagant rock band\" into PJ Harvey."
+      "text": "Glazer began developing the film for over a decade, initially envisioning an elaborate effects‑heavy version before paring it down to a sparse alien perspective."
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "The budget was $13.3 million, but the film grossed only $7.2 million, making it a box‑office failure."
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "Most of the cast had no acting experience, and many scenes—such as those in the nightclub and shopping centre—were shot with hidden cameras to enhance realism."
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "Financing came from a consortium including Film4 Productions, the British Film Institute, Scottish Screen, Silver Reel, and FilmNation Entertainment."
+    },
+    {
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "During pre‑production Glazer shot commercials to \"sketch\" ideas and test equipment for the film."
     }
   ],
   "scene_analysis": [
     {
-      "scene": "Nightclub pickup sequence",
+      "scene": "Beach drowning sequence",
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "Filmed with hidden cameras and unscripted dialogue, the scene captures genuine reactions that heighten the alien’s unsettling presence."
+      "text": "The scene juxtaposes the alien’s cold indifference with a human couple’s desperate rescue attempt, underscoring the film’s meditation on empathy and detachment."
+    },
+    {
+      "scene": "Void immersion of the first victim",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "The liquid abyss visualizes the alien’s consumption process, turning a simple abduction into a surreal, almost ritualistic experience."
+    },
+    {
+      "scene": "Nightclub pickup",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "Filmed with hidden cameras, the nightclub scene captures raw, unmediated interactions, highlighting the alien’s outsider status among ordinary nightlife."
+    },
+    {
+      "scene": "Mirror self‑examination",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "When the alien studies herself in a mirror, the moment serves as a visual cue for emerging self‑awareness and the erosion of her alien detachment."
     }
   ],
   "critical_consensus": {
-    "summary": "Critics praised Johansson’s hypnotic performance, Glazer’s stark direction, and Levi’s unsettling score, though some found the narrative too opaque.",
+    "summary": "Critics hailed Jonathan Glazer’s direction, Scarlett Johansson’s hypnotic performance, and the stark cinematography and score, while noting that the film’s elusive narrative may divide viewers.",
     "scores": [
       {
         "source": "Rotten Tomatoes",
@@ -60,34 +128,54 @@
       }
     ],
     "awards": [
-      "Nominated for Outstanding British Film and Best Original Music at the 68th BAFTAs."
+      "Nominated for Outstanding British Film at the 68th British Academy Film Awards",
+      "Nominated for Best Original Music at the 68th British Academy Film Awards",
+      "Nominated for a Critics' Choice Award",
+      "Nominated for an Independent Spirit Award",
+      "Nominated for four British Independent Film Awards"
     ]
   },
   "strengths": [
-    "Striking cinematography and haunting score create an immersive atmosphere.",
-    "Scarlett Johansson’s nuanced, almost wordless performance anchors the film’s emotional core."
+    "Jonathan Glazer’s direction creates an unsettling, immersive atmosphere.",
+    "Scarlett Johansson delivers a mesmerizing, physically demanding performance.",
+    "Lodith Landin’s stark cinematography captures Scotland’s bleak beauty.",
+    "Mica Levi’s avant‑garde score intensifies the film’s alien mood.",
+    "The use of hidden‑camera realism grounds the sci‑fi premise in everyday life."
   ],
   "weaknesses": [
-    "Its abstract narrative may frustrate viewers seeking conventional storytelling.",
-    "Some critics found the pacing deliberately sluggish."
+    "The narrative’s intentional ambiguity leaves some viewers feeling untethered.",
+    "Critics noted the film provides “too little” for audiences seeking a cohesive story.",
+    "Its slow, minimalist pacing can alienate viewers accustomed to conventional plot structures."
   ],
-  "verdict": "A haunting, visually arresting sci‑fi study that rewards patience and contemplation.",
+  "verdict": "A daring, visually striking sci‑fi meditation that rewards patience and rewards viewers who relish ambiguity.",
   "useless_fact": null,
   "fun_facts": [
     {
-      "lead": "Non‑actors in key roles",
+      "lead": "BBC ranking",
       "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
-      "text": "Most of the cast had no acting experience, contributing to the film’s naturalistic feel."
+      "text": "The film was ranked 61st on the BBC's 100 Greatest Films of the 21st Century list."
+    },
+    {
+      "lead": "Future accolades",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "In 2025, Rolling Stone and The New York Times named it among the best films of the 21st century."
+    },
+    {
+      "lead": "Brad Pitt’s early involvement",
+      "source_id": "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29",
+      "text": "An early draft of the script cast Brad Pitt as the husband of the alien duo before the story was refocused on the female lead."
     }
   ],
   "questions": [
-    "What does the alien’s gradual loss of anonymity suggest about human identity?",
-    "How does the film’s visual language shape our perception of empathy?"
+    "What does the alien’s gradual loss of anonymity suggest about the human condition?",
+    "How does the film’s minimalist dialogue shape the audience’s emotional response?",
+    "Why does the narrative focus exclusively on the female alien, leaving other characters nameless?",
+    "What is the significance of the recurring void imagery throughout the film?"
   ],
   "debate_prompts": [
-    "Does the film’s minimalist narrative amplify its meditation on humanity, or does it alienate viewers seeking plot clarity?"
+    "Is the film’s narrative ambiguity a bold artistic strength that deepens its themes, or a flaw that leaves audiences disconnected?"
   ],
-  "cta": "Experience the alien’s eerie odyssey in Under the Skin.",
+  "cta": "Dive into Under the Skin to experience its haunting, alien‑view of humanity.",
   "sources": [
     "https://en.wikipedia.org/wiki/Under_the_Skin_%282013_film%29"
   ],
@@ -95,5 +183,8 @@
   "themes": [
     "Identity",
     "Perception"
-  ]
+  ],
+  "title": "Under the Skin",
+  "year": 2013,
+  "tmdb_id": 698232
 }
