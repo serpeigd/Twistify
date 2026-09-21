@@ -1,0 +1,109 @@
+{
+  "title_id": "oldboy_2003",
+  "story": "Oldboy sigue a Oh Dae-su, un hombre de negocios que está encarcelado inexplicablemente durante quince años. Tras su repentina liberación, se ve inmerso en una búsqueda laberíntica de respuestas y venganza, descubriendo una red de conspiración que vincula su pasado con un presente impactante.\n\nMientras navega por un mundo de encuentros brutales e intimidad inesperada, la película combina la acción hiperestilizada con un núcleo emocional inquietante, dejando al público lidiando con las complejidades morales de la venganza.",
+  "context_bullets": [
+    "Segunda entrega de la Trilogía de la Venganza de Park Chan-wook.",
+    "Adaptación libre del manga japonés de Garon Tsuchiya y Nobuaki Minegishi.",
+    "Reconocida por su secuencia de lucha en el pasillo de un solo disparo."
+  ],
+  "before_watching": [
+    {
+      "lead": "Ganador del Gran Premio de Cannes",
+      "text": "Oldboy ganó el Gran Premio en el Festival de Cine de Cannes de 2004, recibiendo grandes elogios del presidente del jurado, Quentin Tarantino.",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29"
+    }
+  ],
+  "author_voice": [
+    {
+      "text": "Cuando se le preguntó en el comentario del DVD si sentía lástima por Choi, el director Park Chan-wook dijo que sentía más lástima por los pulpos.",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "kind": null
+    }
+  ],
+  "emotional_temperature": "intenso",
+  "why_now": "En medio del auge mundial del cine coreano en las plataformas de streaming, la influencia de Oldboy en los thrillers contemporáneos y su estatus como punto de referencia para contar historias con estilo y moralmente complejas lo convierten en algo esencial hoy en día.",
+  "metaphors": [
+    {
+      "text": "La interminable lucha en el corredor sirve como metáfora de la ira ineludible de Dae-su.",
+      "source_id": null,
+      "kind": "interpretation"
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "text": "La película adapta el manga japonés Old Boy de Garon Tsuchiya y Nobuaki Minegishi, traduciendo su premisa de venganza en un contexto cinematográfico coreano.",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "kind": "fact"
+    }
+  ],
+  "production_trivia": [
+    {
+      "text": "La pelea en el pasillo requirió 17 tomas durante tres días y fue capturada en un disparo continuo; solo se añadió la puñalada con CGI.",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29",
+      "kind": null
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Pelea en el pasillo",
+      "text": "Filmada en una sola toma ininterrumpida, la secuencia empuja a los espectadores a la furia cruda de Dae-su, haciendo que la violencia se sienta inmediata e inevitable.",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29"
+    }
+  ],
+  "critical_consensus": {
+    "summary": "Oldboy es elogiado por su ingeniosa narrativa de venganza, sus sorprendentes efectos visuales y su acción inolvidable, aunque su implacable violencia puede alienar a algunos espectadores.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "value": "82% (160 reviews)",
+        "url": null
+      },
+      {
+        "source": "Metacritic",
+        "value": "78/100 (33 critics)",
+        "url": null
+      }
+    ],
+    "awards": [
+      "Gran Premio, Festival de Cine de Cannes (2004)",
+      "Ocupa el puesto 64 en la lista de las 500 mejores películas de Empire (2008)",
+      "Ocupa el puesto número 3 en la lista de clásicos del cine surcoreano moderno de The Guardian (2020)."
+    ]
+  },
+  "strengths": [
+    "Visualmente impactante, especialmente la icónica pelea en el pasillo.",
+    "Una narrativa compleja y con múltiples capas que equilibra la brutalidad con la resonancia emocional."
+  ],
+  "weaknesses": [
+    "La violencia gráfica puede disuadir a algunos espectadores.",
+    "El final ambiguo deja sin resolver los hilos narrativos clave."
+  ],
+  "verdict": "Un thriller de venganza magistral y brutal que premia a los espectadores dispuestos a soportar su intensidad.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Pulpos vivos",
+      "text": "Se utilizaron cuatro pulpos vivos para la escena de la comida; Park dijo más tarde que sentía más lástima por los pulpos que por los actores.",
+      "source_id": "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29"
+    }
+  ],
+  "questions": [
+    "¿Cuál es el verdadero motivo detrás de la elaborada venganza de Evergreen?",
+    "¿Cómo afecta el final ambiguo a nuestra percepción de la redención de Dae-su?"
+  ],
+  "debate_prompts": [
+    "¿La violencia gráfica de Oldboy sirve a la profundidad emocional de la historia, o se cruza con un exceso gratuito?"
+  ],
+  "cta": "Mira Oldboy y vive su visceral saga de venganza.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/Oldboy_%282003_film%29"
+  ],
+  "director": "Park Chan-wook",
+  "themes": [
+    "Obsession",
+    "Morality and Justice"
+  ],
+  "title": null,
+  "year": null,
+  "tmdb_id": null
+}

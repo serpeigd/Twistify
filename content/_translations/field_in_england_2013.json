@@ -1,0 +1,125 @@
+{
+  "title_id": "field_in_england_2013",
+  "story": "Ambientada en medio del caos de la Guerra Civil Inglesa del siglo XVII, una pequeña banda de desertores se topa con un misterioso campo donde un alquimista afirma haber encontrado un tesoro escondido. Su viaje se convierte en una odisea alucinógena mientras consumen setas silvestres y se enfrentan a un enigmático mago.&#10; La austera paleta en blanco y negro de la película y su ritmo implacable, propio de una lógica onírica, convierten una simple búsqueda del tesoro en un estudio sobre el poder, la locura y la delgada línea que separa la realidad de la ilusión.",
+  "context_bullets": [
+    "Lanzado simultáneamente en cines, bajo demanda y medios domésticos el 5 de julio de 2014.",
+    "Filmada en blanco y negro durante un rodaje de 12 días en las afueras de Guildford, Surrey.",
+    "Presupuestado en £ 300.000."
+  ],
+  "before_watching": [
+    {
+      "lead": "Chispa histórica",
+      "text": "Wheatley se interesó en el escenario de la Guerra Civil Inglesa después de filmar un documental sobre la sociedad de recreación de Sealed Knot.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England"
+    },
+    {
+      "lead": "Fuente de financiación",
+      "text": "La película fue desarrollada y financiada por Film4.0, el centro de innovación de Film4.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England"
+    }
+  ],
+  "author_voice": [
+    {
+      "text": "Wheatley dijo: \"La gente estaba moliendo hongos en polvo y soplándolos en la cara de la gente y luego haciendo trucos de magia\".",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England",
+      "kind": null
+    },
+    {
+      "text": "Wheatley dijo que A Field in England combina \"los elementos más psicodélicos\" de sus películas anteriores Kill List y Sightseers y \"teje en nuestra visión del drama histórico\".",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England",
+      "kind": null
+    },
+    {
+      "text": "Wheatley y la directora de fotografía Laurie Rose tomaron la decisión espontánea de filmar en blanco y negro.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England",
+      "kind": null
+    }
+  ],
+  "emotional_temperature": "inquietantemente intenso",
+  "why_now": "En una era de sobrecarga de transmisión, su formato compacto y experimental ofrece una ruptura fresca e inmersiva con los límites del género convencional.",
+  "metaphors": [
+    {
+      "text": "El campo en sí funciona como un crisol donde la historia, la alquimia y la percepción alterada se fusionan en un solo crisol febril.",
+      "source_id": null,
+      "kind": "interpretation"
+    }
+  ],
+  "intertextual_refs": [
+    {
+      "text": "Wheatley vincula los \"elementos psicodélicos\" de la película con sus obras anteriores Kill List y Sightseers.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England",
+      "kind": "fact"
+    }
+  ],
+  "production_trivia": [
+    {
+      "text": "El rodaje tuvo lugar en el campo a las afueras de Guildford, Surrey.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England",
+      "kind": null
+    }
+  ],
+  "scene_analysis": [
+    {
+      "scene": "Harina de champiñones",
+      "text": "El festín compartido de hongos desencadena reacciones divergentes, poniendo en primer plano la exploración de la película sobre la percepción alterada frente a la restricción disciplinada.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England"
+    }
+  ],
+  "critical_consensus": {
+    "summary": "Los críticos elogiaron su audaz mezcla de drama de época y terror psicodélico, destacando una visión singular e intransigente.",
+    "scores": [
+      {
+        "source": "Rotten Tomatoes",
+        "value": "86% (67 reviews)",
+        "url": null
+      },
+      {
+        "source": "Metacritic",
+        "value": "73/100 (19 reviews)",
+        "url": null
+      }
+    ],
+    "awards": []
+  },
+  "strengths": [
+    "Estilo visual atrevido que realza la atmósfera inquietante de la película.",
+    "Una atrevida fusión de drama histórico con terror psicodélico."
+  ],
+  "weaknesses": [
+    "La opacidad narrativa puede alienar a las audiencias que buscan una resolución clara de la trama.",
+    "El exceso psicodélico ocasionalmente eclipsa el desarrollo del carácter."
+  ],
+  "verdict": "Una obra atrevida y polarizadora que premia a los espectadores dispuestos a rendirse a su ritmo alucinatorio.",
+  "useless_fact": null,
+  "fun_facts": [
+    {
+      "lead": "Sesiones y presupuesto",
+      "text": "El presupuesto de producción fue de £ 300,000 y la fotografía principal se realizó en solo 12 días.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England"
+    },
+    {
+      "lead": "Elección en blanco y negro",
+      "text": "Wheatley y la directora de fotografía Laurie Rose optaron por el blanco y negro de forma espontánea tras estudiar la película Culloden de Peter Watkins.",
+      "source_id": "https://en.wikipedia.org/wiki/A_Field_in_England"
+    }
+  ],
+  "questions": [
+    "¿Qué simboliza el escurridizo tesoro para cada personaje?",
+    "¿Cómo afecta la lógica alucinatoria de la película a nuestra confianza en la narrativa?"
+  ],
+  "debate_prompts": [
+    "¿La estética psicodélica de la película amplifica la tensión histórica o distrae de la narrativa?"
+  ],
+  "cta": "Sumérgete en el campo de las alucinaciones y decide si su locura es genio o extralimitación.",
+  "sources": [
+    "https://en.wikipedia.org/wiki/A_Field_in_England"
+  ],
+  "director": "Ben Wheatley",
+  "themes": [
+    "Obsession",
+    "Perception"
+  ],
+  "title": null,
+  "year": null,
+  "tmdb_id": null
+}
